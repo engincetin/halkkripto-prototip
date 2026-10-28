@@ -135,7 +135,7 @@ function renderSendCard() {
 }
 
 function renderMoves() {
-  $('#moves').innerHTML = state.moves.slice(0, 2).map((m) => `
+  $('#moves').innerHTML = state.moves.slice(0, 1).map((m) => `
     <div class="mv">
       <div class="datebox"><span class="m">${m.m}</span><span class="d">${m.d}</span><span class="y">${m.y}</span></div>
       <div class="mv-body">
@@ -168,7 +168,7 @@ function renderMarket() {
   const list = COINS.filter((c) => !q || c.n.toLocaleLowerCase('tr-TR').includes(q) || c.c.toLocaleLowerCase('tr-TR').includes(q));
   let html;
   if (marketCur === 'all') html = list.flatMap((c) => [coinRow(c, 'TL', true), coinRow(c, 'USD', true)]).join('');
-  else html = list.map((c) => coinRow(c, marketCur)).join('');
+  else html = list.map((c) => coinRow(c, marketCur, true)).join('');
   $('#market-list').innerHTML = html || '<div class="empty">Sonuç bulunamadı</div>';
   $$('#chips .chip').forEach((b) => b.classList.toggle('on', b.dataset.cur === marketCur));
 }
