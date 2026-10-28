@@ -489,3 +489,5 @@ body.framed .home-indicator {
 .hold-head .cd-head { gap: 11px; }
 .hold-head .cd-head span:not(.coin-ic) { font-size: 14px; }
 .hold-head .coin-val b { font-size: 16px; }
+.lbl2 .bal { color: var(--blue); font-weight: 800; font-size: 15px; margin-top: 4px; }
+.lbl2 .bal small { font-size: 12px; }

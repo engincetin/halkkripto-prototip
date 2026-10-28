@@ -5,6 +5,7 @@ Figma tasarımından (halkkripto) yapılmış, iPhone'da uygulama gibi çalışa
 ## Akış
 Açılış → Ana Sayfa → **Kripto İşlemleri**
 - Kripto’ya Para Gönder → Tutar (klavye) → Devam → İşlem Özeti → Onayla → İşlem Sonuç → Dekont
+  - Gönderen hesaptaki turuncu oka dokununca alttan açılan menüden Vadesiz TL / Vadesiz USD hesabı seçilir; USD hesabından dolar gönderilebilir
 - Kripto Varlıklarım
 - Kripto Piyasaları (Tümünü Gör / büyüteç) – arama ve TL / USD / Tümü filtresi çalışır
 - Halk Kripto kartındaki TL düğmesi: alttan açılan menüden TL / USD seçimi; bakiye, kar/zarar, piyasa ve varlık tutarları seçilen para biriminde

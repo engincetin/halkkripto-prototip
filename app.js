@@ -35,6 +35,15 @@ function portfolioPL() {
 }
 const signed = (n) => `${n > 0 ? '+' : n < 0 ? '-' : ''}${fmt(Math.abs(n))}`;
 
+const BRANCH = 'NİŞANTAŞI/İSTANBUL ŞB.';
+function accounts() {
+  return [
+    { id: 'TL', name: 'Vadesiz TL Hesabı', no: '1658 - 01106845', bal: state.vadesiz, kredili: state.kredili },
+    { id: 'USD', name: 'Vadesiz USD Hesabı', no: '1658 - 01106852', bal: state.usd, kredili: null },
+  ];
+}
+const fromAcc = (id = state.from) => accounts().find((a) => a.id === id);
+
 const MONTHS = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA'];
 
 const state = {
@@ -43,6 +52,8 @@ const state = {
   nakit: 30200,
   kripto: 70150, // ASSETS değerlerinin toplamı
   cur: 'TL', // Halk Kripto ekranlarında görüntüleme para birimi
+  usd: 12450.75, // Vadesiz USD hesabı bakiyesi
+  from: 'TL', // Para Gönder ekranında seçili gönderen hesap (TL / USD)
   hidden: false,
   amt: '',          // klavyeden girilen ham tutar, ör. "50000,5"
   last: null,       // son başarılı işlem
@@ -89,8 +100,6 @@ function renderBalances() {
   const tp = portfolioPL();
   $$('[data-k="vadesiz-big"]').forEach((e) => (e.innerHTML = money(state.vadesiz)));
   $$('[data-k="kredili"]').forEach((e) => (e.innerHTML = money(state.kredili)));
-  $$('[data-k="vadesiz-blue"]').forEach((e) => (e.innerHTML = money(state.vadesiz)));
-  $$('[data-k="kredili-blue"]').forEach((e) => (e.innerHTML = money(state.kredili)));
   const eye = `<button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#${state.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></button>`;
   const head = `
     <div class="acct-head">
@@ -110,12 +119,27 @@ function renderBalances() {
   $('#device').classList.toggle('hidden-amt', state.hidden);
 }
 
+function renderSendCard() {
+  const a = fromAcc();
+  $('#send-card').innerHTML = `
+    <div class="acct-head">
+      <span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span>
+      <span class="name">${a.name}</span>
+      <button class="press" data-accsheet aria-label="Hesap seç"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="#e8721c"/><path d="m11 8 5 5-5 5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="branch">${BRANCH}</div>
+    <div class="acct-no2">${a.no}</div>
+    <div class="bal-row"><span>Kullanılabilir Bakiye</span><b>${money(a.bal, a.id)}</b></div>
+    ${a.kredili !== null ? `<div class="bal-row"><span>Kullanılabilir Kredili Bakiye</span><b>${money(a.kredili, a.id)}</b></div>` : ''}`;
+  $('#amount-cur').textContent = a.id;
+}
+
 function renderMoves() {
   $('#moves').innerHTML = state.moves.slice(0, 2).map((m) => `
     <div class="mv">
       <div class="datebox"><span class="m">${m.m}</span><span class="d">${m.d}</span><span class="y">${m.y}</span></div>
       <div class="mv-body">
-        <div class="mv-top"><b>${m.t}</b><span class="${m.a > 0 ? 'pos' : 'neg'} amt">${m.a < 0 ? '-' : ''}${fmt(Math.abs(m.a))}TL</span></div>
+        <div class="mv-top"><b>${m.t}</b><span class="${m.a > 0 ? 'pos' : 'neg'} amt">${m.a < 0 ? '-' : ''}${fmt(Math.abs(m.a))}${m.cur || 'TL'}</span></div>
         <div class="mv-bot"><span>${m.s}</span><svg width="17" height="19" style="color:#0576b8;flex:none;margin-left:10px"><use href="#i-receipt"/></svg></div>
       </div>
     </div>`).join('');
@@ -347,7 +371,10 @@ function renderTabbars() {
 
 function renderAmountBits() {
   const v = state.last ? state.last.amount : parseAmt(state.amt);
-  $$('[data-k="amount"]').forEach((e) => (e.textContent = `${fmt(v)} TL`));
+  const acc = fromAcc(state.last ? state.last.from : state.from);
+  $$('[data-k="amount"]').forEach((e) => (e.textContent = `${fmt(v)} ${acc.id}`));
+  $$('[data-k="from-acc"]').forEach((e) => (e.textContent = `${acc.no} - ${BRANCH}`));
+  $$('[data-k="fee"]').forEach((e) => (e.textContent = `0,00 ${acc.id}`));
   $$('[data-k="today"]').forEach((e) => (e.textContent = today()));
   $$('[data-k="ref"]').forEach((e) => (e.textContent = state.last ? state.last.ref : ''));
 }
@@ -383,15 +410,15 @@ BELGE NO     : -
       ${fakeQR(Number(t.ref))}
     </div>
     <div class="box"><pre>İŞLEM TÜRÜ      : HALK KRİPTO HESABINA TRANSFER
-GÖNDEREN HESAP  : 1658 - 01106845 NİŞANTAŞI/İSTANBUL ŞB.
+GÖNDEREN HESAP  : ${fromAcc(t.from).no} ${BRANCH}
 ALICI HESAP     : HALK KRİPTO HESABIM
 SORGU NO        : ${t.ref.slice(0, 9)}
-İŞLEM TUTARI (TL) :        ${a}
-İŞLEM ÜCRETİ (TL) :             0,00
-BSMV         (TL) :             0,00
+İŞLEM TUTARI (${t.cur}) :        ${a}
+İŞLEM ÜCRETİ (${t.cur}) :             0,00
+BSMV         (${t.cur}) :             0,00
 
-TOPLAM (TL) : ${a}
-AÇIKLAMA : HALK KRİPTO HESABINA TL TRANSFERİ
+TOPLAM (${t.cur}) : ${a}
+AÇIKLAMA : HALK KRİPTO HESABINA ${t.cur} TRANSFERİ
 
 
 </pre></div>
@@ -408,7 +435,7 @@ const el = (id) => document.getElementById(id);
 const cur = () => el(stack[stack.length - 1]);
 
 function onEnter(id) {
-  if (id === 'gonder') updateAmount();
+  if (id === 'gonder') { renderSendCard(); updateAmount(); }
   if (id === 'ozet') renderAmountBits();
   if (id === 'sonuc') { renderAmountBits(); const c = $('#check'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); }
   if (id === 'dekont') renderDekont();
@@ -576,31 +603,55 @@ function updateAmount() {
   const f = $('#amount-field');
   f.classList.toggle('filled', !!state.amt);
   let err = '';
-  if (v > state.vadesiz) err = 'Tutar, kullanılabilir bakiyenizi aşıyor.';
+  if (v > fromAcc().bal) err = 'Tutar, kullanılabilir bakiyenizi aşıyor.';
   f.classList.toggle('err', !!err);
   $('#amount-err').textContent = err;
   $('#devam').disabled = !(v > 0) || !!err;
 }
 
-/* ================= Para birimi seçimi (alttan açılan menü) ================= */
+/* ================= Alttan açılan menüler ================= */
 let sheetOpen = false;
-function openCurSheet() {
-  sheetOpen = true;
-  $$('#cur-sheet [data-dcur]').forEach((b) => b.classList.toggle('on', b.dataset.dcur === state.cur));
+function openSheet(id) {
+  closeKeypad();
+  sheetOpen = id;
   $('#sheet-bg').classList.add('show');
-  $('#cur-sheet').classList.add('open');
+  $(`#${id}`).classList.add('open');
 }
-function closeCurSheet() {
-  sheetOpen = false;
+function closeSheet() {
+  if (!sheetOpen) return;
+  $(`#${sheetOpen}`).classList.remove('open');
   $('#sheet-bg').classList.remove('show');
-  $('#cur-sheet').classList.remove('open');
+  sheetOpen = false;
+}
+
+// Halk Kripto görüntüleme para birimi (TL / USD)
+function openCurSheet() {
+  $$('#cur-sheet [data-dcur]').forEach((b) => b.classList.toggle('on', b.dataset.dcur === state.cur));
+  openSheet('cur-sheet');
 }
 function setDisplayCur(cur) {
   $$('#cur-sheet [data-dcur]').forEach((b) => b.classList.toggle('on', b.dataset.dcur === cur));
   state.cur = cur;
   marketCur = cur;
   renderBalances(); renderKriptoList(); renderAssets(); renderMarket();
-  setTimeout(closeCurSheet, 180);
+  setTimeout(closeSheet, 180);
+}
+
+// Para Gönder: gönderen hesap seçimi
+function openAccSheet() {
+  $('#acc-opts').innerHTML = accounts().map((a) => `
+    <button class="opt press${a.id === state.from ? ' on' : ''}" data-acc="${a.id}">
+      <span class="cur-ic">${a.id === 'USD' ? '$' : '₺'}</span>
+      <span class="lbl2"><b>${a.name}</b><span>${a.no}</span><span class="bal">${money(a.bal, a.id)}</span></span>
+      <i class="radio"></i>
+    </button>`).join('');
+  openSheet('acc-sheet');
+}
+function setFromAcc(id) {
+  $$('#acc-opts [data-acc]').forEach((b) => b.classList.toggle('on', b.dataset.acc === id));
+  state.from = id;
+  renderSendCard(); updateAmount();
+  setTimeout(closeSheet, 180);
 }
 
 /* ================= Bildirim ================= */
@@ -629,6 +680,8 @@ function setupEvents() {
     if (b.dataset.popto) return popTo(b.dataset.popto);
     if (b.hasAttribute('data-cursheet')) return openCurSheet();
     if (b.dataset.dcur) return setDisplayCur(b.dataset.dcur);
+    if (b.hasAttribute('data-accsheet')) return openAccSheet();
+    if (b.dataset.acc) return setFromAcc(b.dataset.acc);
     if (b.hasAttribute('data-soon')) return toast('Bu özellik demoda yer almıyor');
     if (b.dataset.toast) return toast(b.dataset.toast);
     if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; return renderBalances(); }
@@ -637,7 +690,7 @@ function setupEvents() {
   });
 
   $('#amount-field').addEventListener('click', openKeypad);
-  $('#sheet-bg').addEventListener('click', closeCurSheet);
+  $('#sheet-bg').addEventListener('click', closeSheet);
   $('#kp-done').addEventListener('click', closeKeypad);
   $('#gonder-scroll').addEventListener('click', (e) => { if (keypadOpen && !e.target.closest('#amount-field')) closeKeypad(); });
   $('#devam').addEventListener('click', () => { state.last = null; push('ozet'); });
@@ -652,12 +705,18 @@ function setupEvents() {
     setTimeout(() => {
       const amount = parseAmt(state.amt);
       const d = new Date();
-      state.vadesiz -= amount;
-      state.kredili -= amount;
-      state.nakit += amount;
+      const cur = state.from;
+      if (cur === 'USD') {
+        state.usd -= amount;
+        state.nakit += amount * USD_RATE; // Halk Kripto nakit bakiyesi TL olarak tutulur
+      } else {
+        state.vadesiz -= amount;
+        state.kredili -= amount;
+        state.nakit += amount;
+      }
       state.amt = ''; // sonraki gönderim boş tutarla başlasın
-      state.last = { amount, ref: String(7683000000 + Math.floor(Math.random() * 999999)), date: today(), time: today(true) };
-      state.moves.unshift({ m: MONTHS[d.getMonth()], d: d.getDate(), y: d.getFullYear(), t: 'Halk Kripto Transferi', s: 'HALK KRİPTO HESABIMA GÖNDERİLEN', a: -amount });
+      state.last = { amount, cur, from: cur, ref: String(7683000000 + Math.floor(Math.random() * 999999)), date: today(), time: today(true) };
+      state.moves.unshift({ m: MONTHS[d.getMonth()], d: d.getDate(), y: d.getFullYear(), t: 'Halk Kripto Transferi', s: 'HALK KRİPTO HESABIMA GÖNDERİLEN', a: -amount, cur });
       renderBalances(); renderMoves();
       push('sonuc');
       setTimeout(() => { btn.textContent = 'Onayla'; delete btn.dataset.loading; }, DUR + 50);
