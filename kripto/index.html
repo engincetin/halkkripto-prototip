@@ -72,6 +72,8 @@
     <symbol id="k-convert" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 9.5A7.8 7.8 0 0 0 5.6 6.8L4 8.5"/><path d="M4 4v4.5h4.5"/><path d="M4.5 14.5a7.8 7.8 0 0 0 13.9 2.7l1.6-1.7"/><path d="M20 20v-4.5h-4.5"/></g></symbol>
     <symbol id="t-chart" viewBox="0 0 24 24"><g fill="currentColor"><rect x="2" y="13" width="4.2" height="9" rx="1.2"/><rect x="9.9" y="8" width="4.2" height="14" rx="1.2"/><rect x="17.8" y="3" width="4.2" height="19" rx="1.2"/></g></symbol>
     <symbol id="t-user" viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="5" fill="currentColor"/><path d="M2.5 22.5c.6-5 4.6-8.2 9.5-8.2s8.9 3.2 9.5 8.2z" fill="currentColor"/></symbol>
+    <symbol id="k-filter" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 6.5h11M3 17.5h11"/><circle cx="5.5" cy="6.5" r="2.5" fill="currentColor" stroke="none"/><circle cx="18.5" cy="17.5" r="2.5" fill="currentColor" stroke="none"/></g></symbol>
+    <symbol id="k-sort" viewBox="0 0 10 16"><path d="M5 1 9.2 6.6H.8z" style="fill: var(--up, currentColor)"/><path d="M5 15 .8 9.4h8.4z" style="fill: var(--dn, currentColor)"/></symbol>
     <symbol id="k-star" viewBox="0 0 24 24"><path d="m12 2.6 2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17.1l-5.9 3.3 1.3-6.5L2.5 9.4l6.6-.8z" fill="currentColor"/></symbol>
   </defs>
 </svg>
@@ -93,12 +95,12 @@
   <section class="screen" id="k-home">
     <div class="home-top k-top">
       <div class="row1">
-        <button class="k-back press" id="back-to-bank" hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
+        <button class="k-back press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
         <div class="avatar"><i><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></div>
         <span class="bell"><svg width="24" height="24"><use href="#i-bell"/></svg></span>
         <span class="sp"></span>
         <button class="press" data-soon style="margin-right:21px" aria-label="Takvim"><svg width="22" height="24"><use href="#i-cal"/></svg></button>
-        <button class="press" data-soon aria-label="Ara"><svg width="23" height="23"><use href="#i-search"/></svg></button>
+        <button class="press" data-kpush="k-search" aria-label="Ara"><svg width="23" height="23"><use href="#i-search"/></svg></button>
       </div>
     </div>
     <div class="scroll home-scroll k-scroll" id="k-home-scroll">
@@ -128,13 +130,61 @@
         <div style="height:calc(var(--sab) + 110px)"></div>
       </div>
     </div>
-    <nav class="tabbar">
-      <button class="tab on"><svg width="23" height="24"><use href="#t-home"/></svg>Ana Sayfa</button>
-      <button class="tab" data-soon><svg width="24" height="24"><use href="#t-chart"/></svg>Piyasalar</button>
-      <div class="tab fab-slot"><button class="fab k-fab press" data-soon>Al/Sat<svg width="26" height="22"><use href="#i-transfer"/></svg></button></div>
-      <button class="tab" data-soon><svg width="24" height="24"><use href="#t-pie"/></svg>Varlıklarım</button>
-      <button class="tab" data-soon><svg width="24" height="24"><use href="#t-user"/></svg>Profil</button>
-    </nav>
+    <nav class="tabbar" data-ktabbar="k-home"></nav>
+  </section>
+
+  <!-- ===================== PİYASALAR ===================== -->
+  <section class="screen" id="k-markets">
+    <header class="header">
+      <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
+      <h1>Piyasalar</h1>
+      <div class="k-hright">
+        <button class="press" data-ksheet="filter-sheet" aria-label="Listeyi düzenle"><svg width="24" height="24"><use href="#k-filter"/></svg></button>
+        <button class="press" data-kpush="k-search" aria-label="Ara"><svg width="23" height="23"><use href="#i-search"/></svg></button>
+      </div>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="k-qtabs" id="km-quotes">
+        <button data-kq="fav" aria-label="Favoriler"><svg width="20" height="20"><use href="#k-star"/></svg></button>
+        <button data-kq="TL" class="on">TL</button>
+        <button data-kq="USD">USD</button>
+      </div>
+      <div class="k-info"><svg width="20" height="20"><use href="#i-info"/></svg><span>TL çiftlerde limit emirler <b>%0</b> komisyon!</span></div>
+      <div class="k-sorthead" id="km-sort">
+        <button data-ksort="name">İsim <svg width="9" height="14"><use href="#k-sort"/></svg></button>
+        <button data-ksort="price"><span id="km-price-lbl">En İyi Satış Fiyatı</span> <svg width="9" height="14"><use href="#k-sort"/></svg></button>
+        <button data-ksort="ch">24s Değişim <svg width="9" height="14"><use href="#k-sort"/></svg></button>
+      </div>
+      <div class="list-card" id="km-list"></div>
+      <div style="height:calc(var(--sab) + 110px)"></div>
+    </div>
+    <nav class="tabbar" data-ktabbar="k-markets"></nav>
+  </section>
+
+  <!-- ===================== ARAMA ===================== -->
+  <section class="screen k-push" id="k-search">
+    <header class="header">
+      <button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>Kripto Ara</h1>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <label class="search"><svg width="22" height="22" style="color:#0576b8"><use href="#i-search"/></svg><input id="ks-q" type="search" placeholder="İşlem çifti arayın" autocomplete="off" autocorrect="off" spellcheck="false"></label>
+      <div id="ks-idle">
+        <div id="ks-recent-wrap">
+          <div class="row-title"><span class="section-title">GEÇMİŞ ARAMALAR</span><button class="see-all press" id="ks-clear">Temizle</button></div>
+          <div class="list-card" id="ks-recent"></div>
+        </div>
+        <div class="section-title">POPÜLER</div>
+        <div class="k-pop" id="ks-pop"></div>
+      </div>
+      <div id="ks-results" hidden>
+        <div class="section-title">SONUÇLAR</div>
+        <div class="list-card" id="ks-list"></div>
+      </div>
+      <div style="height:calc(var(--sab) + 40px)"></div>
+    </div>
   </section>
 
   <div class="toast" id="toast"></div>
@@ -145,6 +195,15 @@
     <p>Varlıklarınız seçtiğiniz para birimiyle gösterilir.</p>
     <button class="opt press" data-dcur="TL"><span class="cur-ic">₺</span><span class="lbl2"><b>Türk Lirası</b><span>TL</span></span><i class="radio"></i></button>
     <button class="opt press" data-dcur="USD"><span class="cur-ic">$</span><span class="lbl2"><b>Amerikan Doları</b><span>USD</span></span><i class="radio"></i></button>
+  </div>
+  <div class="sheet" id="filter-sheet" role="dialog" aria-label="Listeyi düzenle">
+    <div class="grab"></div>
+    <div class="k-sheet-head"><h3>Listeyi Düzenle</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <p>Listede hangi fiyatın gösterileceğini seçin.</p>
+    <button class="opt k-pm press" data-kpm="last"><span class="lbl2"><b>Son Fiyat</b><span>Piyasadaki en son işlemin fiyatı</span></span><i class="radio"></i></button>
+    <button class="opt k-pm press" data-kpm="bid"><span class="lbl2"><b>En İyi Alış Fiyatı <em>Satış yapmak için</em></b><span>Bir alıcının ödemeye hazır olduğu en yüksek fiyat</span></span><i class="radio"></i></button>
+    <button class="opt k-pm press" data-kpm="ask"><span class="lbl2"><b>En İyi Satış Fiyatı <em>Alış yapmak için</em></b><span>Bir satıcının kabul edeceği en düşük fiyat</span></span><i class="radio"></i></button>
+    <button class="opt k-pm press" data-kpm="avg"><span class="lbl2"><b>Ortalama Fiyat</b><span>En iyi alış ve en iyi satış fiyatının ortalaması</span></span><i class="radio"></i></button>
   </div>
 </div>
 <script src="../common.js"></script>

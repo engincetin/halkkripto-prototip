@@ -17,7 +17,7 @@ Ekranın sol kenarından sağa kaydırarak geri gidilebilir (iOS hareketi). Göz
 
 ## İki uygulama: Halkbank ve Halk Kripto
 - **Halkbank** (bu klasör): bankacılık uygulaması. Kripto Al/Sat ve kripto detaydaki Al/Sat butonları "Halk Kripto'ya yönlendiriliyorsunuz" pop-up'ını açar; Devam ile Halk Kripto, iOS uygulama açma animasyonuyla açılır, "Halkbank'a Dön" ile geri gelinir.
-- **Halk Kripto** (`kripto/`): Al/Sat uygulaması. Kendi adresi (`.../kripto/`), adı, ikonu ve açılış ekranı vardır; tek başına da ana ekrana eklenebilir. Halkbank ile aynı kurumsal kimliği (`styles.css`) ve aynı veriyi (`common.js`) kullanır. Ana sayfa: Toplam Varlığım (TL/USD), hızlı işlemler, kapatılabilir kampanya kartı, Yükselenler / Düşenler / Favorilerim. Halkbank'tan açıldığında oradaki güncel bakiyeyi gösterir ve sol üstte "‹ Halkbank" ile geri dönülür.
+- **Halk Kripto** (`kripto/`): Al/Sat uygulaması. Kendi adresi (`.../kripto/`), adı, ikonu ve açılış ekranı vardır; tek başına da ana ekrana eklenebilir. Halkbank ile aynı kurumsal kimliği (`styles.css`) ve aynı veriyi (`common.js`) kullanır. Ana sayfa: Toplam Varlığım (TL/USD), hızlı işlemler, kapatılabilir kampanya kartı, Yükselenler / Düşenler / Favorilerim. Halkbank'tan açıldığında oradaki güncel bakiyeyi gösterir ve sol üstte "‹ Halkbank" ile geri dönülür. Piyasalar: ★ / TL / USD sekmeleri, isim-fiyat-değişim sıralaması, Listeyi Düzenle (Son / En İyi Alış / En İyi Satış / Ortalama fiyat) ve arama ekranı (geçmiş aramalar, popüler).
 - iOS'ta ana ekrandaki iki web uygulaması birbirini açamadığı için Halkbank içinden açılan Halk Kripto, aynı uygulamanın çerçeve (iframe) içinde gösterilir; kod tek, iki yerde de aynı çalışır.
 
 ## iPhone'da açmak
