@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Halkbank Kripto</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#025193">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Halkbank">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="fonts/nunitosans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-back" viewBox="0 0 20 18"><path d="M19 9H2.5M9.5 1.5 2 9l7.5 7.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7.6" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="m15.6 15.6 6 6" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="11" cy="6.6" r="1.3" fill="currentColor"/><path d="M11 9.6v6.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-info-fill" viewBox="0 0 14 14"><circle cx="7" cy="7" r="7" fill="#8a9097"/><rect x="6" y="3" width="2" height="2" rx=".5" fill="#fff"/><rect x="6" y="6" width="2" height="6" rx=".5" fill="#fff"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M12 2.5c-3.6 0-6.2 2.8-6.2 6.4v4.3L4 16.6c-.4.7.1 1.4.9 1.4h14.2c.8 0 1.3-.7.9-1.4l-1.8-3.4V8.9c0-3.6-2.6-6.4-6.2-6.4z" fill="currentColor"/><path d="M9.3 19.6a2.8 2.8 0 0 0 5.4 0z" fill="currentColor"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 22 24"><rect x=".65" y="2.65" width="20.7" height="20.7" rx="6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M.65 8.5h20.7v8.85a6 6 0 0 1-6 6h-8.7a6 6 0 0 1-6-6z" fill="currentColor"/><rect x="5.6" width="1.5" height="5" rx=".75" fill="currentColor"/><rect x="13.4" width="1.5" height="5" rx=".75" fill="currentColor"/><g fill="#02a4e2"><rect x="5" y="12" width="2" height="2" rx=".2"/><rect x="9.5" y="12" width="2" height="2" rx=".2"/><rect x="14" y="12" width="2" height="2" rx=".2"/><rect x="5" y="16" width="2" height="2" rx=".2"/><rect x="9.5" y="16" width="2" height="2" rx=".2"/><rect x="14" y="16" width="2" height="2" rx=".2"/></g></symbol>
+    <symbol id="i-eye" viewBox="0 0 18 13"><path d="M9 .5C5 .5 1.8 3 .5 6.5 1.8 10 5 12.5 9 12.5s7.2-2.5 8.5-6C16.2 3 13 .5 9 .5z" fill="#0576b8"/><circle cx="9" cy="6.5" r="3.4" fill="#fff"/><circle cx="9" cy="6.5" r="1.9" fill="#0576b8"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 18 13"><path d="M9 .5C5 .5 1.8 3 .5 6.5 1.8 10 5 12.5 9 12.5s7.2-2.5 8.5-6C16.2 3 13 .5 9 .5z" fill="#0576b8"/><circle cx="9" cy="6.5" r="3.4" fill="#fff"/><path d="M2 12 16 1" stroke="#fff" stroke-width="3"/><path d="M2 12 16 1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev-down" viewBox="0 0 14 8"><path d="m1 1 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chev-right" viewBox="0 0 6 10"><path d="m1 1 4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 10 10"><path d="m5 .6 1.3 2.8 3 .3-2.3 2 .7 3-2.7-1.6-2.7 1.6.7-3L.7 3.7l3-.3z" fill="#fff"/></symbol>
+    <symbol id="i-transfer" viewBox="0 0 24 22"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6.5H4.5M8.5 2.5l-4 4 4 4"/><path d="M4 15.5h15.5M15.5 11.5l4 4-4 4"/></g></symbol>
+    <symbol id="i-atm" viewBox="0 0 18 20"><rect x="0" y="1" width="18" height="2" rx="1" fill="currentColor"/><rect x="3" y="2.5" width="12" height="14" rx="1" fill="currentColor"/><circle cx="9" cy="7.5" r="3.3" fill="#fff"/><text x="9" y="9.6" text-anchor="middle" font-size="5.6" font-weight="900" fill="currentColor" font-family="Arial">₺</text><path d="M5 14h8" stroke="#fff" stroke-width=".8"/><path d="m6.6 17 2.4 2.3 2.4-2.3z" fill="currentColor"/></symbol>
+    <symbol id="i-share" viewBox="0 0 20 20"><path d="M8 3H5a3 3 0 0 0-3 3v9a3 3 0 0 0 3 3h9a3 3 0 0 0 3-3v-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M11 2h7v7M18 2 9 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.75"><rect x="1" y="1" width="9.2" height="9.2" rx="2.4"/><rect x="13.8" y="1" width="9.2" height="9.2" rx="2.4"/><rect x="1" y="13.8" width="9.2" height="9.2" rx="2.4"/><rect x="13.8" y="13.8" width="9.2" height="9.2" rx="2.4"/></g></symbol>
+    <symbol id="i-receipt" viewBox="0 0 18 20"><path d="M2.5 1.2h10.8v14.6c0 1.6 1.1 2.6 2.5 2.6H4.6a2.4 2.4 0 0 1-2.4-2.4V1.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M13.3 12.5h3.4v3.4a2.5 2.5 0 0 1-2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.3 5h5M5.3 8h5M5.3 11h3.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-send" viewBox="0 0 16 16"><path d="M2 14 13.5 2.5M5 2h9v9" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pie" viewBox="0 0 24 24"><path d="M10.8 2.6v10.6h10.6A10.6 10.6 0 1 1 10.8 2.6z" fill="currentColor"/><path d="M13.2.2a10.6 10.6 0 0 1 10.6 10.6H13.2z" fill="currentColor"/></symbol>
+    <symbol id="i-coinbadge" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#0aa2e2"/><path d="M10.8 5.5A3.6 3.6 0 1 0 10.8 10.5" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><path d="M7 3v2M9 3v2M7 11v2M9 11v2" stroke="#fff" stroke-width="1" stroke-linecap="round"/></symbol>
+    <symbol id="i-cring" viewBox="0 0 22 22"><path d="M15.6 6.4a6.5 6.5 0 1 0 0 9.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9.3 2.6v2.6M12.7 2.6v2.6M9.3 16.8v2.6M12.7 16.8v2.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 44 30"><path d="M4 15.5 16 27 40 3" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bksp" viewBox="0 0 26 20"><path d="M8 1h15a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8l-7-9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m12 6 8 8M20 6l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-up" viewBox="0 0 22 12"><path d="m1 11 10-10 10 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <!-- Tab bar -->
+    <symbol id="t-home" viewBox="0 0 24 25"><path d="M2 9.8 10.2 2a2.6 2.6 0 0 1 3.6 0L22 9.8c.6.6 1 1.4 1 2.3v9.6a2.6 2.6 0 0 1-2.6 2.6H3.6A2.6 2.6 0 0 1 1 21.7v-9.6c0-.9.4-1.7 1-2.3z" fill="currentColor"/><rect x="7.6" y="17.3" width="8.8" height="2.4" rx="1.2" fill="#fff"/></symbol>
+    <symbol id="t-wallet" viewBox="0 0 24 24"><path d="M3.5 6.5 16.5 1.5c1-.4 2 .4 2 1.4V6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="1" y="5.5" width="22" height="17.5" rx="3.6" fill="currentColor"/><circle cx="18.2" cy="14.3" r="1.6" fill="#fff"/></symbol>
+    <symbol id="t-apply" viewBox="0 0 24 24"><path d="M12 .8a11.2 11.2 0 1 0 11.2 11.2h-6A5.2 5.2 0 0 1 12 6.8z" fill="currentColor"/><circle cx="19.4" cy="4.6" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 6.6v10.8M6.6 12h10.8" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="t-pie" viewBox="0 0 24 24"><path d="M10.6 2.4v11h11A10.8 10.8 0 1 1 10.6 2.4z" fill="currentColor"/><path d="M13.4.2a10.6 10.6 0 0 1 10.4 10.6H13.4z" fill="currentColor"/></symbol>
+    <symbol id="t-fab" viewBox="0 0 30 16"><g fill="#fff"><rect x="0" y="0" width="30" height="2.5" rx=".7"/><rect x="0" y="6.8" width="6.4" height="2.5" rx=".7"/><rect x="10" y="6.8" width="16.3" height="2.5" rx=".7"/><rect x="4" y="13.5" width="20.9" height="2.5" rx=".7"/><rect x="26.7" y="13.5" width="3.3" height="2.5" rx=".7"/></g></symbol>
+    <!-- Kripto paralar -->
+    <symbol id="c-btc" viewBox="0 0 24 24"><g transform="rotate(12 12 12)" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M7.5 4.5h6a3.6 3.6 0 0 1 0 7.2h-6zM7.5 11.7h7a3.9 3.9 0 0 1 0 7.8h-7z"/><path d="M9.8 2v2.5M13.2 2v2.5M9.8 19.5V22M13.2 19.5V22" stroke-linecap="round"/></g></symbol>
+    <symbol id="c-eth" viewBox="0 0 24 24"><path d="M12 1.5 5 12.6l7 4.1 7-4.1z" fill="currentColor"/><path d="M12 1.5v15.2l7-4.1z" fill="#3b9bd6"/><path d="M12 18.1 5 14l7 9.5 7-9.5z" fill="currentColor"/><path d="M12 18.1v5.4l7-9.5z" fill="#3b9bd6"/></symbol>
+    <symbol id="c-xrp" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2.5 4.5 8.6 10a4.9 4.9 0 0 0 6.8 0l6.1-5.5"/><path d="M2.5 19.5 8.6 14a4.9 4.9 0 0 1 6.8 0l6.1 5.5"/></g></symbol>
+    <symbol id="c-sol" viewBox="0 0 24 24"><g fill="currentColor"><path d="M6.5 4h15l-3 3.4h-15z"/><path d="M3.5 10.3h15l3 3.4h-15z"/><path d="M6.5 16.6h15l-3 3.4h-15z"/></g></symbol>
+    <symbol id="c-usdc" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8.6 3.2a9.5 9.5 0 0 0 0 17.6M15.4 3.2a9.5 9.5 0 0 1 0 17.6"/><path d="M14.9 9.4c-.3-1.3-1.4-2-2.9-2-1.7 0-2.9.9-2.9 2.2 0 3 6 1.5 6 4.8 0 1.4-1.3 2.3-3.1 2.3-1.7 0-2.9-.8-3.1-2.2M12 5.4v2M12 16.7v1.9"/></g></symbol>
+    <symbol id="c-uni" viewBox="0 0 24 24"><path d="M5.5 21.5c-.3-3.5.6-6.5 2.8-8.6-1.4-1-2.4-2.7-2.2-4.9 1.6.6 2.9 1.6 3.7 2.7l1.2-1.4L9.6 4.6l3.4 3.8 4-5.4-1.5 6.4c2.3 1.2 3.9 3.3 4.1 5.9.1 1-.7 1.5-1.5 1.1l-2.2-1.1c-.9 1.9-.9 4.3.1 6.2z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="14.4" cy="11.8" r="1" fill="currentColor"/></symbol>
+    <!-- Durum çubuğu (masaüstü önizleme) -->
+    <symbol id="s-bars" viewBox="0 0 20 13"><g fill="currentColor"><rect y="8.5" width="3.4" height="4.5" rx="1"/><rect x="5.3" y="6" width="3.4" height="7" rx="1"/><rect x="10.6" y="3.2" width="3.4" height="9.8" rx="1"/><rect x="15.9" width="3.4" height="13" rx="1"/></g></symbol>
+    <symbol id="s-wifi" viewBox="0 0 18 13"><path d="M9 2.4c2.6 0 5 1 6.8 2.7l1.4-1.4A11.6 11.6 0 0 0 9 .4 11.6 11.6 0 0 0 .8 3.7l1.4 1.4A9.7 9.7 0 0 1 9 2.4zm0 4c1.5 0 2.9.6 4 1.6l1.4-1.4A7.7 7.7 0 0 0 9 4.4c-2 0-3.9.8-5.4 2.2L5 8c1.1-1 2.5-1.6 4-1.6zm0 4.1-2.6-1.6a3.7 3.7 0 0 1 5.2 0z" fill="currentColor"/></symbol>
+    <symbol id="s-batt" viewBox="0 0 28 13"><rect x=".6" y=".6" width="23.8" height="11.8" rx="3.6" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-width="1.1"/><rect x="2.4" y="2.4" width="20.2" height="8.2" rx="2.2" fill="currentColor"/><path d="M26 4.4v4.2c.9-.3 1.4-1.1 1.4-2.1s-.5-1.8-1.4-2.1z" fill="currentColor" fill-opacity=".45"/></symbol>
+  </defs>
+</svg>
+
+<div id="device">
+  <div class="fake-status"><span class="time">9:41</span><span class="island"></span><span style="display:flex;gap:6px;align-items:center"><svg width="19" height="12"><use href="#s-bars"/></svg><svg width="17" height="12"><use href="#s-wifi"/></svg><svg width="27" height="13"><use href="#s-batt"/></svg></span></div>
+  <div class="home-indicator"></div>
+
+  <!-- ===================== AÇILIŞ ===================== -->
+  <section class="screen" id="splash"></section>
+
+  <!-- ===================== ANA SAYFA ===================== -->
+  <section class="screen" id="home">
+    <div class="scroll">
+      <div class="home-top">
+        <div class="row1">
+          <div class="avatar"><i><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></div>
+          <span class="bell"><svg width="24" height="24"><use href="#i-bell"/></svg></span>
+          <span class="sp"></span>
+          <button class="press" data-soon style="margin-right:21px"><svg width="22" height="24"><use href="#i-cal"/></svg></button>
+          <button class="press" data-soon><svg width="23" height="23"><use href="#i-search"/></svg></button>
+        </div>
+        <div class="home-tabs"><span class="on">Hesaplarım</span><span data-soon>Kartlarım</span><span data-soon>Yatırımlarım</span></div>
+      </div>
+
+      <div class="card acct-card bal">
+        <div class="acct-head">
+          <span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span>
+          <span class="name">Vadesiz TL Hesabı</span>
+          <button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#i-eye"/></svg></button>
+          <span class="pill-orange" style="margin-left:14px">Tümü</span>
+        </div>
+        <div class="acct-no">1658 - 01106845</div>
+        <div class="lbl" style="margin-top:20px">Kullanılabilir Bakiye</div>
+        <div class="amt-big amt" data-k="vadesiz-big"></div>
+        <div class="kredili"><span class="lbl">Kullanılabilir Kredili Bakiye</span><b class="money-sm amt" data-k="kredili"></b></div>
+        <div class="quick">
+          <button class="press" data-soon><span class="qi" style="color:#0576b8"><svg width="21" height="19"><use href="#i-transfer"/></svg></span>Para<br>Transferi</button>
+          <button class="press" data-soon><span class="qi" style="color:#0079b6"><svg width="17" height="20"><use href="#i-atm"/></svg></span>ATM’den<br>Para Çek</button>
+          <button class="press" data-soon><span class="qi" style="color:#0576b8"><svg width="19" height="19"><use href="#i-share"/></svg></span>IBAN<br>Paylaş</button>
+          <button class="press" data-soon><span class="qi" style="color:#f0700d"><svg width="24" height="24"><use href="#i-grid"/></svg></span>Tüm<br>İşlemler</button>
+        </div>
+      </div>
+
+      <div class="card moves">
+        <div class="moves-head"><b>HESAP HAREKETLERİ</b><button class="see-all press" data-soon>Tümünü Gör <svg width="6" height="10"><use href="#i-chev-right"/></svg></button></div>
+        <div id="moves"></div>
+      </div>
+
+      <div class="tiles">
+        <button class="tile press" data-soon><span class="glow"></span><img src="img/banka.png" alt="">Diğer Bankalarım</button>
+        <button class="tile press" data-go="kripto"><span class="glow"></span><img class="tall" src="img/kripto.png" alt="">Kripto İşlemleri</button>
+        <button class="tile press" data-soon><span class="glow"></span><img src="img/hediye.png" alt="">Kampanyalarım</button>
+        <button class="tile press" data-soon><span class="glow"></span><img src="img/ev.png" alt="">Evim</button>
+        <button class="tile press" data-soon><span class="glow"></span><img src="img/arac.png" alt="">Aracım</button>
+        <button class="tile press" data-soon><span class="glow"></span><img src="img/seyahat.png" alt="">Seyahatim</button>
+      </div>
+    </div>
+    <nav class="tabbar" data-tabbar></nav>
+  </section>
+
+  <!-- ===================== KRİPTO İŞLEMLERİ ===================== -->
+  <section class="screen" id="kripto">
+    <header class="header">
+      <button class="hbtn left press" data-back><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>Kripto İşlemleri</h1>
+      <button class="hbtn right press" data-go="piyasalar" data-focus-search><svg width="23" height="23"><use href="#i-search"/></svg></button>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="grad-ext"></div>
+      <div class="card kcard bal" data-kcard></div>
+      <div class="section-title" style="margin-top:16px">KRİPTO İŞLEMLERİ</div>
+      <div class="kops">
+        <button class="kop press" data-soon><span class="ki" style="color:#0576b8"><svg width="15" height="13"><use href="#i-transfer"/></svg></span>Kripto<br>Al/Sat</button>
+        <button class="kop press" data-go="gonder"><span class="ki" style="color:#0576b8"><svg width="12" height="12"><use href="#i-send"/></svg></span>Kripto’ya<br>Para Gönder</button>
+        <button class="kop press" data-go="varliklar"><span class="ki" style="color:#0576b8"><svg width="17" height="17"><use href="#i-pie"/></svg></span>Kripto<br>Varlıklarım</button>
+      </div>
+      <div class="row-title"><span class="section-title">KRİPTO PİYASALARI</span><button class="see-all press" data-go="piyasalar">Tümünü Gör <svg width="6" height="10"><use href="#i-chev-right"/></svg></button></div>
+      <div class="list-card" id="kripto-list"></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
+  <!-- ===================== KRİPTO PİYASALARI ===================== -->
+  <section class="screen" id="piyasalar">
+    <header class="header">
+      <button class="hbtn left press" data-back><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>Kripto Piyasaları</h1>
+      <button class="hbtn right press" data-toast="Fiyatlar bilgi amaçlıdır, anlık değildir."><svg width="22" height="22"><use href="#i-info"/></svg></button>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <label class="search"><svg width="22" height="22" style="color:#0576b8"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Kripto Varlık Ara" autocomplete="off" autocorrect="off" spellcheck="false"></label>
+      <div class="chips" id="chips"><button class="chip press" data-cur="all">Tümü</button><button class="chip on press" data-cur="TL">TL</button><button class="chip press" data-cur="USD">USD</button></div>
+      <div class="section-title" style="margin:24px 0 15px">KRİPTO PİYASALARI</div>
+      <div class="list-card" id="market-list"></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
+  <!-- ===================== KRİPTO VARLIKLARIM ===================== -->
+  <section class="screen" id="varliklar">
+    <header class="header">
+      <button class="hbtn left press" data-back><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>Kripto Varlıklarım</h1>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="card vcard bal" data-vcard></div>
+      <div class="section-title" style="margin:20px 0 15px">KRİPTO VARLIKLARIM</div>
+      <div class="card list-card bal" id="asset-list"></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PARA GÖNDER ===================== -->
+  <section class="screen" id="gonder">
+    <header class="header">
+      <button class="hbtn left press" data-back><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>Halk Kripto’ya Para Gönder</h1>
+    </header>
+    <div class="scroll" id="gonder-scroll">
+      <div class="pad-header"></div>
+      <div class="info"><svg width="14" height="14"><use href="#i-info-fill"/></svg><span>Halk Kripto’ya ister Türk Lirası (TL) ister Amerikan Doları (USD) gönderip işlem yapabilirsiniz.</span></div>
+      <div class="section-title" style="margin:20px 0 19px">GÖNDEREN HESAP</div>
+      <div class="card send-card">
+        <div class="acct-head">
+          <span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span>
+          <span class="name">Vadesiz TL Hesabı</span>
+          <button class="press" data-soon><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="#e8721c"/><path d="m11 8 5 5-5 5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="branch">NİŞANTAŞI/İSTANBUL ŞB.</div>
+        <div class="acct-no2">1658 - 01106845</div>
+        <div class="bal-row"><span>Kullanılabilir Bakiye</span><b data-k="vadesiz-blue"></b></div>
+        <div class="bal-row"><span>Kullanılabilir Kredili Bakiye</span><b data-k="kredili-blue"></b></div>
+      </div>
+      <div class="section-title" style="margin-top:17px">TRANSFER BİLGİLERİ</div>
+      <div class="amount-field" id="amount-field">
+        <span class="ph">Tutar</span>
+        <span class="val"><span id="amount-text"></span><i class="caret"></i></span>
+        <span class="cur">TL</span>
+      </div>
+      <div class="field-err" id="amount-err"></div>
+    </div>
+    <div class="bottom-btn"><button class="btn-primary press" id="devam" disabled>Devam</button></div>
+    <div class="keypad" id="keypad">
+      <div class="kp-bar"><svg width="22" height="12"><use href="#i-up"/></svg><svg width="22" height="12" style="transform:rotate(180deg)"><use href="#i-up"/></svg><button class="done" id="kp-done">Tamam</button></div>
+      <div class="kp-keys" id="kp-keys"></div>
+    </div>
+  </section>
+
+  <!-- ===================== İŞLEM ÖZETİ ===================== -->
+  <section class="screen" id="ozet">
+    <header class="header">
+      <button class="hbtn left press" data-back><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>İşlem Özeti</h1>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="section-title" style="margin:16px 0 13px">GÖNDERİM BİLGİSİ</div>
+      <div class="card sum-card">
+        <div class="sum-row"><span>Gönderen Hesap</span><b class="fit">1658 - 01106845 - NİŞANTAŞI/İSTANBUL ŞB.</b></div>
+        <div class="sum-row"><span>Alıcı Hesap</span><b>Halk Kripto Hesabım</b></div>
+        <div class="sum-row"><span>İşlem Tarihi</span><b data-k="today"></b></div>
+        <div class="sum-row"><span>Tutar</span><b data-k="amount"></b></div>
+        <div class="sum-row"><span>Toplam Ücret (İşlem Ücreti + BSMV)</span><b>0,00 TL</b></div>
+        <div class="sum-row"><span>Toplam Tutar</span><b data-k="amount"></b></div>
+      </div>
+    </div>
+    <div class="bottom-btns">
+      <button class="btn-secondary press" data-back>Vazgeç</button>
+      <button class="btn-primary press" id="onayla">Onayla</button>
+    </div>
+  </section>
+
+  <!-- ===================== İŞLEM SONUÇ ===================== -->
+  <section class="screen" id="sonuc">
+    <header class="header">
+      <button class="hbtn left press" data-popto="kripto"><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>İşlem Sonuç</h1>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="card res-card">
+        <div class="check" id="check"><i><svg width="40" height="28"><use href="#i-check"/></svg></i></div>
+        <h2>İşleminiz başarıyla gerçekleşmiştir.</h2>
+        <p>Halk Kripto hesabınıza <span data-k="amount"></span><br>tutarındaki transfer işleminiz gerçekleşmiştir.</p>
+        <p class="ref">Referans Numarası: <span data-k="ref"></span></p>
+        <div class="res-btns">
+          <button class="btn-row press" data-go="dekont"><svg width="17" height="19" style="color:#fff"><use href="#i-receipt"/></svg>Dekont Görüntüle</button>
+          <button class="btn-row press" id="yeni-transfer"><svg width="20" height="17"><use href="#i-transfer"/></svg>Yeni Transfer</button>
+          <button class="btn-row press" data-popto="kripto"><svg width="22" height="22"><use href="#i-cring"/></svg>Kripto İşlemlere Dön</button>
+        </div>
+      </div>
+      <div style="height:calc(var(--sab) + 110px)"></div>
+    </div>
+    <nav class="tabbar" data-tabbar></nav>
+  </section>
+
+  <!-- ===================== DEKONT ===================== -->
+  <section class="screen" id="dekont">
+    <header class="header">
+      <button class="hbtn left press" data-back><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>Dekont</h1>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="dk-card"><div class="pg">1/1</div><div class="doc" id="doc"></div></div>
+      <div style="height:calc(var(--sab) + 110px)"></div>
+    </div>
+    <nav class="tabbar" data-tabbar></nav>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
