@@ -438,7 +438,7 @@ function layout() {
   } else {
     const probe = $('#safe-probe');
     const cs = getComputedStyle(probe);
-    let fullH = Math.max(H, document.documentElement.clientHeight, probe.getBoundingClientRect().height);
+    let fullH = Math.max(H, document.documentElement.clientHeight, probe.getBoundingClientRect().height, $('#lvh-probe').getBoundingClientRect().height);
     if (standalone) {
       // iOS ana ekran modunda innerHeight durum çubuğu kadar eksik gelebiliyor;
       // uygulama tüm ekranı kapladığı için gerçek ekran yüksekliğini kullan.
@@ -459,12 +459,48 @@ function layout() {
   dev.style.transform = `translate(${view.x}px, ${view.y}px) scale(${z})`;
 }
 
+/* Tanı paneli: ekranın üst kenarına (ilk 50px) 1,5 sn içinde 4 kez dokununca açılır/kapanır */
+function setupDiag() {
+  const d = document.createElement('div');
+  d.id = 'diag';
+  document.body.appendChild(d);
+  let taps = [];
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches[0].clientY > 50) return;
+    const now = Date.now();
+    taps = taps.filter((t) => now - t < 1500).concat(now);
+    if (taps.length < 4) return;
+    taps = [];
+    const r = (s) => document.querySelector(s).getBoundingClientRect();
+    const cs = getComputedStyle($('#safe-probe'));
+    const dev = $('#device');
+    d.textContent = [
+      `innerW×H: ${innerWidth}×${innerHeight}`,
+      `screen: ${screen.width}×${screen.height}`,
+      `clientH: ${document.documentElement.clientHeight}`,
+      `visualViewport: ${window.visualViewport ? Math.round(visualViewport.width) + '×' + Math.round(visualViewport.height) + ' @' + Math.round(visualViewport.offsetTop) : '-'}`,
+      `lvh: ${Math.round(r('#lvh-probe').height)}  fixed inset0: ${Math.round(r('#safe-probe').height)}`,
+      `safe top/bottom: ${cs.paddingTop} / ${cs.paddingBottom}`,
+      `standalone: ${!!navigator.standalone}  dpr: ${devicePixelRatio}`,
+      `device: ${Math.round(r('#device').height)} (zoom ${view.z.toFixed(3)})`,
+      `--sat ${dev.style.getPropertyValue('--sat')}  --sab ${dev.style.getPropertyValue('--sab')}`,
+      `UA: ${navigator.userAgent}`,
+    ].join('\n');
+    d.classList.toggle('show');
+  }, { passive: true });
+}
+
 /* ================= Başlat ================= */
 function init() {
   const probe = document.createElement('div');
   probe.id = 'safe-probe';
   probe.style.cssText = 'position:fixed;top:0;bottom:0;left:0;width:1px;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
   document.body.appendChild(probe);
+  const lvh = document.createElement('div');
+  lvh.id = 'lvh-probe';
+  lvh.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:100vh;height:100lvh;visibility:hidden;pointer-events:none';
+  document.body.appendChild(lvh);
+  setupDiag();
 
   renderTabbars(); buildKeypad();
   renderBalances(); renderMoves(); renderKriptoList(); renderMarket(); renderAssets(); updateAmount();
