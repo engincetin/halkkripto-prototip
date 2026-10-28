@@ -285,14 +285,16 @@ function renderCoin() {
     <div class="info-row"><span>Maksimum Arz</span><b>${info.max ? bigNum(info.max, c.c) : 'Sınırsız'}</b></div>`;
 
   const a = ASSETS.find((x) => x.k === cd.k);
+  // Özet / Durumum sekmeleri yalnızca kullanıcının bu varlığı varsa gösterilir
+  $('#coin-seg').hidden = !a;
+  if (!a) setSeg('ozet');
   $('#cd-hold').innerHTML = a ? `
     <div class="info-row"><span>Varlık</span><b>${info.name} (${c.c})</b></div>
     <div class="info-row"><span>Miktar</span><b class="amt">${a.qty}</b></div>
     <div class="info-row"><span>Tahmini Değer</span><b class="amt">${a.tl}</b></div>
     <hr>
     <div class="info-row"><span>Kar/Zarar Oranı</span><b class="up">${a.pct}</b></div>
-    <div class="info-row"><span>Kar/Zarar Tutarı</span><b class="up amt">${a.pl}</b></div>` : `
-    <div class="hold-empty"><b>Henüz ${info.name} varlığınız yok</b>Aşağıdaki Al butonu ile ${c.c} alarak portföyünüze ekleyebilirsiniz.</div>`;
+    <div class="info-row"><span>Kar/Zarar Tutarı</span><b class="up amt">${a.pl}</b></div>` : '';
 }
 
 function openCoin(k, cur) {

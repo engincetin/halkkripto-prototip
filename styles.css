@@ -441,11 +441,10 @@ body.framed .home-indicator {
 .info-row b { font-weight: 800; color: var(--ink); text-align: right; white-space: nowrap; }
 .info-row b small { display: block; font-size: 13px; color: var(--gray); font-weight: 700; margin-top: 2px; }
 .info-card hr { border: 0; border-top: 1px solid #e3e5e8; margin: 6px -20px; }
-.hold-empty { text-align: center; padding: 26px 6px 22px; color: var(--gray); font-size: 15px; line-height: 1.45; }
-.hold-empty b { display: block; color: var(--ink); font-size: 17px; margin-bottom: 6px; }
 .cd-btns { z-index: 6; }
 .cd-btns .sell { background: linear-gradient(90deg, #e8650a 0%, #f7963f 100%); }
 #coin-fav.on path { fill: #fff; }
 .cd-btns::before { content: ''; position: absolute; z-index: -1; left: -17px; right: -17px; top: -14px; bottom: calc(-1 * max(24px, calc(var(--sab) + 4px))); background: var(--bg); border-top: 1px solid #e3e5e8; }
 .info-row b.up { color: var(--green); }
 .info-row b.down { color: var(--red); }
+.seg[hidden] { display: none; }
