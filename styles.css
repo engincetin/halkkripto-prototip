@@ -60,20 +60,34 @@ html, body {
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 svg { display: block; flex: none; }
 
-/* ---------- Telefon yüzeyi (440 tasarım px, JS ile ölçeklenir) ---------- */
+/* ---------- Telefon yüzeyi ----------
+   Tasarım 440px genişlikte. JS yalnızca genişliğe göre ölçek (--z) verir.
+   Yükseklik ve güvenli alanlar tamamen CSS'ten gelir: her cihazda ekranı
+   tepeden en alta kadar kaplar; başlık üste, menü alta sabitlenir. */
 #device {
+  --z: 1;
+  --fix: 0px;
+  --sat: calc(env(safe-area-inset-top) / var(--z));
+  --sab: calc(env(safe-area-inset-bottom) / var(--z));
   position: fixed;
   left: 0; top: 0;
   width: 440px;
-  height: var(--h, 956px);
+  height: calc((100vh + var(--fix)) / var(--z));
+  height: calc((100lvh + var(--fix)) / var(--z));
   overflow: hidden;
   background: var(--bg);
   transform-origin: 0 0;
+  transform: scale(var(--z));
 }
+/* iOS ana ekran modundaki hata: görünür alan durum çubuğu kadar kısa
+   bildirildiğinde aradaki fark yine güvenli alan değeriyle kapatılır. */
+html.vh-bug #device { --fix: env(safe-area-inset-top); }
+html.notch-sim #device { --sat: 54px; --sab: 34px; }
 
 /* Masaüstü sunum modu: iPhone çerçevesi */
 body.framed { background: radial-gradient(circle at 50% 30%, #2b3440, #0f1318 70%); }
 body.framed #device {
+  height: 956px; --sat: 54px; --sab: 34px;
   border-radius: 64px;
   box-shadow: 0 0 0 12px #111, 0 0 0 14px #3a3f47, 0 40px 90px rgba(0,0,0,.6);
 }
@@ -361,7 +375,3 @@ body.framed .home-indicator {
 /* ---------- Bildirim (toast) ---------- */
 .toast { position: absolute; z-index: 100; left: 50%; bottom: calc(var(--sab) + 120px); transform: translate(-50%, 20px); background: rgba(27,26,31,.92); color: #fff; font-size: 15px; padding: 12px 18px; border-radius: 12px; opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-/* Tanı paneli: üst kenara hızlıca 4 kez dokununca açılır */
-#diag { position: fixed; z-index: 999; left: 10px; right: 10px; top: 60px; background: rgba(0,0,0,.85); color: #0f0; font: 12px/1.45 ui-monospace, monospace; padding: 12px; border-radius: 10px; white-space: pre-wrap; display: none; -webkit-user-select: text; user-select: text; }
-#diag.show { display: block; }

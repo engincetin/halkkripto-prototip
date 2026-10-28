@@ -421,7 +421,9 @@ function setupEvents() {
   });
 }
 
-/* ================= Ölçekleme ve güvenli alanlar ================= */
+/* ================= Ölçekleme =================
+   JS yalnızca genişliğe göre ölçeği (--z) belirler. Yükseklik, üst/alt
+   güvenli alanlar ve sabitleme tamamen CSS'tedir (styles.css → #device). */
 const view = { z: 1, x: 0, y: 0 };
 function layout() {
   const dev = $('#device');
@@ -429,78 +431,31 @@ function layout() {
   const standalone = window.navigator.standalone || matchMedia('(display-mode: standalone)').matches;
   const framed = !standalone && W >= 640;
   document.body.classList.toggle('framed', framed);
-  let z, h, sat, sab;
+  document.documentElement.classList.toggle('notch-sim', location.search.includes('notch')); // yalnızca test için
   if (framed) {
-    h = 956;
-    z = Math.min((H - 48) / h, (W - 48) / 440, 1);
-    sat = 54; sab = 34;
-    view.x = (W - 440 * z) / 2; view.y = (H - h * z) / 2;
-  } else {
-    const probe = $('#safe-probe');
-    const cs = getComputedStyle(probe);
-    let fullH = Math.max(H, document.documentElement.clientHeight, probe.getBoundingClientRect().height, $('#lvh-probe').getBoundingClientRect().height);
-    if (standalone) {
-      // iOS ana ekran modunda innerHeight durum çubuğu kadar eksik gelebiliyor;
-      // uygulama tüm ekranı kapladığı için gerçek ekran yüksekliğini kullan.
-      const long = Math.max(screen.width, screen.height), short = Math.min(screen.width, screen.height);
-      fullH = Math.max(fullH, W <= short + 1 ? long : short);
-    }
-    z = W / 440;
-    h = fullH / z;
-    sat = parseFloat(cs.paddingTop) / z;
-    sab = parseFloat(cs.paddingBottom) / z;
-    if (location.search.includes('notch')) { sat = 54; sab = 34; } // test için çentik simülasyonu
-    view.x = 0; view.y = 0;
+    const z = Math.min((H - 48) / 956, (W - 48) / 440, 1);
+    view.z = z; view.x = (W - 440 * z) / 2; view.y = (H - 956 * z) / 2;
+    dev.style.setProperty('--z', 1);
+    dev.style.transform = `translate(${view.x}px, ${view.y}px) scale(${z})`;
+    return;
   }
-  view.z = z;
-  dev.style.setProperty('--h', `${h}px`);
-  dev.style.setProperty('--sat', `${sat}px`);
-  dev.style.setProperty('--sab', `${sab}px`);
-  dev.style.transform = `translate(${view.x}px, ${view.y}px) scale(${z})`;
-}
-
-/* Tanı paneli: ekranın üst kenarına (ilk 50px) 1,5 sn içinde 4 kez dokununca açılır/kapanır */
-function setupDiag() {
-  const d = document.createElement('div');
-  d.id = 'diag';
-  document.body.appendChild(d);
-  let taps = [];
-  document.addEventListener('touchstart', (e) => {
-    if (e.touches[0].clientY > 50) return;
-    const now = Date.now();
-    taps = taps.filter((t) => now - t < 1500).concat(now);
-    if (taps.length < 4) return;
-    taps = [];
-    const r = (s) => document.querySelector(s).getBoundingClientRect();
-    const cs = getComputedStyle($('#safe-probe'));
-    const dev = $('#device');
-    d.textContent = [
-      `innerW×H: ${innerWidth}×${innerHeight}`,
-      `screen: ${screen.width}×${screen.height}`,
-      `clientH: ${document.documentElement.clientHeight}`,
-      `visualViewport: ${window.visualViewport ? Math.round(visualViewport.width) + '×' + Math.round(visualViewport.height) + ' @' + Math.round(visualViewport.offsetTop) : '-'}`,
-      `lvh: ${Math.round(r('#lvh-probe').height)}  fixed inset0: ${Math.round(r('#safe-probe').height)}`,
-      `safe top/bottom: ${cs.paddingTop} / ${cs.paddingBottom}`,
-      `standalone: ${!!navigator.standalone}  dpr: ${devicePixelRatio}`,
-      `device: ${Math.round(r('#device').height)} (zoom ${view.z.toFixed(3)})`,
-      `--sat ${dev.style.getPropertyValue('--sat')}  --sab ${dev.style.getPropertyValue('--sab')}`,
-      `UA: ${navigator.userAgent}`,
-    ].join('\n');
-    d.classList.toggle('show');
-  }, { passive: true });
+  view.z = W / 440; view.x = 0; view.y = 0;
+  dev.style.transform = '';
+  dev.style.setProperty('--z', view.z);
+  // iOS ana ekran modu hatası: görünür alan, durum çubuğu (güvenli alan üstü) kadar
+  // kısa bildiriliyorsa CSS bu farkı env(safe-area-inset-top) ile kapatır.
+  const safeTop = parseFloat(getComputedStyle($('#safe-probe')).paddingTop) || 0;
+  const screenH = W <= Math.min(screen.width, screen.height) + 1 ? Math.max(screen.width, screen.height) : Math.min(screen.width, screen.height);
+  const missing = screenH - H;
+  document.documentElement.classList.toggle('vh-bug', !!standalone && safeTop > 0 && Math.abs(missing - safeTop) <= 4);
 }
 
 /* ================= Başlat ================= */
 function init() {
   const probe = document.createElement('div');
   probe.id = 'safe-probe';
-  probe.style.cssText = 'position:fixed;top:0;bottom:0;left:0;width:1px;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+  probe.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top)';
   document.body.appendChild(probe);
-  const lvh = document.createElement('div');
-  lvh.id = 'lvh-probe';
-  lvh.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:100vh;height:100lvh;visibility:hidden;pointer-events:none';
-  document.body.appendChild(lvh);
-  setupDiag();
 
   renderTabbars(); buildKeypad();
   renderBalances(); renderMoves(); renderKriptoList(); renderMarket(); renderAssets(); updateAmount();
@@ -509,10 +464,6 @@ function init() {
   window.addEventListener('resize', layout);
   window.addEventListener('orientationchange', () => setTimeout(layout, 300));
   window.addEventListener('pageshow', layout);
-  document.addEventListener('visibilitychange', () => !document.hidden && layout());
-  if (window.visualViewport) visualViewport.addEventListener('resize', layout);
-  // iOS güvenli alan değerlerini açılıştan biraz sonra kesinleştirir
-  setTimeout(layout, 250); setTimeout(layout, 1000);
 
   // Açılış ekranı → Ana Sayfa
   stack.push('home');
