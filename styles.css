@@ -400,3 +400,8 @@ body.framed .home-indicator {
 /* ---------- Bildirim (toast) ---------- */
 .toast { position: absolute; z-index: 100; left: 50%; bottom: calc(var(--sab) + 120px); transform: translate(-50%, 20px); background: rgba(27,26,31,.92); color: #fff; font-size: 15px; padding: 12px 18px; border-radius: 12px; opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Kartın arkasında mavi bant olan ekranlarda (Kripto İşlemleri) aşağı çekince
+   açılan boşluk da mavi kalsın: mavi zemin kayan alanda, içerik kendi gri zemininde. */
+.scroll.pull-blue { background: linear-gradient(90deg, #025193 0%, #02b9f5 100%) 0 0 / 100% 50% no-repeat, var(--bg-home); }
+.pull-content { background: var(--bg-home); min-height: calc(100% - var(--sat) - 54px); }
