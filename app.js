@@ -431,6 +431,7 @@ function layout() {
   const standalone = window.navigator.standalone || matchMedia('(display-mode: standalone)').matches;
   const framed = !standalone && W >= 640;
   document.body.classList.toggle('framed', framed);
+  document.documentElement.classList.toggle('standalone', !!standalone);
   document.documentElement.classList.toggle('notch-sim', location.search.includes('notch')); // yalnızca test için
   if (framed) {
     const z = Math.min((H - 48) / 956, (W - 48) / 440, 1);

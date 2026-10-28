@@ -46,6 +46,15 @@
 html, body {
   height: 100%;
   background: var(--bg);
+}
+/* iOS 26 ana ekran modu hatası (WebKit 301108): black-translucent + viewport-fit=cover
+   ile html/body'de height:100% kullanılınca görünür alan durum çubuğu kadar kısalıyor ve
+   en altta hiçbir şeyin çizilmediği bir bant kalıyor. 100vh bu alanı geri getiriyor. */
+@media (display-mode: standalone) {
+  html, body { height: 100vh; }
+}
+html.standalone, html.standalone body { height: 100vh; }
+html, body {
   font-family: 'Nunito Sans', -apple-system, system-ui, sans-serif;
   font-weight: 700;
   color: var(--ink);
@@ -82,6 +91,8 @@ svg { display: block; flex: none; }
 /* iOS ana ekran modundaki hata: görünür alan durum çubuğu kadar kısa
    bildirildiğinde aradaki fark yine güvenli alan değeriyle kapatılır. */
 html.vh-bug #device { --fix: env(safe-area-inset-top); }
+/* iOS 26 güvenli alanı bazen 0 bildiriyor: ana ekran modunda menü yine de ev çubuğuna yapışmasın */
+html.standalone #device { --sab: calc(max(env(safe-area-inset-bottom), 20px) / var(--z)); }
 html.notch-sim #device { --sat: 54px; --sab: 34px; }
 
 /* Masaüstü sunum modu: iPhone çerçevesi */
