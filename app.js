@@ -49,7 +49,8 @@ const MONTHS = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL'
 const state = {
   vadesiz: 250000,
   kredili: 250000,
-  nakit: 30200,
+  nakit: 20264, // Halk Kripto nakit TL bakiyesi
+  nakitUsd: 200, // Halk Kripto nakit USD bakiyesi (20.264 TL + 200 USD = 30.200 TL)
   kripto: 70150, // ASSETS değerlerinin toplamı
   cur: 'TL', // Halk Kripto ekranlarında görüntüleme para birimi
   usd: 12450.75, // Vadesiz USD hesabı bakiyesi
@@ -95,8 +96,11 @@ function chClass(ch) { return ch > 0 ? 'up' : ch < 0 ? 'down' : 'flat'; }
 function coinIcon(k) { return `<span class="coin-ic"><svg width="24" height="24"><use href="#c-${k}"/></svg></span>`; }
 
 /* ================= Çizim ================= */
+// Halk Kripto toplam nakit (TL karşılığı)
+const cashTL = () => state.nakit + state.nakitUsd * USD_RATE;
+
 function renderBalances() {
-  const total = state.nakit + state.kripto;
+  const total = cashTL() + state.kripto;
   const tp = portfolioPL();
   $$('[data-k="vadesiz-big"]').forEach((e) => (e.innerHTML = money(state.vadesiz)));
   $$('[data-k="kredili"]').forEach((e) => (e.innerHTML = money(state.kredili)));
@@ -113,10 +117,25 @@ function renderBalances() {
   $('[data-kcard]').innerHTML = head;
   $('[data-vcard]').innerHTML = head + `
     <hr>
-    <div class="vrow"><span class="lbl">Nakit Varlıklarım</span><b class="amt">${moneyC(state.nakit)}</b></div>
+    <div class="vrow"><span class="lbl">Nakit Varlıklarım</span><b class="amt">${moneyC(cashTL())}</b></div>
     <div class="vrow"><span class="lbl">Kripto Varlıklarım</span><b class="amt">${moneyC(state.kripto)}</b></div>`;
   $$('[data-eye] use').forEach((u) => u.setAttribute('href', state.hidden ? '#i-eye-off' : '#i-eye'));
   $('#device').classList.toggle('hidden-amt', state.hidden);
+  renderCash();
+}
+
+// Kripto Varlıklarım ekranı: Halk Kripto nakit bakiyeleri (kendi para birimi + diğerinde karşılığı)
+function renderCash() {
+  const rows = [
+    { k: 'try', n: 'Türk Lirası', c: 'TL', v: state.nakit, eq: `≈ ${fmt(state.nakit / USD_RATE)} USD` },
+    { k: 'usd', n: 'Amerikan Doları', c: 'USD', v: state.nakitUsd, eq: `≈ ${fmt(state.nakitUsd * USD_RATE)} TL` },
+  ];
+  $('#cash-list').innerHTML = rows.map((r) => `
+    <div class="coin-row">
+      ${coinIcon(r.k)}
+      <div class="coin-name"><b>${r.n}</b><span>${r.c}</span></div>
+      <div class="coin-val"><b class="amt">${fmt(r.v)} ${r.c}</b><span class="flat amt">${r.eq}</span></div>
+    </div>`).join('');
 }
 
 function renderSendCard() {
@@ -708,7 +727,7 @@ function setupEvents() {
       const cur = state.from;
       if (cur === 'USD') {
         state.usd -= amount;
-        state.nakit += amount * USD_RATE; // Halk Kripto nakit bakiyesi TL olarak tutulur
+        state.nakitUsd += amount; // dolar, Halk Kripto USD nakit bakiyesine gider
       } else {
         state.vadesiz -= amount;
         state.kredili -= amount;
