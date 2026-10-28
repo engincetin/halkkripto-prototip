@@ -21,14 +21,17 @@ function renderTotal() {
   const total = cashTL() + state.kripto;
   const tp = portfolioPL();
   const plv = inCur(tp.pl);
+  // Halkbank'taki Halk Kripto Hesabım kartıyla aynı yazı boyutları ve sıra
   $('#k-total').innerHTML = `
     <div class="acct-head">
+      <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
       <span class="name">Toplam Varlığım</span>
       <button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#${state.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></button>
       <button class="pill-orange press" data-cursheet>${state.cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
     </div>
-    <div class="amt-big amt" style="margin-top:12px">${money(inCur(total), state.cur)}</div>
-    <div class="pl-row"><span class="lbl">Kar/Zarar</span><b class="${chClass(tp.pl)} money-sm amt">${signed(plv).split(',')[0]}<small>,${fmt(plv).split(',')[1]} ${state.cur}</small></b><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}<i class="k-arrow"></i></b></div>
+    <div class="lbl" style="margin-top:13px">Kripto ve Nakit Bakiye</div>
+    <div class="amt-big amt">${money(inCur(total), state.cur)}</div>
+    <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}</b><b class="${chClass(tp.pl)} money-sm amt">${signed(plv).split(',')[0]}<small>,${fmt(plv).split(',')[1]} ${state.cur}</small></b></div>
     <hr>
     <button class="see-all press" data-soon>Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
   $('#device').classList.toggle('hidden-amt', state.hidden);
@@ -46,7 +49,7 @@ function renderList() {
     return `
     <div class="coin-row tap" data-soon>
       ${coinIcon(c.k)}
-      <div class="coin-name k-pair"><b>${c.c} <small>/ ${cur}</small></b><span>${c.n === 'UNISWAP' ? 'Uniswap' : c.n}</span></div>
+      <div class="coin-name"><b>${c.n}</b><span>${c.c}/${cur}</span></div>
       <div class="coin-val"><b>${price} ${cur}</b><span class="${chClass(c.ch)}">%${fmt(Math.abs(c.ch))}${c.ch ? '<i class="k-arrow"></i>' : ''}</span></div>
     </div>`;
   }).join('') : '<div class="k-empty">Bu listede henüz varlık yok</div>';

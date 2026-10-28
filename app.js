@@ -64,7 +64,7 @@ function renderBalances() {
     <div class="acct-head">
       <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
       <span class="name">Halk Kripto Hesabım</span>${eye}
-      <button class="pill-orange press" data-cursheet style="margin-left:16px">${state.cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
+      <button class="pill-orange press" data-cursheet>${state.cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
     </div>
     <div class="lbl" style="margin-top:13px">Kripto ve Nakit Bakiye</div>
     <div class="amt-big amt">${moneyC(total)}</div>
