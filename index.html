@@ -72,17 +72,19 @@
 
   <!-- ===================== ANA SAYFA ===================== -->
   <section class="screen" id="home">
-    <div class="scroll">
-      <div class="home-top">
-        <div class="row1">
-          <div class="avatar"><i><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></div>
-          <span class="bell"><svg width="24" height="24"><use href="#i-bell"/></svg></span>
-          <span class="sp"></span>
-          <button class="press" data-soon style="margin-right:21px"><svg width="22" height="24"><use href="#i-cal"/></svg></button>
-          <button class="press" data-soon><svg width="23" height="23"><use href="#i-search"/></svg></button>
-        </div>
-        <div class="home-tabs"><span class="on">Hesaplarım</span><span data-soon>Kartlarım</span><span data-soon>Yatırımlarım</span></div>
+    <div class="home-top">
+      <div class="row1">
+        <div class="avatar"><i><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></div>
+        <span class="bell"><svg width="24" height="24"><use href="#i-bell"/></svg></span>
+        <span class="sp"></span>
+        <button class="press" data-soon style="margin-right:21px"><svg width="22" height="24"><use href="#i-cal"/></svg></button>
+        <button class="press" data-soon><svg width="23" height="23"><use href="#i-search"/></svg></button>
       </div>
+      <div class="home-tabs"><span class="on">Hesaplarım</span><span data-soon>Kartlarım</span><span data-soon>Yatırımlarım</span></div>
+    </div>
+    <div class="ptr" id="ptr"><svg width="26" height="26" viewBox="0 0 26 26"><g stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M13 3v5" opacity="0.25" transform="rotate(0 13 13)"/><path d="M13 3v5" opacity="0.36" transform="rotate(45 13 13)"/><path d="M13 3v5" opacity="0.46" transform="rotate(90 13 13)"/><path d="M13 3v5" opacity="0.57" transform="rotate(135 13 13)"/><path d="M13 3v5" opacity="0.68" transform="rotate(180 13 13)"/><path d="M13 3v5" opacity="0.79" transform="rotate(225 13 13)"/><path d="M13 3v5" opacity="0.89" transform="rotate(270 13 13)"/><path d="M13 3v5" opacity="1.00" transform="rotate(315 13 13)"/></g></svg></div>
+    <div class="scroll home-scroll" id="home-scroll">
+      <div class="home-content" id="home-content">
 
       <div class="card acct-card bal">
         <div class="acct-head">
@@ -115,6 +117,7 @@
         <button class="tile press" data-soon><span class="glow"></span><img src="img/ev.png" alt="">Evim</button>
         <button class="tile press" data-soon><span class="glow"></span><img src="img/arac.png" alt="">Aracım</button>
         <button class="tile press" data-soon><span class="glow"></span><img src="img/seyahat.png" alt="">Seyahatim</button>
+      </div>
       </div>
     </div>
     <nav class="tabbar" data-tabbar></nav>

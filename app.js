@@ -323,6 +323,31 @@ function setupEdgeSwipe() {
   dev.addEventListener('touchcancel', end);
 }
 
+/* Ana sayfada aşağı çekerek yenileme (iOS esneme hareketi ile) */
+function setupPullToRefresh() {
+  const sc = $('#home-scroll'), content = $('#home-content'), ptr = $('#ptr');
+  let pull = 0, busyRefresh = false;
+  sc.addEventListener('scroll', () => {
+    if (busyRefresh) return;
+    pull = Math.max(0, -sc.scrollTop);
+    ptr.style.opacity = Math.min(1, pull / 60);
+    ptr.style.transform = `rotate(${pull * 4}deg)`;
+  }, { passive: true });
+  sc.addEventListener('touchend', () => {
+    if (busyRefresh || pull < 70) return;
+    busyRefresh = true;
+    content.classList.add('refreshing');
+    ptr.style.opacity = 1; ptr.style.transform = '';
+    ptr.classList.add('spin');
+    setTimeout(() => {
+      content.classList.remove('refreshing');
+      ptr.classList.remove('spin');
+      ptr.style.opacity = 0;
+      setTimeout(() => { busyRefresh = false; pull = 0; }, 350);
+    }, 1100);
+  }, { passive: true });
+}
+
 /* ================= Tutar girişi / klavye ================= */
 let keypadOpen = false;
 function openKeypad() { keypadOpen = true; $('#keypad').classList.add('open'); $('#amount-field').classList.add('focus'); }
@@ -460,7 +485,7 @@ function init() {
 
   renderTabbars(); buildKeypad();
   renderBalances(); renderMoves(); renderKriptoList(); renderMarket(); renderAssets(); updateAmount();
-  setupEvents(); setupEdgeSwipe();
+  setupEvents(); setupEdgeSwipe(); setupPullToRefresh();
   layout();
   window.addEventListener('resize', layout);
   window.addEventListener('orientationchange', () => setTimeout(layout, 300));
