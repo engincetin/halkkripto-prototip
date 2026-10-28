@@ -280,7 +280,7 @@ body.framed .home-indicator {
 .tab.on { color: var(--blue-tab); font-weight: 800; }
 .tab.on::before { content: ''; position: absolute; top: 0; width: 59px; height: 3px; border-radius: 1px; background: var(--blue-tab); }
 .tab.fab-slot { flex: 0 0 100px; }
-.fab { position: absolute; left: 50%; top: -22px; width: 68px; height: 68px; margin-left: -34px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #ff9c55 0%, #f7853a 55%, #f0700d 100%); box-shadow: 0 0 0 4px rgba(255,255,255,.95), 0 8px 18px rgba(240,112,13,.45); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 700; }
+.fab { position: absolute; left: 50%; top: -13px; width: 68px; height: 68px; margin-left: -34px; border-radius: 50%; background: linear-gradient(180deg, #f3a464 0%, #f98a43 55%, #fb7531 100%); box-shadow: 0 0 0 4px #fff, 0 10px 22px rgba(248,120,45,.35); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 12px; gap: 4px; font-size: 11px; font-weight: 700; line-height: 18px; letter-spacing: -.1px; }
 
 /* ---------- Kripto İşlemleri ---------- */
 #kripto { background: var(--bg-home); }
