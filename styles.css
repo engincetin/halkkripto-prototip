@@ -536,10 +536,14 @@ body.framed .home-indicator {
 /* ---------- Uygulama geçişi (iOS uygulama açma animasyonu) ---------- */
 .screen { transition: opacity .35s ease, border-radius .35s ease; }
 #device.app-out .screen.active { transform: scale(.88); opacity: 0; border-radius: 44px; overflow: hidden; transition: transform .38s cubic-bezier(.2,.8,.2,1), opacity .3s ease .05s, border-radius .38s; }
-.switch { position: absolute; inset: 0; z-index: 90; display: none; background: radial-gradient(120% 90% at 50% 20%, #33408f 0%, #141a3f 70%); }
+.switch { position: absolute; inset: 0; z-index: 90; display: none; background: radial-gradient(120% 90% at 50% 20%, #0b4f8f 0%, #06213f 70%); }
 .switch.show { display: block; }
-.switch-app { position: absolute; inset: 0; overflow: hidden; border-radius: 46px; transform: scale(.2); opacity: 0; transition: transform .48s cubic-bezier(.2,.85,.25,1), opacity .2s ease, border-radius .48s; background: #eef1fd; }
+.switch-app { position: absolute; inset: 0; overflow: hidden; border-radius: 46px; transform: scale(.2); opacity: 0; transition: transform .48s cubic-bezier(.2,.85,.25,1), opacity .2s ease, border-radius .48s; background: #025193; }
 .switch.open .switch-app { transform: none; opacity: 1; border-radius: 0; }
-.switch-launch { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(120% 80% at 50% 35%, #fff 0%, #eef1fd 55%, #dfe5fa 100%); }
-.switch-launch img { width: 230px; }
+/* Halk Kripto açılış ekranının (kripto/app.css #k-splash) birebir aynısı: geçiş kesintisiz görünür */
+.switch-launch { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(160deg, #025193 0%, #0368b3 45%, #02a6e6 100%); }
+.switch-launch .k-splash-in { text-align: center; color: #fff; }
+.switch-launch .k-splash-logo { width: 220px; height: auto; filter: drop-shadow(0 16px 26px rgba(0,20,60,.35)); }
+.switch-launch .k-brand { font-size: 34px; font-weight: 900; letter-spacing: .3px; margin-top: 10px; }
+.switch-launch .k-tag { font-size: 15px; font-weight: 700; opacity: .85; margin-top: 6px; }
 #kripto-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; }
