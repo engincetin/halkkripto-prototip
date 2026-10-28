@@ -12,12 +12,13 @@ const COINS = [
   { k: 'uni', n: 'UNISWAP', c: 'UNI', tl: 354.29, d: 2, ch: 5.61 },
 ];
 
+// v: tahmini TL değeri, pl: olası kar/zarar (TL), pct: kar/zarar oranı (%)
 const ASSETS = [
-  { k: 'btc', n: 'Bitcoin', c: 'BTC', tl: '~ 50.234,00 TL', qty: '0,0313 BTC', pct: '%0,85', pl: '+5.002,82 TL' },
-  { k: 'eth', n: 'Ethereum', c: 'ETH', tl: '~ 30.123,60 TL', qty: '2,43 ETH', pct: '%0,42', pl: '+2.002,82 TL' },
-  { k: 'usdc', n: 'USD Coin', c: 'USDC', tl: '~ 19.879,21 TL', qty: '1.540,05 USDC', pct: '%0,01', pl: '+402,23 TL' },
-  { k: 'sol', n: 'Solana', c: 'SOL', tl: '~ 19.879,21 TL', qty: '3,9467 SOL', pct: '%0,01', pl: '+402,23 TL' },
-  { k: 'xrp', n: 'Ripple', c: 'XRP', tl: '~ 19.879,21 TL', qty: '310,27 XRP', pct: '%0,01', pl: '+402,23 TL' },
+  { k: 'btc', n: 'Bitcoin', c: 'BTC', v: 50234.00, qty: '0,0313 BTC', pct: 0.85, pl: 5002.82 },
+  { k: 'eth', n: 'Ethereum', c: 'ETH', v: 30123.60, qty: '2,43 ETH', pct: 0.42, pl: 2002.82 },
+  { k: 'usdc', n: 'USD Coin', c: 'USDC', v: 19879.21, qty: '1.540,05 USDC', pct: 0.01, pl: 402.23 },
+  { k: 'sol', n: 'Solana', c: 'SOL', v: 19879.21, qty: '3,9467 SOL', pct: 0.01, pl: 402.23 },
+  { k: 'xrp', n: 'Ripple', c: 'XRP', v: 19879.21, qty: '310,27 XRP', pct: 0.01, pl: 402.23 },
 ];
 
 const MONTHS = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA'];
@@ -135,9 +136,9 @@ function renderAssets() {
       ${coinIcon(a.k)}
       <div class="coin-name">
         <b>${a.n}</b><span>${a.c}</span>
-        <div class="plr"><em>Kar/Zarar</em><span class="up">${a.pct}</span></div>
+        <div class="plr"><em>Kar/Zarar</em><span class="up">%${fmt(a.pct)}</span></div>
       </div>
-      <div class="coin-val"><b class="amt">${a.tl}</b><b class="amt" style="margin-top:5px">${a.qty}</b><span class="up amt">${a.pl}</span></div>
+      <div class="coin-val"><b class="amt">~ ${fmt(a.v)} TL</b><b class="amt" style="margin-top:5px">${a.qty}</b><span class="up amt">+${fmt(a.pl)} TL</span></div>
     </div>`).join('');
 }
 
@@ -288,13 +289,20 @@ function renderCoin() {
   // Özet / Durumum sekmeleri yalnızca kullanıcının bu varlığı varsa gösterilir
   $('#coin-seg').hidden = !a;
   if (!a) setSeg('ozet');
-  $('#cd-hold').innerHTML = a ? `
-    <div class="info-row"><span>Varlık</span><b>${info.name} (${c.c})</b></div>
-    <div class="info-row"><span>Miktar</span><b class="amt">${a.qty}</b></div>
-    <div class="info-row"><span>Tahmini Değer</span><b class="amt">${a.tl}</b></div>
-    <hr>
-    <div class="info-row"><span>Kar/Zarar Oranı</span><b class="up">${a.pct}</b></div>
-    <div class="info-row"><span>Kar/Zarar Tutarı</span><b class="up amt">${a.pl}</b></div>` : '';
+  if (a) {
+    const share = (a.v / ASSETS.reduce((t, x) => t + x.v, 0)) * 100;
+    $('#cd-hold-head').innerHTML = `
+      <div class="cd-head">
+        <span class="coin-ic"><svg width="24" height="24"><use href="#c-${cd.k}"/></svg></span>
+        <div><b>${c.c}/${cur}</b><span>${info.name}/${curName}</span></div>
+      </div>
+      <div class="coin-val"><b>${fmtPrice(price)} ${cur}</b><span class="cd-ch ${chClass(c.ch)}">%${fmt(Math.abs(c.ch))}${c.ch ? '<i></i>' : ''}</span></div>`;
+    $('#cd-hold').innerHTML = `
+      <div class="info-row"><span>Kullanılabilir Tutar</span><b class="amt">${a.qty}<em>${fmt(a.v / USD_RATE)} USD</em><em>${fmt(a.v)} TL</em></b></div>
+      <div class="info-row"><span>Toplam Olası Kar / Zarar</span><b class="up amt">+${fmt(a.pl)} TL<em>+%${fmt(a.pct)}</em></b></div>
+      <hr>
+      <div class="info-row"><span>Portföy Dağılımı</span><b class="plain">%${fmt(share)}</b></div>`;
+  }
 }
 
 function openCoin(k, cur) {
