@@ -9,12 +9,9 @@
 .k-tag { font-size: 15px; font-weight: 700; opacity: .85; margin-top: 6px; }
 @keyframes k-rise { from { opacity: 0; transform: translateY(14px) scale(.96); } }
 
-/* ---------- Üst kısım ---------- */
+/* ---------- Üst kısım: Halkbank ana sayfasındaki satırın aynısı ---------- */
 .k-top { height: calc(var(--sat) + 76px); }
-.k-top .row1 { height: 76px; padding: 4px 19px 0; gap: 10px; }
-.k-back { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px 0 10px; border-radius: 16px; background: rgba(255,255,255,.18); color: #fff; font-size: 14px; font-weight: 800; margin-right: 4px; }
-.k-round { position: relative; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.16); color: #fff; display: flex; align-items: center; justify-content: center; margin-left: 10px; }
-.k-dot { position: absolute; right: 9px; top: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--orange); border: 1.5px solid #fff; }
+.k-back { display: flex; align-items: center; gap: 5px; color: #fff; font-size: 15px; font-weight: 700; margin-right: 14px; }
 .k-scroll { top: calc(var(--sat) + 76px); }
 
 /* ---------- Toplam varlık kartı ---------- */
@@ -24,12 +21,8 @@
 .k-total hr { border: 0; border-top: 1px solid #e3e5e8; margin: 14px 0 12px; }
 .k-total .see-all { font-size: 15px; }
 
-/* ---------- Hızlı işlemler (yatay kayar) ---------- */
-.k-actions { display: flex; gap: 9px; overflow-x: auto; padding: 16px 19px 4px; scroll-snap-type: x mandatory; scroll-padding: 0 19px; -webkit-overflow-scrolling: touch; }
-.k-actions::after { content: ""; flex: 0 0 10px; }
-.k-actions::-webkit-scrollbar { display: none; }
-.k-act { flex: 0 0 96px; height: 100px; scroll-snap-align: start; background: #fff; border-radius: 10px; box-shadow: 0 0 13px 2px rgba(0,0,0,.07); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-size: 14px; color: var(--ink-3); letter-spacing: -.2px; }
-.k-act-ic { width: 46px; height: 46px; border-radius: 50%; background: var(--grad); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(2,81,147,.25); }
+/* ---------- Hızlı işlemler: Halkbank .kops kutucukları ---------- */
+.k-kops { margin-top: 16px; }
 
 /* ---------- Kampanya kartı (kapatılabilir) ---------- */
 .k-promo { position: relative; margin: 16px 19px 0; padding: 18px 120px 16px 18px; border-radius: 10px; background: linear-gradient(120deg, #e3f0fb 0%, #eef6fd 100%); border: 1px solid #d5e6f5; overflow: hidden; max-height: 260px; transition: max-height .35s ease, opacity .25s ease, margin .35s ease, padding .35s ease; }

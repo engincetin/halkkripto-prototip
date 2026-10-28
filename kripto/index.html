@@ -94,22 +94,22 @@
     <div class="home-top k-top">
       <div class="row1">
         <button class="k-back press" id="back-to-bank" hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
-        <div class="avatar"></div>
+        <div class="avatar"><i><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></div>
+        <span class="bell"><svg width="24" height="24"><use href="#i-bell"/></svg></span>
         <span class="sp"></span>
-        <button class="k-round press" data-soon aria-label="Ara"><svg width="21" height="21"><use href="#i-search"/></svg></button>
-        <button class="k-round press" data-soon aria-label="Bildirimler"><svg width="21" height="21"><use href="#i-bell"/></svg><i class="k-dot"></i></button>
+        <button class="press" data-soon style="margin-right:21px" aria-label="Takvim"><svg width="22" height="24"><use href="#i-cal"/></svg></button>
+        <button class="press" data-soon aria-label="Ara"><svg width="23" height="23"><use href="#i-search"/></svg></button>
       </div>
     </div>
     <div class="scroll home-scroll k-scroll" id="k-home-scroll">
       <div class="home-content">
         <div class="card acct-card k-total bal" id="k-total"></div>
 
-        <div class="k-actions">
-          <button class="k-act press" data-soon><span class="k-act-ic"><svg width="22" height="22"><use href="#k-deposit"/></svg></span>Yatır</button>
-          <button class="k-act press" data-soon><span class="k-act-ic"><svg width="22" height="22"><use href="#k-withdraw"/></svg></span>Çek</button>
-          <button class="k-act press" data-soon><span class="k-act-ic"><svg width="24" height="22"><use href="#i-transfer"/></svg></span>Al/Sat</button>
-          <button class="k-act press" data-soon><span class="k-act-ic"><svg width="22" height="22"><use href="#k-orders"/></svg></span>Emirlerim</button>
-          <button class="k-act press" data-soon><span class="k-act-ic"><svg width="22" height="22"><use href="#k-convert"/></svg></span>Dönüştür</button>
+        <!-- Halkbank Kripto İşlemleri kutucuklarıyla aynı -->
+        <div class="kops k-kops">
+          <button class="kop press" data-soon><span class="ki" style="color:#0576b8"><svg width="15" height="13"><use href="#i-transfer"/></svg></span>Kripto<br>Al/Sat</button>
+          <button class="kop press" data-soon><span class="ki" style="color:#0576b8"><svg width="14" height="14"><use href="#k-deposit"/></svg></span>Para<br>Yatır</button>
+          <button class="kop press" data-soon><span class="ki" style="color:#0576b8"><svg width="14" height="14"><use href="#k-withdraw"/></svg></span>Para<br>Çek</button>
         </div>
 
         <div class="k-promo" id="k-promo">
