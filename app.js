@@ -775,6 +775,13 @@ function init() {
   window.addEventListener('resize', layout);
   window.addEventListener('orientationchange', () => setTimeout(layout, 300));
   window.addEventListener('pageshow', layout);
+  // Pencerenin kendisi hiç kaymaz; yalnızca ekranların içindeki listeler kayar. iOS ana ekran modunda
+  // sayfa görünür alandan uzun sayılınca pencere kayıp alt menüyü ekran dışına itebiliyordu.
+  const lockWindow = () => { if (window.scrollX || window.scrollY) window.scrollTo(0, 0); };
+  window.addEventListener('scroll', lockWindow, { passive: true });
+  if (window.visualViewport) visualViewport.addEventListener('scroll', lockWindow);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { layout(); lockWindow(); } });
+  if (window.visualViewport) visualViewport.addEventListener('resize', layout);
 
   // Açılış ekranı → Ana Sayfa
   stack.push('home');
