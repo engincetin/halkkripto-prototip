@@ -44,7 +44,7 @@
 html, body {
   height: 100%;
   overflow: hidden;
-  background: #025193;
+  background: var(--bg);
   font-family: 'Nunito Sans', -apple-system, system-ui, sans-serif;
   font-weight: 700;
   color: var(--ink);

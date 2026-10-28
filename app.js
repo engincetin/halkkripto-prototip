@@ -438,8 +438,15 @@ function layout() {
   } else {
     const probe = $('#safe-probe');
     const cs = getComputedStyle(probe);
+    let fullH = Math.max(H, document.documentElement.clientHeight, probe.getBoundingClientRect().height);
+    if (standalone) {
+      // iOS ana ekran modunda innerHeight durum çubuğu kadar eksik gelebiliyor;
+      // uygulama tüm ekranı kapladığı için gerçek ekran yüksekliğini kullan.
+      const long = Math.max(screen.width, screen.height), short = Math.min(screen.width, screen.height);
+      fullH = Math.max(fullH, W <= short + 1 ? long : short);
+    }
     z = W / 440;
-    h = H / z;
+    h = fullH / z;
     sat = parseFloat(cs.paddingTop) / z;
     sab = parseFloat(cs.paddingBottom) / z;
     if (location.search.includes('notch')) { sat = 54; sab = 34; } // test için çentik simülasyonu
@@ -456,7 +463,7 @@ function layout() {
 function init() {
   const probe = document.createElement('div');
   probe.id = 'safe-probe';
-  probe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
+  probe.style.cssText = 'position:fixed;top:0;bottom:0;left:0;width:1px;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)';
   document.body.appendChild(probe);
 
   renderTabbars(); buildKeypad();
@@ -465,6 +472,11 @@ function init() {
   layout();
   window.addEventListener('resize', layout);
   window.addEventListener('orientationchange', () => setTimeout(layout, 300));
+  window.addEventListener('pageshow', layout);
+  document.addEventListener('visibilitychange', () => !document.hidden && layout());
+  if (window.visualViewport) visualViewport.addEventListener('resize', layout);
+  // iOS güvenli alan değerlerini açılıştan biraz sonra kesinleştirir
+  setTimeout(layout, 250); setTimeout(layout, 1000);
 
   // Açılış ekranı → Ana Sayfa
   stack.push('home');
