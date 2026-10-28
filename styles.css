@@ -461,3 +461,4 @@ body.framed .home-indicator {
 .hold-head .coin-val .cd-ch { display: flex; }
 .asset-row .plr span.down { display: inline; margin: 0; font-size: 15px; color: var(--red); }
 .asset-row .plr span.flat { display: inline; margin: 0; font-size: 15px; color: #686d71; }
+.tile img.kr { height: 35px; top: 13px; }
