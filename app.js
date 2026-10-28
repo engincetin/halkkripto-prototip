@@ -91,7 +91,7 @@ function renderBalances() {
 }
 
 function renderMoves() {
-  $('#moves').innerHTML = state.moves.map((m) => `
+  $('#moves').innerHTML = state.moves.slice(0, 2).map((m) => `
     <div class="mv">
       <div class="datebox"><span class="m">${m.m}</span><span class="d">${m.d}</span><span class="y">${m.y}</span></div>
       <div class="mv-body">
@@ -431,6 +431,7 @@ function setupEvents() {
       state.vadesiz -= amount;
       state.kredili -= amount;
       state.nakit += amount;
+      state.amt = ''; // sonraki gönderim boş tutarla başlasın
       state.last = { amount, ref: String(7683000000 + Math.floor(Math.random() * 999999)), date: today(), time: today(true) };
       state.moves.unshift({ m: MONTHS[d.getMonth()], d: d.getDate(), y: d.getFullYear(), t: 'Halk Kripto Transferi', s: 'HALK KRİPTO HESABIMA GÖNDERİLEN', a: -amount });
       renderBalances(); renderMoves();
