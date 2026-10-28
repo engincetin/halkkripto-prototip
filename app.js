@@ -107,7 +107,7 @@ function coinRow(c, cur, pair) {
   const price = usd ? `${fmt(p, p >= 1000 ? 0 : 2)} USD` : `${fmt(c.tl, c.d)} TL`;
   const code = pair ? `${c.c}/${cur}` : c.c;
   return `
-    <div class="coin-row">
+    <div class="coin-row tap" data-coin="${c.k}" data-cur="${usd ? 'USD' : 'TL'}">
       ${coinIcon(c.k)}
       <div class="coin-name"><b>${c.n}</b><span>${code}</span></div>
       <div class="coin-val"><b>${price}</b><span class="${chClass(c.ch)}">%${fmt(Math.abs(c.ch))}</span></div>
@@ -131,7 +131,7 @@ function renderMarket() {
 
 function renderAssets() {
   $('#asset-list').innerHTML = ASSETS.map((a) => `
-    <div class="asset-row">
+    <div class="asset-row tap" data-coin="${a.k}" data-cur="TL">
       ${coinIcon(a.k)}
       <div class="coin-name">
         <b>${a.n}</b><span>${a.c}</span>
@@ -139,6 +139,170 @@ function renderAssets() {
       </div>
       <div class="coin-val"><b class="amt">${a.tl}</b><b class="amt" style="margin-top:5px">${a.qty}</b><span class="up amt">${a.pl}</span></div>
     </div>`).join('');
+}
+
+/* ================= Kripto detay ================= */
+// Piyasa bilgileri demo amaçlıdır (USD cinsinden; arzlar adet).
+const COIN_INFO = {
+  btc: { name: 'Bitcoin', rank: 1, circ: 20.1e6, total: 20.1e6, max: 21e6, dom: 60.07, ath: [126254, '06.10.2025'], atl: [57734, '01.07.2026'] },
+  eth: { name: 'Ethereum', rank: 2, circ: 120.7e6, total: 120.7e6, max: null, dom: 11.82, ath: [4953.73, '24.08.2025'], atl: [1385.12, '09.04.2025'] },
+  xrp: { name: 'Ripple', rank: 4, circ: 60.1e9, total: 99.99e9, max: 100e9, dom: 3.21, ath: [3.65, '18.07.2025'], atl: [0.0028, '07.07.2014'] },
+  sol: { name: 'Solana', rank: 6, circ: 552e6, total: 610e6, max: null, dom: 2.38, ath: [293.31, '19.01.2025'], atl: [0.50, '11.05.2020'] },
+  usdc: { name: 'USD Coin', rank: 7, circ: 76.2e9, total: 76.2e9, max: null, dom: 2.12, ath: [1.17, '28.05.2019'], atl: [0.88, '11.03.2023'] },
+  uni: { name: 'Uniswap', rank: 30, circ: 630e6, total: 1e9, max: 1e9, dom: 0.18, ath: [44.97, '03.05.2021'], atl: [1.03, '17.09.2020'] },
+};
+const RANGES = {
+  '1S': { n: 60, vol: 0.0009, step: 60e3 },
+  '24S': { n: 72, vol: 0.003, step: 20 * 60e3 },
+  '1H': { n: 84, vol: 0.008, step: 2 * 3600e3 },
+  '1A': { n: 90, vol: 0.012, step: 8 * 3600e3 },
+  '3A': { n: 90, vol: 0.02, step: 24 * 3600e3 },
+  '6A': { n: 90, vol: 0.028, step: 2 * 24 * 3600e3 },
+  '1Y': { n: 104, vol: 0.035, step: 3.5 * 24 * 3600e3 },
+};
+const TR_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+const favs = new Set();
+const cd = { k: 'btc', cur: 'TL', range: '1S', pts: [] };
+
+function bigNum(n, unit) {
+  const steps = [[1e12, 'trilyon'], [1e9, 'milyar'], [1e6, 'milyon']];
+  for (const [v, w] of steps) if (n >= v) return `${fmt(n / v, 1)} ${w} ${unit}`;
+  return `${fmt(n, 0)} ${unit}`;
+}
+function priceIn(k, cur) {
+  const c = COINS.find((x) => x.k === k);
+  return cur === 'USD' ? c.tl / USD_RATE : c.tl;
+}
+function fmtPrice(v) { return fmt(v, v < 1 ? 4 : 2); }
+function dateTime(d, withSec) {
+  const p = (x) => String(x).padStart(2, '0');
+  return `${d.getDate()} ${TR_MONTHS[d.getMonth()]} ${d.getFullYear()}, ${p(d.getHours())}:${p(d.getMinutes())}${withSec ? ':' + p(d.getSeconds()) : ''}`;
+}
+
+// Seçilen aralık için tekrarlanabilir (her açılışta aynı) fiyat serisi üretir; son nokta güncel fiyattır
+function series(k, range, last) {
+  const R = RANGES[range];
+  let seed = [...(k + range)].reduce((a, ch) => a * 31 + ch.charCodeAt(0), 7) % 2147483647 || 1;
+  const rnd = () => (seed = (seed * 48271) % 2147483647) / 2147483647;
+  const vol = k === 'usdc' ? R.vol * 0.04 : R.vol;
+  const steps = [];
+  for (let i = 1; i < R.n; i++) steps.push((rnd() - 0.5) * 2 * vol + (rnd() < 0.08 ? (rnd() - 0.5) * vol * 5 : 0));
+  const pts = [last];
+  for (let i = steps.length - 1; i >= 0; i--) pts.unshift(pts[0] / (1 + steps[i]));
+  return pts;
+}
+
+function drawChart(animate) {
+  const W = 402, H = 250, padT = 26, padB = 14, padR = 22, padL = 20;
+  const last = priceIn(cd.k, cd.cur);
+  const pts = (cd.pts = series(cd.k, cd.range, last));
+  const lo = Math.min(...pts), hi = Math.max(...pts), span = hi - lo || 1;
+  const x = (i) => padL + (i / (pts.length - 1)) * (W - padL - padR);
+  const y = (v) => padT + (1 - (v - lo) / span) * (H - padT - padB);
+  cd.x = x; cd.y = y;
+  const up = pts[pts.length - 1] >= pts[0];
+  const color = up ? '#0b9a4a' : '#e0393e';
+  const d = pts.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join('');
+  const area = `${d}L${x(pts.length - 1).toFixed(1)} ${H}L${x(0).toFixed(1)} ${H}Z`;
+  const by = y(pts[0]).toFixed(1);
+  $('#chart-svg').innerHTML = `
+    <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".18"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <line x1="0" x2="${W}" y1="${by}" y2="${by}" stroke="#9aa7b6" stroke-width="1.2" stroke-dasharray="3 4"/>
+    <path d="${area}" fill="url(#cg)"/>
+    <path class="ln${animate ? ' draw' : ''}" d="${d}" stroke="${color}"/>
+    <circle class="dot" cx="${x(pts.length - 1)}" cy="${y(last)}" r="5.5" fill="${color}"/>
+    <g id="scrub" style="display:none"><line id="scrub-l" y1="0" y2="${H}" stroke="#7d848a" stroke-width="1" stroke-dasharray="3 3"/><circle id="scrub-c" r="6" fill="#fff" stroke="${color}" stroke-width="3"/></g>`;
+  if (animate) {
+    const ln = $('#chart-svg .ln');
+    const len = ln.getTotalLength();
+    ln.style.strokeDasharray = len;
+    ln.style.setProperty('--len', len);
+  }
+}
+
+function setupChartScrub() {
+  const box = $('#chart'), tip = $('#chart-tip');
+  const move = (clientX) => {
+    if (!cd.pts.length) return;
+    const r = box.getBoundingClientRect();
+    const lx = ((clientX - r.left) / r.width) * 402;
+    const n = cd.pts.length;
+    const i = Math.max(0, Math.min(n - 1, Math.round(((lx - 20) / (402 - 42)) * (n - 1))));
+    const v = cd.pts[i];
+    const g = $('#scrub');
+    g.style.display = '';
+    $('#scrub-l').setAttribute('x1', cd.x(i)); $('#scrub-l').setAttribute('x2', cd.x(i));
+    $('#scrub-c').setAttribute('cx', cd.x(i)); $('#scrub-c').setAttribute('cy', cd.y(v));
+    const t = new Date(Date.now() - (n - 1 - i) * RANGES[cd.range].step);
+    tip.innerHTML = `${fmtPrice(v)} ${cd.cur}<small>${dateTime(t, false)}</small>`;
+    tip.style.left = `${Math.max(70, Math.min(332, cd.x(i))) / 402 * 100}%`;
+    tip.classList.add('show');
+  };
+  const end = () => { tip.classList.remove('show'); const g = $('#scrub'); if (g) g.style.display = 'none'; };
+  box.addEventListener('touchstart', (e) => move(e.touches[0].clientX), { passive: true });
+  box.addEventListener('touchmove', (e) => move(e.touches[0].clientX), { passive: true });
+  box.addEventListener('touchend', end);
+  box.addEventListener('mousemove', (e) => move(e.clientX));
+  box.addEventListener('mouseleave', end);
+}
+
+function renderCoin() {
+  const c = COINS.find((x) => x.k === cd.k), info = COIN_INFO[cd.k];
+  const cur = cd.cur, price = priceIn(cd.k, cur);
+  const curName = cur === 'USD' ? 'Amerikan Doları' : 'Türk Lirası';
+  $('#coin-title').textContent = `${c.c}/${cur}`;
+  $('#coin-fav').classList.toggle('on', favs.has(cd.k));
+  $('#cd-ic').innerHTML = `<svg width="24" height="24"><use href="#c-${cd.k}"/></svg>`;
+  $('#cd-pair').textContent = `${c.c}/${cur}`;
+  $('#cd-name').textContent = `${info.name}/${curName}`;
+  const [i, f] = fmtPrice(price).split(',');
+  $('#cd-price').innerHTML = `${i}<small>,${f} ${cur}</small>`;
+  const ch = $('#cd-ch');
+  ch.className = `cd-ch ${chClass(c.ch)}`;
+  ch.innerHTML = `%${fmt(Math.abs(c.ch))}${c.ch ? '<i></i>' : ''}`;
+  $('#cd-time').textContent = dateTime(new Date(), true);
+  $$('#ranges button').forEach((b) => b.classList.toggle('on', b.dataset.r === cd.range));
+  drawChart(true);
+
+  // Fiyat aralığı: alış/satış makası %0,05
+  const toCur = (usd) => (cur === 'USD' ? usd : usd * USD_RATE);
+  $('#cd-range').innerHTML = `
+    <div class="info-row"><span>En İyi Alış Fiyatı</span><b>${fmtPrice(price * 0.99975)} ${cur}</b></div>
+    <div class="info-row"><span>En İyi Satış Fiyatı</span><b>${fmtPrice(price * 1.00025)} ${cur}</b></div>
+    <div class="info-row"><span>Ortalama Fiyat</span><b>${fmtPrice(price)} ${cur}</b></div>
+    <hr>
+    <div class="info-row"><span>Tüm Zamanlar En Yüksek</span><b>${fmtPrice(toCur(info.ath[0]))} ${cur}<small>${info.ath[1]}</small></b></div>
+    <div class="info-row"><span>Tüm Zamanlar En Düşük</span><b>${fmtPrice(toCur(info.atl[0]))} ${cur}<small>${info.atl[1]}</small></b></div>`;
+  const cap = c.tl * info.circ, fdv = c.tl * (info.max || info.total);
+  $('#cd-market').innerHTML = `
+    <div class="info-row"><span>Piyasa Değeri Sıralaması</span><b>${info.rank}</b></div>
+    <div class="info-row"><span>Piyasa Değeri</span><b>${bigNum(cap, 'TL')}</b></div>
+    <div class="info-row"><span>Seyreltilmiş Piyasa Değeri</span><b>${bigNum(fdv, 'TL')}</b></div>
+    <div class="info-row"><span>Piyasa Hakimiyeti</span><b>%${fmt(info.dom)}</b></div>
+    <hr>
+    <div class="info-row"><span>Dolaşımdaki Arz</span><b>${bigNum(info.circ, c.c)}</b></div>
+    <div class="info-row"><span>Toplam Arz</span><b>${bigNum(info.total, c.c)}</b></div>
+    <div class="info-row"><span>Maksimum Arz</span><b>${info.max ? bigNum(info.max, c.c) : 'Sınırsız'}</b></div>`;
+
+  const a = ASSETS.find((x) => x.k === cd.k);
+  $('#cd-hold').innerHTML = a ? `
+    <div class="info-row"><span>Varlık</span><b>${info.name} (${c.c})</b></div>
+    <div class="info-row"><span>Miktar</span><b class="amt">${a.qty}</b></div>
+    <div class="info-row"><span>Tahmini Değer</span><b class="amt">${a.tl}</b></div>
+    <hr>
+    <div class="info-row"><span>Kar/Zarar Oranı</span><b class="up">${a.pct}</b></div>
+    <div class="info-row"><span>Kar/Zarar Tutarı</span><b class="up amt">${a.pl}</b></div>` : `
+    <div class="hold-empty"><b>Henüz ${info.name} varlığınız yok</b>Aşağıdaki Al butonu ile ${c.c} alarak portföyünüze ekleyebilirsiniz.</div>`;
+}
+
+function openCoin(k, cur) {
+  cd.k = k; cd.cur = cur || 'TL'; cd.range = '1S';
+  setSeg('ozet');
+  push('coin');
+}
+function setSeg(name) {
+  $$('#coin-seg button').forEach((b) => b.classList.toggle('on', b.dataset.seg === name));
+  $$('#coin [data-pane]').forEach((p) => (p.hidden = p.dataset.pane !== name));
 }
 
 function renderTabbars() {
@@ -220,6 +384,7 @@ function onEnter(id) {
   if (id === 'sonuc') { renderAmountBits(); const c = $('#check'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); }
   if (id === 'dekont') renderDekont();
   if (id === 'piyasalar') renderMarket();
+  if (id === 'coin') renderCoin();
   const sc = $('.scroll', el(id));
   if (sc && id !== 'home') sc.scrollTop = 0;
 }
@@ -401,9 +566,15 @@ function toast(msg) {
 /* ================= Olaylar ================= */
 function setupEvents() {
   document.addEventListener('click', (e) => {
+    const row = e.target.closest('[data-coin]');
+    if (row) return openCoin(row.dataset.coin, row.dataset.cur);
     const b = e.target.closest('button, [data-soon], [data-go]');
     if (!b) return;
     if (b.dataset.go) return push(b.dataset.go);
+    if (b.dataset.seg) return setSeg(b.dataset.seg);
+    if (b.dataset.r) { cd.range = b.dataset.r; $$('#ranges button').forEach((x) => x.classList.toggle('on', x === b)); return drawChart(true); }
+    if (b.dataset.trade) return toast(`Kripto ${b.dataset.trade} işlemi demoda yakında`);
+    if (b.id === 'coin-fav') { favs.has(cd.k) ? favs.delete(cd.k) : favs.add(cd.k); b.classList.toggle('on', favs.has(cd.k)); return toast(favs.has(cd.k) ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı'); }
     if (b.hasAttribute('data-back')) return back();
     if (b.dataset.popto) return popTo(b.dataset.popto);
     if (b.hasAttribute('data-soon')) return toast('Bu özellik demoda yer almıyor');
@@ -486,7 +657,8 @@ function init() {
 
   renderTabbars(); buildKeypad();
   renderBalances(); renderMoves(); renderKriptoList(); renderMarket(); renderAssets(); updateAmount();
-  setupEvents(); setupEdgeSwipe(); setupPullToRefresh();
+  setupEvents(); setupEdgeSwipe(); setupPullToRefresh(); setupChartScrub();
+  setInterval(() => { if (stack[stack.length - 1] === 'coin') $('#cd-time').textContent = dateTime(new Date(), true); }, 1000);
   layout();
   window.addEventListener('resize', layout);
   window.addEventListener('orientationchange', () => setTimeout(layout, 300));

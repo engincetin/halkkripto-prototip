@@ -7,6 +7,7 @@ Açılış → Ana Sayfa → **Kripto İşlemleri**
 - Kripto’ya Para Gönder → Tutar (klavye) → Devam → İşlem Özeti → Onayla → İşlem Sonuç → Dekont
 - Kripto Varlıklarım
 - Kripto Piyasaları (Tümünü Gör / büyüteç) – arama ve TL / USD / Tümü filtresi çalışır
+- Herhangi bir kriptoya dokununca detay ekranı: fiyat, grafik (1S–1Y, parmakla fiyat okuma), fiyat aralığı, piyasa bilgileri, Durumum sekmesi, Al/Sat
 
 Transfer yapılınca Vadesiz hesap bakiyesi düşer, Halk Kripto nakit bakiyesi artar ve Ana Sayfa'daki hesap hareketlerine yeni kayıt eklenir. Sayfa yenilenince demo başa döner.
 

@@ -405,3 +405,47 @@ body.framed .home-indicator {
    açılan boşluk da mavi kalsın: mavi zemin kayan alanda, içerik kendi gri zemininde. */
 .scroll.pull-blue { background: linear-gradient(90deg, #025193 0%, #02b9f5 100%) 0 0 / 100% 50% no-repeat, var(--bg-home); }
 .pull-content { background: var(--bg-home); min-height: calc(100% - var(--sat) - 54px); }
+
+/* ---------- Kripto Detay ---------- */
+.tap { cursor: pointer; transition: background .15s; }
+.tap:active { background: rgba(5,118,184,.06); }
+.seg { display: flex; margin: 20px 19px 0; padding: 3px; border-radius: 9px; background: #e1e8f0; }
+.seg button { flex: 1; height: 42px; border-radius: 7px; font-size: 17px; font-weight: 800; color: var(--blue); transition: background .2s, color .2s; }
+.seg button.on { background: var(--grad); color: #fff; box-shadow: 0 2px 6px rgba(2,81,147,.25); }
+.cd-card { margin: 18px 19px 0; padding: 20px 0 14px; box-shadow: 0 0 13px 2px rgba(0,0,0,.06); }
+.cd-head { display: flex; align-items: center; gap: 13px; padding: 0 20px; }
+.cd-head b { display: block; font-size: 18px; font-weight: 800; letter-spacing: .3px; }
+.cd-head span:not(.coin-ic) { display: block; font-size: 16px; color: var(--gray-2); margin-top: 2px; }
+.cd-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; padding: 0 20px; margin-top: 14px; }
+.cd-ch { font-size: 18px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; }
+.cd-ch i { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; }
+.cd-ch.up i { border-bottom: 8px solid var(--green); }
+.cd-ch.down i { border-top: 8px solid var(--red); }
+.cd-time { padding: 0 20px; margin-top: 4px; font-size: 14px; color: var(--gray); }
+.chart { position: relative; margin-top: 18px; touch-action: pan-y; }
+.chart svg { width: 100%; height: 250px; overflow: visible; }
+.chart .ln { fill: none; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+.chart .ln.draw { animation: draw .9s ease-out both; }
+@keyframes draw { from { stroke-dashoffset: var(--len); } to { stroke-dashoffset: 0; } }
+.chart .dot { animation: pulse 1.6s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+.chart-tip { position: absolute; top: -8px; left: 0; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 13px; padding: 5px 9px; border-radius: 7px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .12s; text-align: center; line-height: 1.3; }
+.chart-tip small { display: block; font-size: 11px; opacity: .75; font-weight: 600; }
+.chart-tip.show { opacity: 1; }
+.ranges { display: flex; justify-content: space-between; padding: 14px 16px 0; }
+.ranges button { min-width: 46px; height: 34px; border-radius: 17px; font-size: 15px; font-weight: 800; color: var(--gray); }
+.ranges button.on { background: var(--blue); color: #fff; }
+.cd-sec { margin: 24px 0 13px; }
+.info-card { margin: 0 19px; padding: 6px 20px; box-shadow: 0 0 13px 2px rgba(0,0,0,.06); }
+.info-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; padding: 10px 0; font-size: 15px; color: var(--ink-3); }
+.info-row b { font-weight: 800; color: var(--ink); text-align: right; white-space: nowrap; }
+.info-row b small { display: block; font-size: 13px; color: var(--gray); font-weight: 700; margin-top: 2px; }
+.info-card hr { border: 0; border-top: 1px solid #e3e5e8; margin: 6px -20px; }
+.hold-empty { text-align: center; padding: 26px 6px 22px; color: var(--gray); font-size: 15px; line-height: 1.45; }
+.hold-empty b { display: block; color: var(--ink); font-size: 17px; margin-bottom: 6px; }
+.cd-btns { z-index: 6; }
+.cd-btns .sell { background: linear-gradient(90deg, #e8650a 0%, #f7963f 100%); }
+#coin-fav.on path { fill: #fff; }
+.cd-btns::before { content: ''; position: absolute; z-index: -1; left: -17px; right: -17px; top: -14px; bottom: calc(-1 * max(24px, calc(var(--sab) + 4px))); background: var(--bg); border-top: 1px solid #e3e5e8; }
+.info-row b.up { color: var(--green); }
+.info-row b.down { color: var(--red); }
