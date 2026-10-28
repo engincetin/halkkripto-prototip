@@ -166,7 +166,10 @@ body.framed .home-indicator {
 
 /* ---------- Ortak kart / liste ---------- */
 .card { background: var(--card); border-radius: 8px; box-shadow: 0 0 13px 2px rgba(0,0,0,.05); }
-.section-title { color: var(--blue); font-size: 15px; font-weight: 700; letter-spacing: .3px; padding: 0 19px; }
+/* Bölüm başlıkları: tüm ekranlarda aynı yazı ve aynı boşluk (üst 24, alt 14; üst kısmın hemen altındaysa üst 20) */
+.section-title { color: var(--blue); font-size: 15px; font-weight: 700; letter-spacing: .3px; line-height: 20px; padding: 0 19px; margin: 24px 0 14px; }
+.section-title.first { margin-top: 20px; }
+.section-title.with-icon { display: flex; align-items: center; gap: 8px; }
 .see-all { color: var(--orange); font-size: 14px; letter-spacing: .7px; display: flex; align-items: center; gap: 8px; }
 .amt-big { font-size: 33px; font-weight: 800; letter-spacing: 1.3px; color: var(--ink); }
 .amt-big small { font-size: 19px; font-weight: 700; letter-spacing: .76px; }
@@ -290,11 +293,11 @@ body.framed .home-indicator {
 .pl-row { display: flex; align-items: baseline; gap: 12px; margin-top: 10px; }
 .pl-row .lbl { margin-right: 4px; }
 .pl-row b { font-size: 18px; font-weight: 800; letter-spacing: .72px; }
-.kops { display: flex; gap: 7px; margin: 14px 19px 0; }
+.kops { display: flex; gap: 7px; margin: 0 19px; }
 .kop { flex: 1; height: 61px; background: #fff; border-radius: 8px; box-shadow: 0 0 13px 2px rgba(0,0,0,.07); display: flex; align-items: center; gap: 9px; padding: 0 6px 0 10px; text-align: left; font-size: 13px; line-height: 15px; color: var(--ink-3); letter-spacing: -.26px; }
 .kop .ki { width: 30px; height: 30px; border-radius: 5px; background: var(--tile); display: flex; align-items: center; justify-content: center; flex: none; }
-.row-title { display: flex; justify-content: space-between; align-items: center; padding: 0 19px; margin: 24px 0 15px; }
-.row-title .section-title { padding: 0; }
+.row-title { display: flex; justify-content: space-between; align-items: center; padding: 0 19px; margin: 24px 0 14px; }
+.row-title .section-title { padding: 0; margin: 0; }
 .list-card { margin: 0 19px; background: var(--card); border-radius: 8px; padding: 0 20px; }
 
 /* ---------- Varlıklarım ---------- */
@@ -317,7 +320,7 @@ body.framed .home-indicator {
 .search input { flex: 1; border: 0; outline: 0; background: none; font: 700 16px 'Nunito Sans', sans-serif; color: var(--ink); -webkit-user-select: text; user-select: text; }
 .search input::placeholder { color: var(--blue); }
 .chips { display: flex; gap: 15px; margin: 21px 19px 0; }
-.chip { height: 37px; min-width: 77px; padding: 0 18px; border-radius: 19px; border: 1.3px solid var(--blue); color: var(--blue); font-size: 16px; font-weight: 800; }
+.chip { height: 37px; min-width: 77px; padding: 0 18px; border-radius: 19px; border: 1.3px solid var(--blue); color: var(--blue); font-size: 15px; font-weight: 700; letter-spacing: .3px; }
 .chip.on { background: var(--blue); color: #fff; }
 .empty { padding: 30px 0; text-align: center; color: var(--gray); font-size: 15px; }
 
@@ -332,7 +335,7 @@ body.framed .home-indicator {
 .bal-row:first-of-type { margin-top: 12px; }
 .bal-row b { color: var(--blue); font-size: 18px; font-weight: 700; letter-spacing: .72px; }
 .bal-row b small { font-size: 14px; letter-spacing: .56px; }
-.amount-field { margin: 15px 19px 0; height: 63px; border-radius: 8px; background: var(--card); border: 1px solid #d3d6da; position: relative; padding: 0 19px 0 15px; display: flex; align-items: center; }
+.amount-field { margin: 0 19px; height: 63px; border-radius: 8px; background: var(--card); border: 1px solid #d3d6da; position: relative; padding: 0 19px 0 15px; display: flex; align-items: center; }
 .amount-field.focus { border: 1.5px solid #52d5e4; }
 .amount-field.err { border-color: #e35252; }
 .amount-field .ph { font-size: 17px; color: var(--gray); transition: all .18s; position: absolute; left: 15px; top: 20px; }
@@ -435,7 +438,6 @@ body.framed .home-indicator {
 .ranges { display: flex; justify-content: space-between; padding: 14px 16px 0; }
 .ranges button { min-width: 46px; height: 34px; border-radius: 17px; font-size: 15px; font-weight: 800; color: var(--gray); }
 .ranges button.on { background: var(--blue); color: #fff; }
-.cd-sec { margin: 24px 0 13px; }
 .info-card { margin: 0 19px; padding: 6px 20px; box-shadow: 0 0 13px 2px rgba(0,0,0,.06); }
 .info-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; padding: 10px 0; font-size: 15px; color: var(--ink-3); }
 .info-row b { font-weight: 800; color: var(--ink); text-align: right; white-space: nowrap; }
