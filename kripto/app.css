@@ -1,0 +1,68 @@
+/* Halk Kripto: Halkbank uygulamasıyla aynı font ve ölçek mantığı, kendi lacivert-lavanta kimliği */
+@font-face {
+  font-family: 'Nunito Sans'; font-style: normal; font-weight: 600 900; font-display: swap;
+  src: url(../fonts/nunitosans-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Nunito Sans'; font-style: normal; font-weight: 600 900; font-display: swap;
+  src: url(../fonts/nunitosans-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+:root {
+  --navy: #16246b;
+  --navy-2: #2b3f9e;
+  --lav: #e9ecfb;
+  --ink: #1b1a1f;
+  --gray: #7d848a;
+  --bg: #f3f4fb;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); font-family: 'Nunito Sans', -apple-system, system-ui, sans-serif; font-weight: 700; color: var(--ink); -webkit-font-smoothing: antialiased; -webkit-user-select: none; user-select: none; overscroll-behavior: none; touch-action: manipulation; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (display-mode: standalone) { html, body { height: 100vh; } }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+/* Yüzey: 440 tasarım px, genişliğe göre ölçek (Halkbank uygulamasıyla aynı) */
+#device {
+  --z: 1; --fix: 0px;
+  --sat: calc(env(safe-area-inset-top) / var(--z));
+  --sab: calc(env(safe-area-inset-bottom) / var(--z));
+  position: fixed; left: 0; top: 0; width: 440px;
+  height: calc((100vh + var(--fix)) / var(--z));
+  height: calc((100lvh + var(--fix)) / var(--z));
+  overflow: hidden; overflow: clip; background: var(--bg);
+  transform-origin: 0 0; transform: scale(var(--z));
+}
+html.vh-bug #device { --fix: env(safe-area-inset-top); }
+body.framed { background: radial-gradient(circle at 50% 30%, #2b3440, #0f1318 70%); }
+body.framed #device { height: 956px; --sat: 54px; --sab: 34px; border-radius: 64px; box-shadow: 0 0 0 12px #111, 0 0 0 14px #3a3f47, 0 40px 90px rgba(0,0,0,.6); }
+
+.screen { position: absolute; inset: 0; visibility: hidden; overflow: hidden; overflow: clip; }
+.screen.active { visibility: visible; }
+
+/* Açılış */
+#splash { background: radial-gradient(120% 80% at 50% 35%, #ffffff 0%, #eef1fd 55%, #dfe5fa 100%); display: flex; align-items: center; justify-content: center; z-index: 5; transition: opacity .5s; }
+#splash.gone { opacity: 0; pointer-events: none; }
+.splash-in { text-align: center; animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+.splash-logo { width: 230px; height: auto; filter: drop-shadow(0 14px 22px rgba(22,36,107,.18)); }
+.brand { font-size: 34px; font-weight: 800; color: var(--navy); letter-spacing: .3px; margin-top: 6px; }
+.brand b { font-weight: 900; color: var(--navy-2); }
+.tag { font-size: 15px; color: #5d6aa6; margin-top: 8px; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.96); } }
+
+/* Karşılama */
+.hk-header { height: calc(var(--sat) + 64px); padding: var(--sat) 22px 0; display: flex; align-items: center; background: linear-gradient(90deg, #16246b 0%, #3550c4 100%); color: #fff; }
+.hk-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; }
+.hk-brand img { width: 34px; height: 34px; border-radius: 9px; background: #fff; }
+.hk-brand b { font-weight: 900; }
+.hk-body { padding: 20px 19px calc(var(--sab) + 24px); display: flex; flex-direction: column; gap: 14px; }
+.hk-card { background: #fff; border-radius: 12px; padding: 18px 20px; box-shadow: 0 0 13px 2px rgba(22,36,107,.06); }
+.hk-card h2 { font-size: 19px; font-weight: 800; color: var(--navy); }
+.hk-card p { font-size: 15px; color: var(--gray); margin-top: 8px; line-height: 1.4; }
+.hk-label { font-size: 13px; color: var(--gray); }
+.hk-intent { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.hk-intent b { font-size: 24px; font-weight: 900; color: var(--navy); }
+.hk-side { font-size: 14px; font-weight: 800; color: #fff; background: #0b9a4a; border-radius: 14px; padding: 4px 12px; }
+.hk-side.sell { background: #e8650a; }
+.hk-btn { height: 52px; border-radius: 10px; background: linear-gradient(90deg, #16246b 0%, #3550c4 100%); color: #fff; font-size: 18px; font-weight: 800; margin-top: 6px; }

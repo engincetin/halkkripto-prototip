@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Halk Kripto</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#16246b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Halk Kripto">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="../fonts/nunitosans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="device">
+  <!-- Açılış -->
+  <section class="screen active" id="splash">
+    <div class="splash-in">
+      <img src="img/logo.png" alt="" class="splash-logo">
+      <div class="brand">Halk <b>Kripto</b></div>
+      <div class="tag">Halkbank güvencesiyle kripto al-sat</div>
+    </div>
+  </section>
+
+  <!-- Karşılama (Al/Sat ekranları birlikte tasarlanacak) -->
+  <section class="screen" id="welcome">
+    <header class="hk-header">
+      <div class="hk-brand"><img src="icons/icon-180.png" alt=""><span>Halk <b>Kripto</b></span></div>
+    </header>
+    <div class="hk-body">
+      <div class="hk-card" id="intent-card" hidden>
+        <span class="hk-label">Halkbank'tan gelen işlem</span>
+        <div class="hk-intent"><b id="intent-pair">BTC/TL</b><span class="hk-side" id="intent-side">Al</span></div>
+      </div>
+      <div class="hk-card">
+        <h2>Kripto Al/Sat</h2>
+        <p>Al/Sat ekranları burada yer alacak. Bu bölüm birlikte tasarlanacak.</p>
+      </div>
+      <button class="hk-btn" id="back-to-bank" hidden>Halkbank'a Dön</button>
+    </div>
+  </section>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -523,7 +523,7 @@ function setupEdgeSwipe() {
   let drag = null;
   const toLocal = (t) => (t.clientX - view.x) / view.z;
   dev.addEventListener('touchstart', (e) => {
-    if (busy || stack.length < 2 || keypadOpen || sheetOpen) return;
+    if (busy || stack.length < 2 || keypadOpen || sheetOpen || redirOpen || appOpen) return;
     const x = toLocal(e.touches[0]);
     if (x > 26) return;
     drag = { x0: x, dx: 0, t0: Date.now(), from: cur(), to: el(stack[stack.length - 2]), started: false };
@@ -674,6 +674,46 @@ function setFromAcc(id) {
   setTimeout(closeSheet, 180);
 }
 
+/* ================= Halk Kripto'ya yönlendirme ve uygulama geçişi ================= */
+// Al/Sat işlemleri ayrı uygulamada (kripto/). iOS'ta ana ekrandaki iki web uygulaması birbirini
+// açamadığı için Halk Kripto bu uygulamanın içinde, iOS'un uygulama açma animasyonuyla gösterilir.
+let redirOpen = false, appOpen = false, redirIntent = null;
+function openRedirect(pair, side) {
+  redirIntent = { pair, side };
+  redirOpen = true;
+  $('#redir-bg').classList.add('show');
+  $('#redir').classList.add('open');
+}
+function closeRedirect() {
+  redirOpen = false;
+  $('#redir-bg').classList.remove('show');
+  $('#redir').classList.remove('open');
+}
+function openKriptoApp() {
+  closeRedirect();
+  appOpen = true;
+  const dev = $('#device');
+  // Güvenli alanlar tasarım px olarak iletilir (iframe içinde env() çalışmaz)
+  const sat = Math.round($('#kripto .header').offsetHeight - 54);
+  const sab = Math.round($('#home .tabbar').offsetHeight - 78);
+  const h = new URLSearchParams();
+  if (redirIntent && redirIntent.pair) { h.set('pair', redirIntent.pair); h.set('side', redirIntent.side); }
+  $('#kripto-frame').src = `kripto/?embed=1&sat=${sat}&sab=${sab}#${h}`;
+  const sw = $('#switch');
+  sw.classList.add('show');
+  setTimeout(() => { dev.classList.add('app-out'); sw.classList.add('open'); }, 120);
+}
+function closeKriptoApp() {
+  const dev = $('#device'), sw = $('#switch');
+  sw.classList.remove('open');
+  dev.classList.remove('app-out');
+  setTimeout(() => {
+    sw.classList.remove('show');
+    $('#kripto-frame').src = 'about:blank';
+    appOpen = false;
+  }, 420);
+}
+
 /* ================= Bildirim ================= */
 let toastT;
 function toast(msg) {
@@ -694,7 +734,9 @@ function setupEvents() {
     if (b.dataset.go) return push(b.dataset.go);
     if (b.dataset.seg) return setSeg(b.dataset.seg);
     if (b.dataset.r) { cd.range = b.dataset.r; $$('#ranges button').forEach((x) => x.classList.toggle('on', x === b)); return drawChart(true); }
-    if (b.dataset.trade) return toast(`Kripto ${b.dataset.trade} işlemi demoda yakında`);
+    if (b.dataset.trade) return openRedirect(`${COINS.find((x) => x.k === cd.k).c}/${cd.cur}`, b.dataset.trade);
+    if (b.hasAttribute('data-redirect')) return openRedirect();
+    if (b.hasAttribute('data-redir-close')) return closeRedirect();
     if (b.id === 'coin-fav') { favs.has(cd.k) ? favs.delete(cd.k) : favs.add(cd.k); b.classList.toggle('on', favs.has(cd.k)); return toast(favs.has(cd.k) ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı'); }
     if (b.hasAttribute('data-back')) return back();
     if (b.dataset.popto) return popTo(b.dataset.popto);
@@ -719,6 +761,11 @@ function setupEvents() {
 
   $('#amount-field').addEventListener('click', openKeypad);
   $('#sheet-bg').addEventListener('click', closeSheet);
+  $('#redir-bg').addEventListener('click', closeRedirect);
+  $('#redir-go').addEventListener('click', openKriptoApp);
+  window.addEventListener('message', (e) => {
+    if (e.origin === location.origin && e.data && e.data.type === 'halkkripto:back') closeKriptoApp();
+  });
   $('#kp-done').addEventListener('click', closeKeypad);
   $('#gonder-scroll').addEventListener('click', (e) => { if (keypadOpen && !e.target.closest('#amount-field')) closeKeypad(); });
   $('#devam').addEventListener('click', () => { state.last = null; push('ozet'); });
@@ -807,6 +854,8 @@ function init() {
   // sayfa görünür alandan uzun sayılınca pencere kayıp alt menüyü ekran dışına itebiliyordu.
   const lockWindow = () => { if (window.scrollX || window.scrollY) window.scrollTo(0, 0); };
   window.addEventListener('scroll', lockWindow, { passive: true });
+  // Yüzey ve ekranlar kaymaz (overflow: clip desteklemeyen eski iOS için güvence)
+  [$('#device'), ...$$('.screen')].forEach((el) => el.addEventListener('scroll', () => { if (el.scrollTop || el.scrollLeft) { el.scrollTop = 0; el.scrollLeft = 0; } }, { passive: true }));
   if (window.visualViewport) visualViewport.addEventListener('scroll', lockWindow);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { layout(); lockWindow(); } });
   if (window.visualViewport) visualViewport.addEventListener('resize', layout);

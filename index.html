@@ -140,7 +140,7 @@
       <div class="card kcard bal" data-kcard></div>
       <div class="section-title">KRİPTO İŞLEMLERİ</div>
       <div class="kops">
-        <button class="kop press" data-soon><span class="ki" style="color:#0576b8"><svg width="15" height="13"><use href="#i-transfer"/></svg></span>Kripto<br>Al/Sat</button>
+        <button class="kop press" data-redirect><span class="ki" style="color:#0576b8"><svg width="15" height="13"><use href="#i-transfer"/></svg></span>Kripto<br>Al/Sat</button>
         <button class="kop press" data-go="gonder"><span class="ki" style="color:#0576b8"><svg width="12" height="12"><use href="#i-send"/></svg></span>Kripto’ya<br>Para Gönder</button>
         <button class="kop press" data-go="varliklar"><span class="ki" style="color:#0576b8"><svg width="17" height="17"><use href="#i-pie"/></svg></span>Kripto<br>Varlıklarım</button>
       </div>
@@ -332,6 +332,28 @@
     <h3>Gönderen Hesap Seçin</h3>
     <p>Halk Kripto hesabınıza hangi hesabınızdan para göndermek istediğinizi seçin.</p>
     <div id="acc-opts"></div>
+  </div>
+
+  <!-- Halk Kripto'ya yönlendirme (Al/Sat) -->
+  <div class="redir-bg" id="redir-bg"></div>
+  <div class="redir" id="redir" role="dialog" aria-label="Halk Kripto'ya yönlendirme">
+    <button class="redir-x press" data-redir-close aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+    <div class="redir-icons">
+      <img src="icons/icon-180.png" alt="Halkbank">
+      <span class="redir-dots"><i></i><i></i><svg width="14" height="18" viewBox="0 0 14 18"><path d="m3 2 8 7-8 7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <img src="kripto/icons/icon-180.png" alt="Halk Kripto">
+    </div>
+    <p>Kripto Al/Sat işlemleriniz için <b>Halk Kripto</b>’ya yönlendiriliyorsunuz.</p>
+    <button class="btn-primary press" id="redir-go">Devam</button>
+    <button class="redir-cancel press" data-redir-close>Vazgeç</button>
+  </div>
+
+  <!-- Uygulama geçişi: Halk Kripto (ayrı uygulama, iframe içinde) -->
+  <div class="switch" id="switch">
+    <div class="switch-app" id="switch-app">
+      <div class="switch-launch"><img src="kripto/img/logo.png" alt=""></div>
+      <iframe id="kripto-frame" title="Halk Kripto"></iframe>
+    </div>
   </div>
 </div>
 

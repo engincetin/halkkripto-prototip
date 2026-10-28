@@ -86,6 +86,9 @@ svg { display: block; flex: none; }
   height: calc((100vh + var(--fix)) / var(--z));
   height: calc((100lvh + var(--fix)) / var(--z));
   overflow: hidden;
+  /* clip: tarayıcının bu yüzeyi (ve ekranları) kendi içinde kaydırmasını da engeller; hidden yalnızca gizler.
+     Ekran altında bekleyen menüler/klavye yüzünden odaklanmada tüm uygulama yukarı kayıyordu. */
+  overflow: clip;
   background: var(--bg);
   transform-origin: 0 0;
   transform: scale(var(--z));
@@ -124,6 +127,8 @@ body.framed .home-indicator {
   position: absolute; inset: 0;
   background: var(--bg);
   visibility: hidden;
+  overflow: hidden;
+  overflow: clip;
 }
 .screen.active, .screen.under, .screen.moving { visibility: visible; }
 .screen.active { z-index: 2; }
@@ -508,3 +513,32 @@ body.framed .home-indicator {
 @keyframes hint-bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -4px); } }
 .tile.hint.nudge { animation: hint-nudge .6s cubic-bezier(.3,1.6,.5,1), hint-pulse 1.8s ease-out .6s infinite; }
 @keyframes hint-nudge { 0% { transform: scale(1); } 35% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+/* ---------- Halk Kripto'ya yönlendirme pop-up'ı ---------- */
+.redir-bg { position: absolute; inset: 0; z-index: 80; background: rgba(10,25,45,.55); opacity: 0; pointer-events: none; transition: opacity .25s; }
+.redir-bg.show { opacity: 1; pointer-events: auto; }
+.redir { position: absolute; z-index: 81; left: 19px; right: 19px; top: 50%; background: #f2f6fa; border-radius: 18px; padding: 22px 22px 22px; transform: translateY(-46%) scale(.94); opacity: 0; pointer-events: none; transition: transform .28s cubic-bezier(.2,.9,.3,1.1), opacity .2s; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+.redir.open { transform: translateY(-50%) scale(1); opacity: 1; pointer-events: auto; }
+.redir-x { position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: var(--blue); }
+.redir-icons { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 30px 0 30px; }
+.redir-icons img { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 6px 16px rgba(2,81,147,.18); }
+.redir-dots { display: flex; align-items: center; gap: 7px; color: #b9c4d2; }
+.redir-dots i { width: 9px; height: 9px; border-radius: 50%; background: currentColor; animation: dot 1.2s ease-in-out infinite; }
+.redir-dots i:nth-child(2) { animation-delay: .15s; }
+.redir-dots svg { animation: dot 1.2s ease-in-out .3s infinite; }
+@keyframes dot { 0%, 100% { opacity: .45; } 50% { opacity: 1; color: var(--blue); } }
+.redir p { font-size: 18px; line-height: 1.4; color: var(--ink); font-weight: 700; }
+.redir p b { color: var(--blue); font-weight: 800; }
+.redir .btn-primary { margin-top: 22px; }
+.redir-cancel { width: 100%; height: 53px; border-radius: 10px; margin-top: 12px; background: #fff; color: var(--blue); font-size: 18px; font-weight: 800; border: 1px solid #dbe4ee; }
+
+/* ---------- Uygulama geçişi (iOS uygulama açma animasyonu) ---------- */
+.screen { transition: opacity .35s ease, border-radius .35s ease; }
+#device.app-out .screen.active { transform: scale(.88); opacity: 0; border-radius: 44px; overflow: hidden; transition: transform .38s cubic-bezier(.2,.8,.2,1), opacity .3s ease .05s, border-radius .38s; }
+.switch { position: absolute; inset: 0; z-index: 90; display: none; background: radial-gradient(120% 90% at 50% 20%, #33408f 0%, #141a3f 70%); }
+.switch.show { display: block; }
+.switch-app { position: absolute; inset: 0; overflow: hidden; border-radius: 46px; transform: scale(.2); opacity: 0; transition: transform .48s cubic-bezier(.2,.85,.25,1), opacity .2s ease, border-radius .48s; background: #eef1fd; }
+.switch.open .switch-app { transform: none; opacity: 1; border-radius: 0; }
+.switch-launch { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(120% 80% at 50% 35%, #fff 0%, #eef1fd 55%, #dfe5fa 100%); }
+.switch-launch img { width: 230px; }
+#kripto-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: transparent; }
