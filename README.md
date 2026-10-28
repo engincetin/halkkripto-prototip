@@ -13,7 +13,7 @@ Açılış → Ana Sayfa → **Kripto İşlemleri**
 
 Transfer yapılınca Vadesiz hesap bakiyesi düşer, Halk Kripto nakit bakiyesi artar ve Ana Sayfa'daki hesap hareketlerine yeni kayıt eklenir. Sayfa yenilenince demo başa döner.
 
-Ekranın sol kenarından sağa kaydırarak geri gidilebilir (iOS hareketi). Göz ikonu bakiyeleri gizler. Demoda olmayan butonlar "Bu özellik demoda yer almıyor" uyarısı verir.
+Ekranın sol kenarından sağa kaydırarak geri gidilebilir (iOS hareketi). Göz ikonu bakiyeleri gizler. Demoda olmayan butonlar "Bu özellik demoda yer almıyor" uyarısı verir. Ana sayfada Kripto İşlemleri kutucuğu, ilk girişe kadar nabız gibi atan bir çerçeve ve "Buradan başlayın" balonuyla vurgulanır.
 
 ## iPhone'da açmak
 1. Bu klasörü bir HTTPS adresine yükleyin. En kolayı: https://app.netlify.com/drop sayfasına klasörü sürükleyip bırakın.

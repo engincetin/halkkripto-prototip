@@ -460,6 +460,7 @@ function onEnter(id) {
   if (id === 'dekont') renderDekont();
   if (id === 'piyasalar') renderMarket();
   if (id === 'coin') renderCoin();
+  if (id === 'kripto') $('#kripto-tile').classList.remove('hint', 'nudge'); // ilk girişten sonra vurgu kalkar
   const sc = $('.scroll', el(id));
   if (sc && id !== 'home') sc.scrollTop = 0;
 }
@@ -701,7 +702,15 @@ function setupEvents() {
     if (b.dataset.dcur) return setDisplayCur(b.dataset.dcur);
     if (b.hasAttribute('data-accsheet')) return openAccSheet();
     if (b.dataset.acc) return setFromAcc(b.dataset.acc);
-    if (b.hasAttribute('data-soon')) return toast('Bu özellik demoda yer almıyor');
+    if (b.hasAttribute('data-soon')) {
+      // Ana sayfada demo dışı bir öğeye dokunulunca kullanıcıyı Kripto İşlemleri'ne yönlendir
+      if (stack[stack.length - 1] === 'home' && $('#kripto-tile').classList.contains('hint')) {
+        const t = $('#kripto-tile');
+        t.classList.remove('nudge'); void t.offsetWidth; t.classList.add('nudge');
+        return toast('Bu özellik demoda yer almıyor. Kripto İşlemleri’ni deneyin.');
+      }
+      return toast('Bu özellik demoda yer almıyor');
+    }
     if (b.dataset.toast) return toast(b.dataset.toast);
     if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; return renderBalances(); }
     if (b.dataset.key) return typeKey(b.dataset.key);

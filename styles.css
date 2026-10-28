@@ -402,7 +402,7 @@ body.framed .home-indicator {
 .doc .note { font-size: 5.5px; text-align: center; margin-top: 2px; }
 
 /* ---------- Bildirim (toast) ---------- */
-.toast { position: absolute; z-index: 100; left: 50%; bottom: calc(var(--sab) + 120px); transform: translate(-50%, 20px); background: rgba(27,26,31,.92); color: #fff; font-size: 15px; padding: 12px 18px; border-radius: 12px; opacity: 0; transition: all .25s; pointer-events: none; white-space: nowrap; }
+.toast { position: absolute; z-index: 100; left: 50%; bottom: calc(var(--sab) + 120px); transform: translate(-50%, 20px); background: rgba(27,26,31,.92); color: #fff; font-size: 15px; line-height: 1.35; text-align: center; padding: 12px 18px; border-radius: 12px; opacity: 0; transition: all .25s; pointer-events: none; width: max-content; max-width: 360px; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* Kartın arkasında mavi bant olan ekranlarda (Kripto İşlemleri) aşağı çekince
@@ -494,3 +494,17 @@ body.framed .home-indicator {
 .hold-head .coin-val b { font-size: 16px; }
 .lbl2 .bal { color: var(--blue); font-weight: 800; font-size: 15px; margin-top: 4px; }
 .lbl2 .bal small { font-size: 12px; }
+
+/* ---------- Demo yönlendirmesi: Kripto İşlemleri kutucuğu ---------- */
+.tile .hint-tip { display: none; }
+.tile.hint { z-index: 3; animation: hint-pulse 1.8s ease-out infinite; }
+.tile.hint .hint-tip { display: block; position: absolute; left: 50%; bottom: calc(100% + 11px); transform: translateX(-50%); background: var(--grad); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: .2px; white-space: nowrap; padding: 7px 12px; border-radius: 10px; box-shadow: 0 6px 14px rgba(2,81,147,.3); animation: hint-bob 1.8s ease-in-out infinite; pointer-events: none; }
+.tile.hint .hint-tip::after { content: ''; position: absolute; left: 50%; top: 100%; margin-left: -7px; border: 7px solid transparent; border-top-color: #0389cf; }
+@keyframes hint-pulse {
+  0% { box-shadow: 0 0 0 2px #0576b8, 0 0 0 0 rgba(5,118,184,.45), 0 0 13px 2px rgba(0,0,0,.15); }
+  70% { box-shadow: 0 0 0 2px #0576b8, 0 0 0 12px rgba(5,118,184,0), 0 0 13px 2px rgba(0,0,0,.15); }
+  100% { box-shadow: 0 0 0 2px #0576b8, 0 0 0 0 rgba(5,118,184,0), 0 0 13px 2px rgba(0,0,0,.15); }
+}
+@keyframes hint-bob { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -4px); } }
+.tile.hint.nudge { animation: hint-nudge .6s cubic-bezier(.3,1.6,.5,1), hint-pulse 1.8s ease-out .6s infinite; }
+@keyframes hint-nudge { 0% { transform: scale(1); } 35% { transform: scale(1.08); } 100% { transform: scale(1); } }
