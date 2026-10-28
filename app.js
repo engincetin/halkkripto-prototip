@@ -1,25 +1,39 @@
 'use strict';
 
 /* ================= Veri ================= */
-const USD_RATE = 49.63; // USDC = 49,63 TL (tasarımdaki değer)
+// Fiyatlar 28 Ekim 2026 piyasa seviyelerine göre (demo, canlı değil). 1 USD ≈ 49,68 TL
+const USD_RATE = 49.68;
 
 const COINS = [
-  { k: 'btc', n: 'Bitcoin', c: 'BTC', tl: 4001989, d: 0, ch: 0.10 },
-  { k: 'eth', n: 'Ethereum', c: 'ETH', tl: 115808, d: 0, ch: 0.83 },
-  { k: 'xrp', n: 'Ripple', c: 'XRP', tl: 64.070, d: 3, ch: -1.05 },
-  { k: 'sol', n: 'Solana', c: 'SOL', tl: 5036.86, d: 2, ch: 0.19 },
-  { k: 'usdc', n: 'USD Coin', c: 'USDC', tl: 49.63, d: 2, ch: 0 },
-  { k: 'uni', n: 'UNISWAP', c: 'UNI', tl: 354.29, d: 2, ch: 5.61 },
+  { k: 'btc', n: 'Bitcoin', c: 'BTC', tl: 4038500, d: 0, ch: -0.15 },
+  { k: 'eth', n: 'Ethereum', c: 'ETH', tl: 117344.16, d: 0, ch: -0.62 },
+  { k: 'xrp', n: 'Ripple', c: 'XRP', tl: 66.07, d: 2, ch: 0.76 },
+  { k: 'sol', n: 'Solana', c: 'SOL', tl: 5081.77, d: 2, ch: 1.12 },
+  { k: 'usdc', n: 'USD Coin', c: 'USDC', tl: 49.68, d: 2, ch: 0 },
+  { k: 'uni', n: 'UNISWAP', c: 'UNI', tl: 343.29, d: 2, ch: 2.84 },
 ];
 
-// v: tahmini TL değeri, pl: olası kar/zarar (TL), pct: kar/zarar oranı (%)
+// v: varlığın güncel TL değeri, pct: alış maliyetine göre kar/zarar oranı (%), dq: miktar ondalığı.
+// Toplam değer Halk Kripto hesabındaki "Kripto Varlıklarım" (70.150 TL) ile aynıdır.
+// Miktar = değer / güncel fiyat, kar/zarar = değer - maliyet olarak hesaplanır.
 const ASSETS = [
-  { k: 'btc', n: 'Bitcoin', c: 'BTC', v: 50234.00, qty: '0,0313 BTC', pct: 0.85, pl: 5002.82 },
-  { k: 'eth', n: 'Ethereum', c: 'ETH', v: 30123.60, qty: '2,43 ETH', pct: 0.42, pl: 2002.82 },
-  { k: 'usdc', n: 'USD Coin', c: 'USDC', v: 19879.21, qty: '1.540,05 USDC', pct: 0.01, pl: 402.23 },
-  { k: 'sol', n: 'Solana', c: 'SOL', v: 19879.21, qty: '3,9467 SOL', pct: 0.01, pl: 402.23 },
-  { k: 'xrp', n: 'Ripple', c: 'XRP', v: 19879.21, qty: '310,27 XRP', pct: 0.01, pl: 402.23 },
+  { k: 'btc', n: 'Bitcoin', c: 'BTC', v: 24552.50, pct: 14.2, dq: 8 },
+  { k: 'eth', n: 'Ethereum', c: 'ETH', v: 15433.00, pct: 6.8, dq: 5 },
+  { k: 'sol', n: 'Solana', c: 'SOL', v: 10522.50, pct: -3.4, dq: 4 },
+  { k: 'xrp', n: 'Ripple', c: 'XRP', v: 9821.00, pct: 22.5, dq: 2 },
+  { k: 'usdc', n: 'USD Coin', c: 'USDC', v: 9821.00, pct: 0, dq: 2 },
 ];
+function assetCalc(a) {
+  const price = COINS.find((x) => x.k === a.k).tl;
+  const pl = a.v - a.v / (1 + a.pct / 100);
+  return { qty: `${fmt(a.v / price, a.dq)} ${a.c}`, pl };
+}
+function portfolioPL() {
+  const pl = ASSETS.reduce((t, a) => t + assetCalc(a).pl, 0);
+  const value = ASSETS.reduce((t, a) => t + a.v, 0);
+  return { pl, pct: (pl / (value - pl)) * 100 };
+}
+const signed = (n) => `${n > 0 ? '+' : n < 0 ? '-' : ''}${fmt(Math.abs(n))}`;
 
 const MONTHS = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA'];
 
@@ -27,7 +41,7 @@ const state = {
   vadesiz: 250000,
   kredili: 250000,
   nakit: 30200,
-  kripto: 70150,
+  kripto: 70150, // ASSETS değerlerinin toplamı
   hidden: false,
   amt: '',          // klavyeden girilen ham tutar, ör. "50000,5"
   last: null,       // son başarılı işlem
@@ -68,6 +82,7 @@ function coinIcon(k) { return `<span class="coin-ic"><svg width="24" height="24"
 /* ================= Çizim ================= */
 function renderBalances() {
   const total = state.nakit + state.kripto;
+  const tp = portfolioPL();
   $$('[data-k="vadesiz-big"]').forEach((e) => (e.innerHTML = money(state.vadesiz)));
   $$('[data-k="kredili"]').forEach((e) => (e.innerHTML = money(state.kredili)));
   $$('[data-k="vadesiz-blue"]').forEach((e) => (e.innerHTML = money(state.vadesiz)));
@@ -81,7 +96,7 @@ function renderBalances() {
     </div>
     <div class="lbl" style="margin-top:13px">Kripto ve Nakit Bakiye</div>
     <div class="amt-big amt">${money(total)}</div>
-    <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="up amt">%10,02</b><b class="up money-sm amt">+25.401<small>,43 TL</small></b></div>`;
+    <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}</b><b class="${chClass(tp.pl)} money-sm amt">${signed(tp.pl).split(',')[0]}<small>,${fmt(tp.pl).split(',')[1]} TL</small></b></div>`;
   $('[data-kcard]').innerHTML = head;
   $('[data-vcard]').innerHTML = head + `
     <hr>
@@ -105,7 +120,7 @@ function renderMoves() {
 function coinRow(c, cur, pair) {
   const usd = cur === 'USD';
   const p = c.tl / USD_RATE;
-  const price = usd ? `${fmt(p, p >= 1000 ? 0 : 2)} USD` : `${fmt(c.tl, c.d)} TL`;
+  const price = usd ? `${fmt(p, p < 1 ? 4 : 2)} USD` : `${fmt(c.tl, c.d)} TL`;
   const code = pair ? `${c.c}/${cur}` : c.c;
   return `
     <div class="coin-row tap" data-coin="${c.k}" data-cur="${usd ? 'USD' : 'TL'}">
@@ -136,9 +151,9 @@ function renderAssets() {
       ${coinIcon(a.k)}
       <div class="coin-name">
         <b>${a.n}</b><span>${a.c}</span>
-        <div class="plr"><em>Kar/Zarar</em><span class="up">%${fmt(a.pct)}</span></div>
+        <div class="plr"><em>Kar/Zarar</em><span class="${chClass(a.pct)}">%${fmt(Math.abs(a.pct))}</span></div>
       </div>
-      <div class="coin-val"><b class="amt">~ ${fmt(a.v)} TL</b><b class="amt" style="margin-top:5px">${a.qty}</b><span class="up amt">+${fmt(a.pl)} TL</span></div>
+      <div class="coin-val"><b class="amt">~ ${fmt(a.v)} TL</b><b class="amt" style="margin-top:5px">${assetCalc(a).qty}</b><span class="${chClass(a.pct)} amt">${signed(assetCalc(a).pl)} TL</span></div>
     </div>`).join('');
 }
 
@@ -298,8 +313,8 @@ function renderCoin() {
       </div>
       <div class="coin-val"><b>${fmtPrice(price)} ${cur}</b><span class="cd-ch ${chClass(c.ch)}">%${fmt(Math.abs(c.ch))}${c.ch ? '<i></i>' : ''}</span></div>`;
     $('#cd-hold').innerHTML = `
-      <div class="info-row"><span>Kullanılabilir Tutar</span><b class="amt">${a.qty}<em>${fmt(a.v / USD_RATE)} USD</em><em>${fmt(a.v)} TL</em></b></div>
-      <div class="info-row"><span>Toplam Olası Kar / Zarar</span><b class="up amt">+${fmt(a.pl)} TL<em>+%${fmt(a.pct)}</em></b></div>
+      <div class="info-row"><span>Kullanılabilir Tutar</span><b class="amt">${assetCalc(a).qty}<em>${fmt(a.v / USD_RATE)} USD</em><em>${fmt(a.v)} TL</em></b></div>
+      <div class="info-row"><span>Toplam Olası Kar / Zarar</span><b class="${chClass(a.pct)} amt">${signed(assetCalc(a).pl)} TL<em>${a.pct > 0 ? '+' : a.pct < 0 ? '-' : ''}%${fmt(Math.abs(a.pct))}</em></b></div>
       <hr>
       <div class="info-row"><span>Portföy Dağılımı</span><b class="plain">%${fmt(share)}</b></div>`;
   }

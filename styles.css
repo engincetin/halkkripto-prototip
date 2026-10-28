@@ -456,6 +456,8 @@ body.framed .home-indicator {
 #cd-hold { margin-top: 12px; padding: 8px 20px; }
 #cd-hold .info-row { padding: 12px 0; }
 #cd-hold .info-row b em { display: block; font-style: normal; font-weight: 700; margin-top: 4px; }
-#cd-hold .info-row b:not(.up) em { color: var(--ink-3); }
+#cd-hold .info-row b:not(.up):not(.down) em { color: var(--ink-3); }
 #cd-hold .info-row b.plain { font-weight: 700; color: var(--ink-3); }
 .hold-head .coin-val .cd-ch { display: flex; }
+.asset-row .plr span.down { display: inline; margin: 0; font-size: 15px; color: var(--red); }
+.asset-row .plr span.flat { display: inline; margin: 0; font-size: 15px; color: #686d71; }
