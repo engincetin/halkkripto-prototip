@@ -214,10 +214,14 @@ body.framed .home-indicator {
 #home { background: var(--bg-home); }
 /* Üst kısım (profil + sekmeler) sabit; kayma sekmelerin altından başlar */
 .home-top { position: absolute; z-index: 10; left: 0; right: 0; top: 0; background: var(--grad); height: calc(var(--sat) + 131px); padding-top: var(--sat); color: #fff; }
-.home-scroll { top: calc(var(--sat) + 131px); }
-.home-content { position: relative; transition: transform .35s cubic-bezier(.2,.8,.2,1); }
-/* Kartın arkasındaki mavi bant; yukarı doğru uzun tutuldu ki aşağı çekince mavi görünsün */
-.home-content::before { content: ''; position: absolute; left: 0; right: 0; top: -1200px; height: 1256px; background: var(--grad); }
+/* Kayan alanın arka planı üstte mavi: iOS'ta aşağı çekince açılan boşluk mavi kalır.
+   İçerik kendi gri zeminini taşır, kartın arkasındaki mavi bant da içerikle birlikte kayar. */
+.home-scroll {
+  top: calc(var(--sat) + 131px);
+  background: linear-gradient(90deg, #025193 0%, #02b9f5 100%) 0 0 / 100% 50% no-repeat, var(--bg-home);
+}
+.home-content { position: relative; min-height: 100%; background: var(--bg-home); transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.home-content::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 56px; background: var(--grad); }
 .home-content.refreshing { transform: translateY(54px); }
 .ptr { position: absolute; z-index: 9; left: 50%; top: calc(var(--sat) + 145px); margin-left: -13px; opacity: 0; pointer-events: none; }
 .ptr.spin svg { animation: ptr-spin .8s steps(8) infinite; }
