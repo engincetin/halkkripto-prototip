@@ -42,6 +42,7 @@ const state = {
   kredili: 250000,
   nakit: 30200,
   kripto: 70150, // ASSETS değerlerinin toplamı
+  cur: 'TL', // Halk Kripto ekranlarında görüntüleme para birimi
   hidden: false,
   amt: '',          // klavyeden girilen ham tutar, ör. "50000,5"
   last: null,       // son başarılı işlem
@@ -59,10 +60,13 @@ function fmt(n, dec = 2) {
   return n.toLocaleString('tr-TR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
 }
 // "250.000" + "<small>,00 TL</small>"
-function money(n) {
+function money(n, cur = 'TL') {
   const [i, f] = fmt(n).split(',');
-  return `${i}<small>,${f} TL</small>`;
+  return `${i}<small>,${f} ${cur}</small>`;
 }
+// Halk Kripto tutarları seçili görüntüleme para biriminde (TL / USD)
+const inCur = (nTL, cur = state.cur) => (cur === 'USD' ? nTL / USD_RATE : nTL);
+const moneyC = (nTL) => money(inCur(nTL), state.cur);
 function parseAmt(s) { return s ? parseFloat(s.replace(',', '.')) : 0; }
 function amtDisplay(s) {
   if (!s) return '';
@@ -92,16 +96,16 @@ function renderBalances() {
     <div class="acct-head">
       <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
       <span class="name">Halk Kripto Hesabım</span>${eye}
-      <button class="pill-orange press" data-soon style="margin-left:16px">TL <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
+      <button class="pill-orange press" data-cursheet style="margin-left:16px">${state.cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
     </div>
     <div class="lbl" style="margin-top:13px">Kripto ve Nakit Bakiye</div>
-    <div class="amt-big amt">${money(total)}</div>
-    <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}</b><b class="${chClass(tp.pl)} money-sm amt">${signed(tp.pl).split(',')[0]}<small>,${fmt(tp.pl).split(',')[1]} TL</small></b></div>`;
+    <div class="amt-big amt">${moneyC(total)}</div>
+    <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}</b><b class="${chClass(tp.pl)} money-sm amt">${signed(inCur(tp.pl)).split(',')[0]}<small>,${fmt(inCur(tp.pl)).split(',')[1]} ${state.cur}</small></b></div>`;
   $('[data-kcard]').innerHTML = head;
   $('[data-vcard]').innerHTML = head + `
     <hr>
-    <div class="vrow"><span class="lbl">Nakit Varlıklarım</span><b class="amt">${money(state.nakit)}</b></div>
-    <div class="vrow"><span class="lbl">Kripto Varlıklarım</span><b class="amt">${money(state.kripto)}</b></div>`;
+    <div class="vrow"><span class="lbl">Nakit Varlıklarım</span><b class="amt">${moneyC(state.nakit)}</b></div>
+    <div class="vrow"><span class="lbl">Kripto Varlıklarım</span><b class="amt">${moneyC(state.kripto)}</b></div>`;
   $$('[data-eye] use').forEach((u) => u.setAttribute('href', state.hidden ? '#i-eye-off' : '#i-eye'));
   $('#device').classList.toggle('hidden-amt', state.hidden);
 }
@@ -131,7 +135,7 @@ function coinRow(c, cur, pair) {
 }
 
 function renderKriptoList() {
-  $('#kripto-list').innerHTML = COINS.map((c) => coinRow(c, 'TL')).join('');
+  $('#kripto-list').innerHTML = COINS.map((c) => coinRow(c, state.cur)).join('');
 }
 
 let marketCur = 'TL';
@@ -147,13 +151,13 @@ function renderMarket() {
 
 function renderAssets() {
   $('#asset-list').innerHTML = ASSETS.map((a) => `
-    <div class="asset-row tap" data-coin="${a.k}" data-cur="TL">
+    <div class="asset-row tap" data-coin="${a.k}" data-cur="${state.cur}">
       ${coinIcon(a.k)}
       <div class="coin-name">
         <b>${a.n}</b><span>${a.c}</span>
         <div class="plr"><em>Kar/Zarar</em><span class="${chClass(a.pct)}">%${fmt(Math.abs(a.pct))}</span></div>
       </div>
-      <div class="coin-val"><b class="amt">~ ${fmt(a.v)} TL</b><b class="amt" style="margin-top:5px">${assetCalc(a).qty}</b><span class="${chClass(a.pct)} amt">${signed(assetCalc(a).pl)} TL</span></div>
+      <div class="coin-val"><b class="amt">~ ${fmt(inCur(a.v))} ${state.cur}</b><b class="amt" style="margin-top:5px">${assetCalc(a).qty}</b><span class="${chClass(a.pct)} amt">${signed(inCur(assetCalc(a).pl))} ${state.cur}</span></div>
     </div>`).join('');
 }
 
@@ -314,7 +318,7 @@ function renderCoin() {
       <div class="coin-val"><b>${fmtPrice(price)} ${cur}</b><span class="cd-ch ${chClass(c.ch)}">%${fmt(Math.abs(c.ch))}${c.ch ? '<i></i>' : ''}</span></div>`;
     $('#cd-hold').innerHTML = `
       <div class="info-row"><span>Kullanılabilir Tutar</span><b class="amt">${assetCalc(a).qty}<em>${fmt(a.v / USD_RATE)} USD</em><em>${fmt(a.v)} TL</em></b></div>
-      <div class="info-row"><span>Toplam Olası Kar / Zarar</span><b class="${chClass(a.pct)} amt">${signed(assetCalc(a).pl)} TL<em>${a.pct > 0 ? '+' : a.pct < 0 ? '-' : ''}%${fmt(Math.abs(a.pct))}</em></b></div>
+      <div class="info-row"><span>Toplam Olası Kar / Zarar</span><b class="${chClass(a.pct)} amt">${signed(inCur(assetCalc(a).pl, cur))} ${cur}<em>${a.pct > 0 ? '+' : a.pct < 0 ? '-' : ''}%${fmt(Math.abs(a.pct))}</em></b></div>
       <hr>
       <div class="info-row"><span>Portföy Dağılımı</span><b class="plain">%${fmt(share)}</b></div>`;
   }
@@ -472,7 +476,7 @@ function setupEdgeSwipe() {
   let drag = null;
   const toLocal = (t) => (t.clientX - view.x) / view.z;
   dev.addEventListener('touchstart', (e) => {
-    if (busy || stack.length < 2 || keypadOpen) return;
+    if (busy || stack.length < 2 || keypadOpen || sheetOpen) return;
     const x = toLocal(e.touches[0]);
     if (x > 26) return;
     drag = { x0: x, dx: 0, t0: Date.now(), from: cur(), to: el(stack[stack.length - 2]), started: false };
@@ -578,6 +582,27 @@ function updateAmount() {
   $('#devam').disabled = !(v > 0) || !!err;
 }
 
+/* ================= Para birimi seçimi (alttan açılan menü) ================= */
+let sheetOpen = false;
+function openCurSheet() {
+  sheetOpen = true;
+  $$('#cur-sheet [data-dcur]').forEach((b) => b.classList.toggle('on', b.dataset.dcur === state.cur));
+  $('#sheet-bg').classList.add('show');
+  $('#cur-sheet').classList.add('open');
+}
+function closeCurSheet() {
+  sheetOpen = false;
+  $('#sheet-bg').classList.remove('show');
+  $('#cur-sheet').classList.remove('open');
+}
+function setDisplayCur(cur) {
+  $$('#cur-sheet [data-dcur]').forEach((b) => b.classList.toggle('on', b.dataset.dcur === cur));
+  state.cur = cur;
+  marketCur = cur;
+  renderBalances(); renderKriptoList(); renderAssets(); renderMarket();
+  setTimeout(closeCurSheet, 180);
+}
+
 /* ================= Bildirim ================= */
 let toastT;
 function toast(msg) {
@@ -602,6 +627,8 @@ function setupEvents() {
     if (b.id === 'coin-fav') { favs.has(cd.k) ? favs.delete(cd.k) : favs.add(cd.k); b.classList.toggle('on', favs.has(cd.k)); return toast(favs.has(cd.k) ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı'); }
     if (b.hasAttribute('data-back')) return back();
     if (b.dataset.popto) return popTo(b.dataset.popto);
+    if (b.hasAttribute('data-cursheet')) return openCurSheet();
+    if (b.dataset.dcur) return setDisplayCur(b.dataset.dcur);
     if (b.hasAttribute('data-soon')) return toast('Bu özellik demoda yer almıyor');
     if (b.dataset.toast) return toast(b.dataset.toast);
     if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; return renderBalances(); }
@@ -610,6 +637,7 @@ function setupEvents() {
   });
 
   $('#amount-field').addEventListener('click', openKeypad);
+  $('#sheet-bg').addEventListener('click', closeCurSheet);
   $('#kp-done').addEventListener('click', closeKeypad);
   $('#gonder-scroll').addEventListener('click', (e) => { if (keypadOpen && !e.target.closest('#amount-field')) closeKeypad(); });
   $('#devam').addEventListener('click', () => { state.last = null; push('ozet'); });
