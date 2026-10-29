@@ -133,7 +133,7 @@ function coinRow(c, cur, pair) {
 }
 
 function renderKriptoList() {
-  $('#kripto-list').innerHTML = COINS.map((c) => coinRow(c, state.cur)).join('');
+  $('#kripto-list').innerHTML = COINS.slice(0, 6).map((c) => coinRow(c, state.cur)).join('');
 }
 
 let marketCur = 'TL';
@@ -168,6 +168,28 @@ const COIN_INFO = {
   sol: { name: 'Solana', rank: 6, circ: 552e6, total: 610e6, max: null, dom: 2.38, ath: [293.31, '19.01.2025'], atl: [0.50, '11.05.2020'] },
   usdc: { name: 'USD Coin', rank: 7, circ: 76.2e9, total: 76.2e9, max: null, dom: 2.12, ath: [1.17, '28.05.2019'], atl: [0.88, '11.03.2023'] },
   uni: { name: 'Uniswap', rank: 30, circ: 630e6, total: 1e9, max: 1e9, dom: 0.18, ath: [44.97, '03.05.2021'], atl: [1.03, '17.09.2020'] },
+  usdt: { name: 'Tether', rank: 3, circ: 185e9, total: 185e9, max: null, dom: 4.91, ath: [1.32, '24.07.2018'], atl: [0.5683, '02.03.2015'] },
+  ada: { name: 'Cardano', rank: 12, circ: 36.5e9, total: 45e9, max: 45e9, dom: 0.20, ath: [3.10, '02.09.2021'], atl: [0.0192, '01.10.2017'] },
+  doge: { name: 'Dogecoin', rank: 9, circ: 151e9, total: 151e9, max: null, dom: 0.82, ath: [0.7376, '08.05.2021'], atl: [0.000087, '06.05.2015'] },
+  ltc: { name: 'Litecoin', rank: 22, circ: 76.5e6, total: 84e6, max: 84e6, dom: 0.12, ath: [410.26, '10.05.2021'], atl: [1.11, '14.01.2015'] },
+  ondo: { name: 'Ondo', rank: 45, circ: 3.16e9, total: 10e9, max: 10e9, dom: 0.04, ath: [2.14, '03.12.2024'], atl: [0.0838, '18.01.2024'] },
+  avax: { name: 'Avalanche', rank: 25, circ: 425e6, total: 460e6, max: 720e6, dom: 0.10, ath: [144.96, '21.11.2021'], atl: [2.80, '31.12.2020'] },
+  grt: { name: 'The Graph', rank: 120, circ: 10.7e9, total: 10.8e9, max: null, dom: 0.01, ath: [2.84, '12.02.2021'], atl: [0.0201, '14.10.2026'] },
+  aave: { name: 'Aave', rank: 35, circ: 15.2e6, total: 16e6, max: 16e6, dom: 0.05, ath: [661.69, '18.05.2021'], atl: [26.02, '05.11.2020'] },
+  ena: { name: 'Ethena', rank: 50, circ: 7.5e9, total: 15e9, max: 15e9, dom: 0.04, ath: [1.52, '11.04.2024'], atl: [0.1950, '10.10.2025'] },
+  ldo: { name: 'Lido DAO', rank: 90, circ: 900e6, total: 1e9, max: 1e9, dom: 0.01, ath: [7.30, '20.08.2021'], atl: [0.3300, '10.10.2026'] },
+  dot: { name: 'Polkadot', rank: 40, circ: 1.65e9, total: 1.65e9, max: null, dom: 0.04, ath: [55.00, '04.11.2021'], atl: [0.9300, '15.10.2026'] },
+  link: { name: 'Chainlink', rank: 15, circ: 700e6, total: 1e9, max: 1e9, dom: 0.21, ath: [52.70, '10.05.2021'], atl: [0.1263, '23.09.2017'] },
+  pendle: { name: 'Pendle', rank: 110, circ: 170e6, total: 280e6, max: null, dom: 0.01, ath: [7.52, '11.04.2024'], atl: [0.0334, '05.11.2022'] },
+  chz: { name: 'Chiliz', rank: 150, circ: 10.1e9, total: 10.1e9, max: null, dom: 0.01, ath: [0.8915, '13.03.2021'], atl: [0.0039, '13.03.2020'] },
+  sand: { name: 'The Sandbox', rank: 160, circ: 2.6e9, total: 3e9, max: 3e9, dom: 0.01, ath: [8.40, '25.11.2021'], atl: [0.0279, '05.11.2020'] },
+  mana: { name: 'Decentraland', rank: 140, circ: 1.97e9, total: 2.19e9, max: 2.19e9, dom: 0.01, ath: [5.85, '25.11.2021'], atl: [0.0079, '28.10.2017'] },
+  pol: { name: 'Polygon', rank: 80, circ: 10.5e9, total: 10.5e9, max: null, dom: 0.03, ath: [1.29, '13.03.2024'], atl: [0.0850, '10.10.2026'] },
+  zro: { name: 'LayerZero', rank: 100, circ: 300e6, total: 1e9, max: 1e9, dom: 0.01, ath: [7.53, '03.12.2024'], atl: [1.25, '10.10.2025'] },
+  virtual: { name: 'Virtuals', rank: 95, circ: 656e6, total: 1e9, max: 1e9, dom: 0.01, ath: [5.25, '02.01.2025'], atl: [0.0074, '17.12.2023'] },
+  inj: { name: 'Injective', rank: 85, circ: 100e6, total: 100e6, max: 100e6, dom: 0.02, ath: [52.75, '14.03.2024'], atl: [0.6572, '03.11.2020'] },
+  ens: { name: 'Ethereum Name Service', rank: 130, circ: 37e6, total: 100e6, max: 100e6, dom: 0.01, ath: [85.69, '11.11.2021'], atl: [4.86, '10.10.2025'] },
+  qnt: { name: 'Quant', rank: 75, circ: 14.5e6, total: 14.6e6, max: 14.6e6, dom: 0.01, ath: [427.42, '11.09.2021'], atl: [0.1636, '23.08.2018'] },
 };
 const RANGES = {
   '1S': { n: 60, vol: 0.0009, step: 60e3 },
@@ -191,7 +213,7 @@ function priceIn(k, cur) {
   const c = COINS.find((x) => x.k === k);
   return cur === 'USD' ? c.tl / USD_RATE : c.tl;
 }
-function fmtPrice(v) { return fmt(v, v < 1 ? 4 : 2); }
+function fmtPrice(v) { return fmt(v, v < 1 ? 4 : v < 20 ? 3 : 2); }
 function dateTime(d, withSec) {
   const p = (x) => String(x).padStart(2, '0');
   return `${d.getDate()} ${TR_MONTHS[d.getMonth()]} ${d.getFullYear()}, ${p(d.getHours())}:${p(d.getMinutes())}${withSec ? ':' + p(d.getSeconds()) : ''}`;

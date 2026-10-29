@@ -16,7 +16,7 @@ let kTab = 'up';
 const km = { quote: 'TL', pm: 'ask', sort: null, dir: 1 };
 // Arama geçmişi (çift: kripto + kotasyon)
 let recents = [{ k: 'btc', q: 'TL' }, { k: 'usdc', q: 'USD' }, { k: 'eth', q: 'TL' }];
-const POPULAR = ['btc', 'eth', 'xrp', 'sol'];
+const POPULAR = ['btc', 'eth', 'sol', 'doge', 'link', 'avax'];
 
 const inCur = (nTL, cur = state.cur) => (cur === 'USD' ? nTL / USD_RATE : nTL);
 const cashTL = () => state.nakit + state.nakitUsd * USD_RATE;

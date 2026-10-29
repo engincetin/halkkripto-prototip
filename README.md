@@ -7,7 +7,7 @@ Açılış → Ana Sayfa → **Kripto İşlemleri**
 - Kripto’ya Para Gönder → Tutar (klavye) → Devam → İşlem Özeti → Onayla → İşlem Sonuç → Dekont
   - Gönderen hesaptaki turuncu oka dokununca alttan açılan menüden Vadesiz TL / Vadesiz USD hesabı seçilir; USD hesabından dolar gönderilebilir
 - Kripto Varlıklarım
-- Kripto Piyasaları (Tümünü Gör / büyüteç) – arama ve TL / USD / Tümü filtresi çalışır
+- Kripto Piyasaları (Tümünü Gör / büyüteç) – 28 kripto; arama ve TL / USD / Tümü filtresi çalışır (Kripto İşlemleri ekranında ilk 6 gösterilir)
 - Halk Kripto kartındaki TL düğmesi: alttan açılan menüden TL / USD seçimi; bakiye, kar/zarar, piyasa ve varlık tutarları seçilen para biriminde
 - Herhangi bir kriptoya dokununca detay ekranı: fiyat, grafik (1S–1Y, parmakla fiyat okuma), fiyat aralığı, piyasa bilgileri, Durumum sekmesi, Al/Sat
 
