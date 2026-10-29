@@ -39,13 +39,18 @@ const COINS = [
 // v: varlığın güncel TL değeri, pct: alış maliyetine göre kar/zarar oranı (%), dq: miktar ondalığı.
 // Toplam değer Halk Kripto hesabındaki "Kripto Varlıklarım" (70.150 TL) ile aynıdır.
 // Miktar = değer / güncel fiyat, kar/zarar = değer - maliyet olarak hesaplanır.
-const ASSETS = [
+// Halk Kripto, Halkbank içinde (iframe) açıldığında aynı listeyi kullanır: alım/satım iki uygulamada da görünür
+const ASSETS = (() => {
+  try { if (window.parent !== window && window.parent.hkAssets) return window.parent.hkAssets; } catch (e) { /* farklı köken */ }
+  return [
   { k: 'btc', n: 'Bitcoin', c: 'BTC', v: 24552.50, pct: 14.2, dq: 8 },
   { k: 'eth', n: 'Ethereum', c: 'ETH', v: 15433.00, pct: 6.8, dq: 5 },
   { k: 'sol', n: 'Solana', c: 'SOL', v: 10522.50, pct: -3.4, dq: 4 },
   { k: 'xrp', n: 'Ripple', c: 'XRP', v: 9821.00, pct: 22.5, dq: 2 },
   { k: 'usdc', n: 'USD Coin', c: 'USDC', v: 9821.00, pct: 0, dq: 2 },
 ];
+})();
+window.hkAssets = ASSETS;
 function assetCalc(a) {
   const price = COINS.find((x) => x.k === a.k).tl;
   const pl = a.v - a.v / (1 + a.pct / 100);

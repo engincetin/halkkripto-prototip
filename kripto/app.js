@@ -139,8 +139,8 @@ function pickPair(pair) {
   const [k, q] = pair.split('/');
   recents = [{ k, q }, ...recents.filter((r) => !(r.k === k && r.q === q))].slice(0, 5);
   renderSearch();
-  const c = COINS.find((x) => x.k === k);
-  toast(`${c.c}/${q} Al/Sat ekranı sıradaki adımda tasarlanacak`);
+  popScreen();
+  openTrade(k, q, 'buy');
 }
 
 /* ---------- Varlıklarım ---------- */
@@ -220,8 +220,8 @@ function renderAssets() {
           ${a.v ? `<div class="plr"><em>Kar/Zarar</em><span class="${chClass(a.pct)}">%${fmt(Math.abs(a.pct))}</span></div>` : ''}
         </div>
         <div class="coin-val"><b class="amt">${calc.qty}</b><b class="amt ka-eq">≈ ${fmt(inCur(a.v))} ${cur}</b>${a.v ? `<span class="${chClass(a.pct)} amt">${signed(inCur(calc.pl))} ${cur}</span>` : ''}</div>
-        <svg class="ka-go" width="7" height="12"><use href="#i-chev-right"/></svg>
-      </div>`;
+      </div>
+      <div class="ka-trade"><button class="press" data-ktrade="${a.k}/${cur}/buy">Al</button><button class="press${a.v ? '' : ' off'}" data-ktrade="${a.k}/${cur}/sell"${a.v ? '' : ' disabled'}>Sat</button></div>`;
     }).join('') || '<div class="k-empty">Sonuç bulunamadı</div>'}</div>`;
 
   $('#ka-zero').classList.toggle('on', ka.hideZero);
@@ -280,11 +280,12 @@ function buildTx() {
   (state.moves || []).filter((m) => m.ts && m.t === 'Halk Kripto Transferi').forEach((m) => {
     list.push({ t: 'dep', k: m.cur === 'USD' ? 'usd' : 'try', q: -m.a, total: -m.a, fee: 0, st: 'done', ts: m.ts, id: `HK${m.ref}`, live: true });
   });
+  (state.ktx || []).forEach((x) => list.push({ ...x }));
   return list.sort((a, b) => b.ts - a.ts);
 }
 const assetCode = (k) => (k === 'try' ? 'TL' : k === 'usd' ? 'USD' : COINS.find((c) => c.k === k).c);
 const assetName = (k) => (k === 'try' ? 'Türk Lirası' : k === 'usd' ? 'Amerikan Doları' : nameOf(COINS.find((c) => c.k === k)));
-const qtyText = (x) => (x.k === 'try' || x.k === 'usd' ? fmt(x.q) : fmt(x.q, x.q < 1 ? 4 : x.q < 100 ? 2 : 0)) + ' ' + assetCode(x.k);
+const qtyText = (x) => (x.k === 'try' || x.k === 'usd' ? fmt(x.q) : fmt(x.q, x.q < 1 ? 6 : x.q < 10000 ? 2 : 0)) + ' ' + assetCode(x.k);
 function txTitle(x) {
   if (x.t === 'dep' || x.t === 'wd') return `${assetCode(x.k)} ${TX_TYPE[x.t].n}`;
   return `${assetCode(x.k)} ${TX_TYPE[x.t].n}`;
@@ -430,12 +431,243 @@ function renderProfile() {
   $('#kp-close-txt').innerHTML = `Hesabınızı kapatmadan önce kripto varlıklarınızı satmanız ve nakit bakiyenizi Halkbank hesabınıza aktarmanız gerekir. Güncel toplam varlığınız: <b>${fmt(inCur(total))} ${state.cur}</b>`;
 }
 
+/* ---------- Kripto Al/Sat (Halkbank döviz alış/satış akışıyla aynı) ---------- */
+// Piyasa emri; komisyon %0,20. Alışta en iyi satış fiyatı, satışta en iyi alış fiyatı kullanılır.
+const FEE = 0.002;
+const tr = { k: 'btc', cur: 'TL', side: 'buy', qty: 0, amt: 0, drift: 1, upd: new Date() };
+const coinOf = (k) => COINS.find((c) => c.k === k);
+const holding = (k) => ASSETS.find((a) => a.k === k && a.v > 0.005);
+const qtyDec = (c) => (c.tl >= 100000 ? 8 : c.tl >= 1000 ? 6 : c.tl >= 10 ? 4 : 2);
+const cashOf = (cur) => (cur === 'USD' ? state.nakitUsd : state.nakit);
+const priceDec = (p) => (p < 1 ? 4 : p < 20 ? 3 : 2);
+function tradePrice() { return priceOf(coinOf(tr.k), tr.cur, tr.side === 'buy' ? 'ask' : 'bid') * tr.drift; }
+function holdQty(k) { const a = holding(k); return a ? a.v / coinOf(k).tl : 0; }
+function parseNum(v) {
+  v = String(v).trim();
+  if (!v) return 0;
+  v = v.includes(',') ? v.replace(/\./g, '').replace(',', '.') : v;
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : 0;
+}
+const timeStr = (d) => d.toTimeString().slice(0, 8);
+
+function openTrade(k = 'btc', cur = state.cur, side = 'buy') {
+  Object.assign(tr, { k, cur: cur === 'USD' ? 'USD' : 'TL', side: side === 'sell' && holding(k) ? 'sell' : 'buy', qty: 0, amt: 0, drift: 1, upd: new Date() });
+  if (side === 'sell' && !holding(k)) toast(`${coinOf(k).c} varlığınız bulunmuyor, Alış ekranı açıldı`);
+  $('#kt-qty').value = ''; $('#kt-amt').value = '';
+  renderTrade();
+  if (!stack.includes('k-trade')) pushScreen('k-trade');
+}
+
+function acctCard(cur, attrs) {
+  const bal = cashOf(cur);
+  return `
+    <button class="card kt-acct press" ${attrs}>
+      ${coinIcon(cur === 'USD' ? 'usd' : 'try')}
+      <span class="kt-acct-txt"><b>Halk Kripto ${cur} Hesabı</b><small>Nakit Varlık</small></span>
+      <span class="kt-acct-bal"><small>Kullanılabilir Bakiye</small><b class="amt">${money(bal, cur)}</b></span>
+      <svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg>
+    </button>`;
+}
+function assetCard(k, sell) {
+  const c = coinOf(k), q = holdQty(k);
+  if (!q) {
+    return `<div class="card kt-note"><span class="kt-note-ic"><svg width="22" height="22"><use href="#i-info"/></svg></span><span><b>${c.c} Varlığı</b><small>${c.c} varlığınız işlem sonunda oluşturulacaktır.</small></span></div>`;
+  }
+  return `
+    <div class="card kt-acct">
+      ${coinIcon(k)}
+      <span class="kt-acct-txt"><b>${c.c} Varlığım</b><small>${nameOf(c)}</small></span>
+      <span class="kt-acct-bal"><small>${sell ? 'Satılabilir Miktar' : 'Mevcut Miktar'}</small><b class="amt">${fmt(q, qtyDec(c))} ${c.c}</b><em class="amt">≈ ${fmt(inCur(q * c.tl, tr.cur))} ${tr.cur}</em></span>
+    </div>`;
+}
+
+function renderTrade() {
+  const c = coinOf(tr.k), buy = tr.side === 'buy', p = tradePrice();
+  $$('#kt-seg [data-kside]').forEach((b) => b.classList.toggle('on', b.dataset.kside === tr.side));
+  $('#kt-pick').innerHTML = `${coinIcon(tr.k)}<span><small>Kripto Tipi</small><b>${nameOf(c)} <em>${c.c}</em></b></span><svg width="14" height="8"><use href="#i-chev-down"/></svg>`;
+  $('#kt-price').innerHTML = `
+    <div><b>${c.c}/${tr.cur} ${buy ? 'Alış' : 'Satış'} Fiyatı</b><small>Son güncelleme: ${timeStr(tr.upd)}</small></div>
+    <div class="kt-pr"><b>${fmt(p, priceDec(p))} ${tr.cur}</b><small class="${chClass(c.ch)}">%${fmt(Math.abs(c.ch))}${c.ch ? '<i class="k-arrow"></i>' : ''}</small></div>`;
+  $('#kt-t1').textContent = buy ? 'PARANIN ÇEKİLECEĞİ HESAP' : 'KRİPTONUN ÇEKİLECEĞİ VARLIK';
+  $('#kt-t2').textContent = buy ? 'KRİPTONUN AKTARILACAĞI VARLIK' : 'PARANIN AKTARILACAĞI HESAP';
+  $('#kt-t3').textContent = buy ? 'ALIŞ BİLGİLERİ' : 'SATIŞ BİLGİLERİ';
+  $('#kt-from').innerHTML = buy ? acctCard(tr.cur, 'data-ksheet="acct-sheet"') : assetCard(tr.k, true);
+  $('#kt-to').innerHTML = buy ? assetCard(tr.k, false) : acctCard(tr.cur, 'data-ksheet="acct-sheet"');
+  $('#kt-qty-u').textContent = c.c; $('#kt-amt-u').textContent = tr.cur;
+  $('#kt-go').textContent = buy ? 'Al' : 'Sat';
+  $('#kt-go').classList.toggle('kt-sell', !buy);
+  renderCalc();
+}
+function tradeTotals() {
+  const fee = tr.amt * FEE;
+  const total = tr.side === 'buy' ? tr.amt + fee : tr.amt - fee;
+  return { fee, total };
+}
+function tradeError() {
+  if (!tr.amt) return '';
+  const c = coinOf(tr.k);
+  const minTL = 10, min = tr.cur === 'USD' ? minTL / USD_RATE : minTL;
+  if (tr.amt < min) return `En düşük işlem tutarı ${fmt(min)} ${tr.cur}`;
+  if (tr.side === 'buy' && tradeTotals().total > cashOf(tr.cur) + 1e-9) return `Yetersiz bakiye. Kullanılabilir: ${fmt(cashOf(tr.cur))} ${tr.cur}`;
+  if (tr.side === 'sell' && tr.qty > holdQty(tr.k) * 1.000001) return `Yetersiz varlık. Satılabilir: ${fmt(holdQty(tr.k), qtyDec(c))} ${c.c}`;
+  return '';
+}
+function renderCalc() {
+  const { fee, total } = tradeTotals(), err = tradeError(), cur = tr.cur;
+  $('#kt-calc').innerHTML = tr.amt ? `
+    <div class="info-row"><span>Komisyon <small>%0,20</small></span><b>${fmt(fee)} ${cur}</b></div>
+    <div class="info-row"><span>${tr.side === 'buy' ? 'Toplam Ödenecek' : 'Hesaba Geçecek'}</span><b>${fmt(total)} ${cur}</b></div>
+    ${err ? `<div class="kt-err">${err}</div>` : ''}` : '<div class="kt-hint">Almak ya da satmak istediğiniz miktarı kripto veya para cinsinden girebilirsiniz.</div>';
+  $('#kt-go').disabled = !tr.amt || !!err;
+}
+function onQty() {
+  tr.qty = parseNum($('#kt-qty').value); tr.amt = tr.qty * tradePrice();
+  $('#kt-amt').value = tr.qty ? fmt(tr.amt) : '';
+  renderCalc();
+}
+function onAmt() {
+  const c = coinOf(tr.k);
+  tr.amt = parseNum($('#kt-amt').value); tr.qty = tr.amt / tradePrice();
+  $('#kt-qty').value = tr.amt ? fmt(tr.qty, qtyDec(c)) : '';
+  renderCalc();
+}
+function setPct(pct) {
+  const c = coinOf(tr.k), p = tradePrice();
+  if (tr.side === 'buy') {
+    tr.amt = Math.floor((cashOf(tr.cur) / (1 + FEE)) * pct) / 100;
+    tr.qty = tr.amt / p;
+  } else {
+    const dec = 10 ** qtyDec(c);
+    tr.qty = Math.floor(holdQty(tr.k) * pct / 100 * dec) / dec;
+    tr.amt = tr.qty * p;
+  }
+  $('#kt-qty').value = tr.qty ? fmt(tr.qty, qtyDec(c)) : '';
+  $('#kt-amt').value = tr.amt ? fmt(tr.amt) : '';
+  renderCalc();
+}
+function refreshPrice(quiet) {
+  // Demo: fiyat her yenilemede çok küçük oynar
+  tr.drift = 1 + (Math.random() - 0.5) * 0.0012;
+  tr.upd = new Date();
+  if (tr.qty) tr.amt = tr.qty * tradePrice();
+  if ($('#kt-amt').value) $('#kt-amt').value = fmt(tr.amt);
+  renderTrade();
+  if (!quiet) toast('Fiyatlar güncellendi');
+}
+
+// Coin seçimi: satışta yalnızca sahip olunan kriptolar
+function renderCoinSheet() {
+  const q = $('#cs-q').value.trim().toLocaleLowerCase('tr-TR');
+  const sell = tr.side === 'sell';
+  $('#cs-title').textContent = sell ? 'Satılacak Kripto' : 'Kripto Tipi Seçimi';
+  const list = COINS.filter((c) => (!sell || holding(c.k)) && (!q || `${nameOf(c)} ${c.c}`.toLocaleLowerCase('tr-TR').includes(q)));
+  $('#cs-list').innerHTML = list.map((c) => {
+    const h = holdQty(c.k);
+    return `
+    <button class="opt press${c.k === tr.k ? ' on' : ''}" data-kcoin="${c.k}">
+      <i class="radio"></i>${coinIcon(c.k)}
+      <span class="lbl2"><b>${c.c}</b><span>${nameOf(c)}</span></span>
+      <span class="cs-r"><b>${priceText(c, tr.cur, sell ? 'bid' : 'ask')}</b>${h ? `<small>${fmt(h, qtyDec(c))} ${c.c}</small>` : ''}</span>
+    </button>`;
+  }).join('') || '<div class="k-empty">Sonuç bulunamadı</div>';
+}
+function renderAcctSheet() {
+  $('#as-title').textContent = tr.side === 'buy' ? 'Paranın Çekileceği Hesap' : 'Paranın Aktarılacağı Hesap';
+  $('#as-list').innerHTML = ['TL', 'USD'].map((cur) => `
+    <button class="opt press${cur === tr.cur ? ' on' : ''}" data-kacct="${cur}">
+      ${coinIcon(cur === 'USD' ? 'usd' : 'try')}
+      <span class="lbl2"><b>Halk Kripto ${cur} Hesabı</b><span class="bal">${money(cashOf(cur), cur)}</span></span><i class="radio"></i>
+    </button>`).join('');
+}
+
+// Özet ekranı: fiyat 20 saniye geçerli, süre dolunca güncel fiyatla yeniden hesaplanır
+let timerT = null, timerLeft = 0;
+function stopTimer() { clearInterval(timerT); timerT = null; }
+function startTimer() {
+  stopTimer(); timerLeft = 20; drawTimer();
+  timerT = setInterval(() => {
+    timerLeft -= 1;
+    if (timerLeft <= 0) { refreshPrice(true); renderSummary(); timerLeft = 20; toast('Fiyat güncellendi'); }
+    drawTimer();
+  }, 1000);
+}
+function drawTimer() {
+  $('#kt-timer').innerHTML = `<i style="--p:${(timerLeft / 20) * 100}%"></i><span>Fiyat <b>${timerLeft} sn</b> geçerlidir</span>`;
+}
+function renderSummary() {
+  const c = coinOf(tr.k), buy = tr.side === 'buy', p = tradePrice(), cur = tr.cur;
+  const { fee, total } = tradeTotals();
+  const has = !!holdQty(tr.k);
+  const row = (a, b) => `<div class="sum-row"><span>${a}</span><b>${b}</b></div>`;
+  $('#kts-title').textContent = buy ? 'ALIŞ BİLGİLERİ' : 'SATIŞ BİLGİLERİ';
+  $('#kts-card').innerHTML = row('İşlem Türü', `Kripto ${buy ? 'Alış' : 'Satış'} (Piyasa Emri)`)
+    + (buy ? row('Paranın Çekileceği Hesap', `Halk Kripto ${cur} Hesabı`) + row('Kriptonun Aktarılacağı Varlık', has ? `${c.c} Varlığım` : 'İşlem sonunda oluşturulacaktır.')
+      : row('Kriptonun Çekileceği Varlık', `${c.c} Varlığım`) + row('Paranın Aktarılacağı Hesap', `Halk Kripto ${cur} Hesabı`))
+    + row(`${c.c} ${buy ? 'Alış' : 'Satış'} Fiyatı`, `${fmt(p, priceDec(p))} ${cur}`)
+    + row(buy ? 'Alınacak Kripto Miktarı' : 'Satılacak Kripto Miktarı', `${fmt(tr.qty, qtyDec(c))} ${c.c}`)
+    + row(`${cur} Karşılığı`, `${fmt(tr.amt)} ${cur}`)
+    + row('Komisyon (%0,20)', `${fmt(fee)} ${cur}`)
+    + row(buy ? 'Toplam İşlem Tutarı' : 'Hesabınıza Geçecek Tutar', `${fmt(total)} ${cur}`);
+}
+function goSummary() {
+  if ($('#kt-go').disabled) return;
+  $$('input').forEach((i) => i.blur());
+  renderSummary();
+  pushScreen('k-tsum');
+  startTimer();
+}
+
+// Onay: bakiyeler, varlıklar, geçmiş ve limitler güncellenir (Halkbank ile ortak veri)
+function confirmTrade() {
+  const btn = $('#kt-confirm');
+  if (btn.dataset.loading) return;
+  btn.dataset.loading = '1'; btn.textContent = 'İşleniyor…';
+  stopTimer();
+  setTimeout(() => {
+    const c = coinOf(tr.k), buy = tr.side === 'buy', cur = tr.cur, p = tradePrice();
+    const { fee, total } = tradeTotals();
+    const valTL = tr.qty * c.tl; // varlığın güncel TL değeri
+    if (buy) {
+      if (cur === 'USD') state.nakitUsd -= total; else state.nakit -= total;
+      const costTL = cur === 'USD' ? total * USD_RATE : total;
+      const a = ASSETS.find((x) => x.k === tr.k);
+      if (a && a.v > 0.005) {
+        const cost = a.v / (1 + a.pct / 100) + costTL;
+        a.v += valTL; a.pct = (a.v / cost - 1) * 100;
+      } else if (a) { a.v = valTL; a.pct = (valTL / costTL - 1) * 100; }
+      else ASSETS.push({ k: c.k, n: nameOf(c), c: c.c, v: valTL, pct: (valTL / costTL - 1) * 100, dq: qtyDec(c) });
+    } else {
+      if (cur === 'USD') state.nakitUsd += total; else state.nakit += total;
+      const a = ASSETS.find((x) => x.k === tr.k);
+      // Tamamına yakını satıldıysa (ondalık yuvarlama artığı) varlık sıfırlanır
+      a.v = tr.qty >= holdQty(tr.k) * 0.9995 ? 0 : Math.max(0, a.v - valTL);
+      if (a.v < 0.005) { a.v = 0; ASSETS.splice(ASSETS.indexOf(a), 1); if (!ZERO.includes(a.k)) ZERO.unshift(a.k); }
+    }
+    state.kripto = ASSETS.reduce((t, a) => t + a.v, 0);
+    const id = `HK${48213907 + Math.floor(Math.random() * 90000) + 1000}`;
+    state.ktx = state.ktx || [];
+    const amtTL = cur === 'USD' ? tr.amt * USD_RATE : tr.amt;
+    state.ktx.push({ t: tr.side, k: tr.k, o: 'Piyasa', q: tr.qty, p: cur === 'USD' ? p * USD_RATE : p, total: amtTL, fee: cur === 'USD' ? fee * USD_RATE : fee, st: 'done', ts: Date.now(), id, cur });
+    LIMITS.d[buy ? 0 : 1][1] += amtTL; LIMITS.m[buy ? 0 : 1][1] += amtTL;
+    tr.lastId = id;
+    $('#ktr-text').innerHTML = buy
+      ? `Halk Kripto ${cur} Hesabınızdan <b>${fmt(total)} ${cur}</b> karşılığında <b>${fmt(tr.qty, qtyDec(c))} ${c.c}</b> alınmıştır.`
+      : `<b>${fmt(tr.qty, qtyDec(c))} ${c.c}</b> satılarak Halk Kripto ${cur} Hesabınıza <b>${fmt(total)} ${cur}</b> aktarılmıştır.`;
+    $('#ktr-ref').textContent = id;
+    renderTotal(); renderList(); renderAssets();
+    pushScreen('k-tres');
+    const ck = $('#kt-check'); ck.classList.remove('pop'); void ck.offsetWidth; ck.classList.add('pop');
+    btn.textContent = 'Onayla'; delete btn.dataset.loading;
+  }, 900);
+}
+
 /* ---------- Ekranlar: alt menü sekmeleri ve üstten açılan ekranlar ---------- */
 let current = 'k-home';
 function tabbarHTML(active) {
   const t = (id, icon, label, w = 24) => `<button class="tab${active === id ? ' on' : ''}" ${id ? `data-ktabgo="${id}"` : 'data-soon'}><svg width="${w}" height="24"><use href="#${icon}"/></svg>${label}</button>`;
   return t('k-home', 't-home', 'Ana Sayfa', 23) + t('k-markets', 't-chart', 'Piyasalar')
-    + '<div class="tab fab-slot"><button class="fab k-fab press" data-soon>Al/Sat<svg width="26" height="22"><use href="#i-transfer"/></svg></button></div>'
+    + '<div class="tab fab-slot"><button class="fab k-fab press" data-ktrade="">Al/Sat<svg width="26" height="22"><use href="#i-transfer"/></svg></button></div>'
     + t('k-assets', 't-pie', 'Varlıklarım') + t('k-profile', 't-user', 'Profil');
 }
 function showTab(id) {
@@ -447,21 +679,28 @@ function showTab(id) {
   if (id === 'k-assets') renderAssets();
   if (id === 'k-profile') renderProfile();
 }
+const stack = []; // üst üste açılan ekranlar (Al/Sat → Özet → Sonuç)
 function pushScreen(id) {
   if (id === 'k-search') { $('#ks-q').value = ''; renderSearch(); }
   if (id === 'k-history') { $('#kh-q').value = ''; renderHistory(); }
   if (id === 'k-limits') renderLimits();
   const s = $(`#${id}`);
+  if (stack.includes(id)) return;
+  stack.push(id);
+  s.style.zIndex = 19 + stack.length;
   s.classList.add('active');
   requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add('open')));
 }
 function popScreen() {
-  const s = $('.k-push.open');
-  if (!s) return;
-  $('#ks-q').blur(); $('#kh-q').blur();
+  const id = stack.pop();
+  if (!id) return;
+  const s = $(`#${id}`);
+  $$('input').forEach((i) => i.blur());
+  if (id === 'k-tsum') stopTimer();
   s.classList.remove('open');
   setTimeout(() => s.classList.remove('active'), 360);
 }
+function popAll() { while (stack.length) popScreen(); }
 
 /* ---------- Alttan açılan menüler ---------- */
 function openSheet(id = 'cur-sheet') {
@@ -484,6 +723,7 @@ function logout() {
   sp.classList.add('active');
   requestAnimationFrame(() => sp.classList.remove('gone'));
   setTimeout(() => {
+    stack.length = 0; stopTimer();
     $$('.k-push.open').forEach((x) => x.classList.remove('open', 'active'));
     $(`#${current}`).classList.remove('active');
     current = 'k-home';
@@ -534,6 +774,10 @@ function init() {
   $('#ks-q').addEventListener('input', renderSearch);
   $('#ka-q').addEventListener('input', renderAssets);
   $('#kh-q').addEventListener('input', renderHistory);
+  $('#kt-qty').addEventListener('input', onQty);
+  $('#kt-amt').addEventListener('input', onAmt);
+  $('#cs-q').addEventListener('input', renderCoinSheet);
+  ['#kt-qty', '#kt-amt', '#cs-q'].forEach((q) => $(q).addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); }));
   $('#kh-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
   $('#ka-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
   $('#ks-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
@@ -545,7 +789,19 @@ function init() {
     if (b.dataset.ktabgo) return showTab(b.dataset.ktabgo);
     if (b.dataset.kpush) return pushScreen(b.dataset.kpush);
     if (b.hasAttribute('data-kpop')) return popScreen();
-    if (b.dataset.ksheet) { if (b.dataset.ksheet === 'hf-sheet') { hfDraft = { ...kh }; renderHfSheet(); } return openSheet(b.dataset.ksheet); }
+    if (b.hasAttribute('data-kpopall')) return popAll();
+    if (b.dataset.ktrade !== undefined) { const [k, q, sd] = (b.dataset.ktrade || 'btc').split('/'); closeSheet(); return openTrade(k, q || state.cur, sd || 'buy'); }
+    if (b.dataset.kside) { if (b.dataset.kside === 'sell' && !holding(tr.k)) { const h = ASSETS.find((a) => a.v > 0.005); if (!h) return toast('Satılabilir kripto varlığınız yok'); toast(`${coinOf(tr.k).c} varlığınız yok, ${h.c} seçildi`); tr.k = h.k; } tr.side = b.dataset.kside; tr.qty = tr.amt = 0; $('#kt-qty').value = ''; $('#kt-amt').value = ''; return renderTrade(); }
+    if (b.hasAttribute('data-krefresh')) return refreshPrice();
+    if (b.dataset.kpct) return setPct(+b.dataset.kpct);
+    if (b.id === 'kt-go') return goSummary();
+    if (b.id === 'kt-confirm') return confirmTrade();
+    if (b.dataset.kcoin) { tr.k = b.dataset.kcoin; tr.qty = tr.amt = 0; $('#kt-qty').value = ''; $('#kt-amt').value = ''; renderTrade(); return setTimeout(closeSheet, 150); }
+    if (b.dataset.kacct) { tr.cur = b.dataset.kacct; tr.qty = tr.amt = 0; $('#kt-qty').value = ''; $('#kt-amt').value = ''; renderTrade(); return setTimeout(closeSheet, 150); }
+    if (b.id === 'ktr-dekont') return openTx(tr.lastId);
+    if (b.id === 'ktr-assets') { popAll(); return showTab('k-assets'); }
+    if (b.id === 'ktr-new') { popScreen(); popScreen(); tr.qty = tr.amt = 0; $('#kt-qty').value = ''; $('#kt-amt').value = ''; return renderTrade(); }
+    if (b.dataset.ksheet) { if (b.dataset.ksheet === 'hf-sheet') { hfDraft = { ...kh }; renderHfSheet(); } if (b.dataset.ksheet === 'coin-sheet') { $('#cs-q').value = ''; renderCoinSheet(); } if (b.dataset.ksheet === 'acct-sheet') renderAcctSheet(); return openSheet(b.dataset.ksheet); }
     if (b.dataset.kpsw) { b.classList.toggle('on'); b.setAttribute('aria-checked', b.classList.contains('on')); return; }
     if (b.dataset.kplim) { limTab = b.dataset.kplim; return renderLimits(); }
     if (b.dataset.klang) { if (b.dataset.klang === 'en') return toast('İngilizce dil seçeneği demoda yer almıyor'); return closeSheet(); }
@@ -567,7 +823,7 @@ function init() {
     if (b.dataset.kpm) { km.pm = b.dataset.kpm; renderMarkets(); return setTimeout(closeSheet, 180); }
     if (b.id === 'ks-clear') { recents = []; return renderSearch(); }
     if (b.dataset.kpick) return pickPair(b.dataset.kpick);
-    if (b.dataset.kpair) { closeSheet(); const [k, q] = b.dataset.kpair.split('/'); return toast(`${COINS.find((x) => x.k === k).c}/${q} Al/Sat ekranı sıradaki adımda tasarlanacak`); }
+    if (b.dataset.kpair) { closeSheet(); const [k, q] = b.dataset.kpair.split('/'); return openTrade(k, q, 'buy'); }
     if (b.id === 'k-promo-x') return $('#k-promo').classList.add('gone');
     if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; renderTotal(); return renderAssets(); }
     if (b.hasAttribute('data-cursheet')) return openSheet();
@@ -594,6 +850,13 @@ function init() {
     $('#k-home').classList.add('active');
     $('#k-splash').classList.add('gone');
     setTimeout(() => $('#k-splash').classList.remove('active'), 600);
+    // Halkbank'taki Al/Sat düğmesinden gelindiyse (#pair=BTC/TL&side=Al) Al/Sat ekranı doğrudan açılır
+    const h = new URLSearchParams(location.hash.slice(1));
+    if (h.get('pair')) {
+      const [code, q] = h.get('pair').split('/');
+      const c = COINS.find((x) => x.c === code);
+      if (c) setTimeout(() => openTrade(c.k, q, h.get('side') === 'Sat' ? 'sell' : 'buy'), 250);
+    }
   }, 1400);
 }
 init();

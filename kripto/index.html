@@ -94,6 +94,7 @@
     <symbol id="k-power" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.6 6.2a8 8 0 1 0 10.8 0"/></g></symbol>
     <symbol id="k-pen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M15.5 4.5l4 4L8.5 19.5 3.5 20.5l1-5z"/><path d="M13 7l4 4"/></g></symbol>
     <symbol id="k-mega" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 10v4h3l8 5V5l-8 5z"/><path d="M6.5 14l1.5 5h2.5"/><path d="M18 9.5a3.5 3.5 0 0 1 0 5"/></g></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 8.5A8 8 0 0 0 5 7.2M4.5 15.5A8 8 0 0 0 19 16.8"/><path d="M5 3v4.4h4.4M19 21v-4.4h-4.4"/></g></symbol>
     <symbol id="k-deposit" viewBox="0 0 24 24"><path d="M18 6 6.5 17.5M6 9v9h9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-withdraw" viewBox="0 0 24 24"><path d="M6 18 17.5 6.5M9 6h9v9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-orders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5l1.6 1.6L8 4.8"/><path d="M11 6.5h10M3 12h18M3 17.5h18"/></g></symbol>
@@ -137,7 +138,7 @@
 
         <!-- Hızlı işlemler: Halkbank Kripto İşlemleri kutucuklarıyla aynı ölçü (ikon solda, yazı yanında); ikonlar eşit boyda -->
         <div class="kops k-kops">
-          <button class="kop press" data-soon><span class="ki"><svg width="16" height="16" viewBox="0 0 24 22"><use href="#i-transfer"/></svg></span>Al/Sat</button>
+          <button class="kop press" data-ktrade=""><span class="ki"><svg width="16" height="16" viewBox="0 0 24 22"><use href="#i-transfer"/></svg></span>Al/Sat</button>
           <button class="kop press" data-soon><span class="ki"><svg width="16" height="16"><use href="#k-deposit"/></svg></span>Yatır</button>
           <button class="kop press" data-soon><span class="ki"><svg width="16" height="16"><use href="#k-withdraw"/></svg></span>Çek</button>
         </div>
@@ -206,7 +207,7 @@
         <div class="card kcard k-total bal" id="ka-total"></div>
 
         <div class="kops k-kops k-kops4">
-          <button class="kop press" data-soon><span class="ki"><svg width="16" height="16" viewBox="0 0 24 22"><use href="#i-transfer"/></svg></span>Al/Sat</button>
+          <button class="kop press" data-ktrade=""><span class="ki"><svg width="16" height="16" viewBox="0 0 24 22"><use href="#i-transfer"/></svg></span>Al/Sat</button>
           <button class="kop press" data-soon><span class="ki"><svg width="16" height="16"><use href="#k-deposit"/></svg></span>Yatır</button>
           <button class="kop press" data-soon><span class="ki"><svg width="16" height="16"><use href="#k-withdraw"/></svg></span>Çek</button>
           <button class="kop press" data-kpush="k-history"><span class="ki"><svg width="16" height="16"><use href="#k-hist"/></svg></span>Geçmiş</button>
@@ -372,6 +373,66 @@
     </div>
   </section>
 
+  <!-- ===================== KRİPTO AL/SAT (Halkbank döviz alış/satış akışı) ===================== -->
+  <section class="screen k-push" id="k-trade">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>Kripto Al/Sat</h1>
+      <button class="hbtn right press" data-krefresh aria-label="Fiyatı yenile"><svg width="24" height="24"><use href="#i-refresh"/></svg></button>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="seg kt-seg" id="kt-seg"><button data-kside="buy" class="on">Alış</button><button data-kside="sell">Satış</button></div>
+      <button class="kt-pick press" data-ksheet="coin-sheet" id="kt-pick"></button>
+      <div class="card kt-price" id="kt-price"></div>
+      <div class="section-title" id="kt-t1"></div>
+      <div id="kt-from"></div>
+      <div class="section-title" id="kt-t2"></div>
+      <div id="kt-to"></div>
+      <div class="section-title" id="kt-t3"></div>
+      <div class="kt-inputs">
+        <label class="kt-in"><input id="kt-qty" inputmode="decimal" autocomplete="off" placeholder="Miktar"><span id="kt-qty-u">BTC</span></label>
+        <label class="kt-in"><input id="kt-amt" inputmode="decimal" autocomplete="off" placeholder="Tutar"><span id="kt-amt-u">TL</span></label>
+      </div>
+      <div class="kt-pcts" id="kt-pcts"><button class="press" data-kpct="25">%25</button><button class="press" data-kpct="50">%50</button><button class="press" data-kpct="75">%75</button><button class="press" data-kpct="100">Tümü</button></div>
+      <div class="kt-calc" id="kt-calc"></div>
+      <div style="height:calc(var(--sab) + 110px)"></div>
+    </div>
+    <div class="bottom-btns"><button class="btn-primary press" id="kt-go" disabled>Al</button></div>
+  </section>
+
+  <section class="screen k-push" id="k-tsum">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>İşlem Özeti</h1></header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="kt-timer" id="kt-timer"></div>
+      <div class="section-title" id="kts-title">ALIŞ BİLGİLERİ</div>
+      <div class="card sum-card" id="kts-card"></div>
+      <div style="height:calc(var(--sab) + 110px)"></div>
+    </div>
+    <div class="bottom-btns">
+      <button class="btn-secondary press" data-kpop>Vazgeç</button>
+      <button class="btn-primary press" id="kt-confirm">Onayla</button>
+    </div>
+  </section>
+
+  <section class="screen k-push" id="k-tres">
+    <header class="header"><button class="hbtn left press" data-kpopall aria-label="Kapat"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>İşlem Sonuç</h1></header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="card res-card">
+        <div class="check" id="kt-check"><i><svg width="40" height="28"><use href="#i-check"/></svg></i></div>
+        <h2>İşleminiz başarıyla gerçekleşmiştir.</h2>
+        <p id="ktr-text"></p>
+        <p class="ref">İşlem No: <span id="ktr-ref"></span></p>
+        <div class="res-btns">
+          <button class="btn-row press" id="ktr-dekont"><svg width="17" height="19" style="color:#fff"><use href="#i-receipt"/></svg>Dekont Görüntüle</button>
+          <button class="btn-row press" id="ktr-assets"><svg width="20" height="20"><use href="#t-pie"/></svg>Varlıklarıma Git</button>
+          <button class="btn-row press" id="ktr-new"><svg width="20" height="17" viewBox="0 0 24 22"><use href="#i-transfer"/></svg>Yeni Al/Sat İşlemi</button>
+        </div>
+      </div>
+      <div style="height:calc(var(--sab) + 40px)"></div>
+    </div>
+  </section>
+
   <!-- ===================== ARAMA ===================== -->
   <section class="screen k-push" id="k-search">
     <header class="header">
@@ -452,6 +513,17 @@
     <div class="grab"></div>
     <div class="kp-dlg"><span class="kp-dlg-ic warn"><svg width="30" height="30"><use href="#i-info"/></svg></span><h3>Kripto hesabınızı kapatmak üzeresiniz</h3><p id="kp-close-txt"></p></div>
     <div class="hf-btns"><button class="btn-secondary press" data-kclose>Vazgeç</button><button class="btn-primary press" data-kclosego>Devam Et</button></div>
+  </div>
+  <div class="sheet kt-sheet" id="coin-sheet" role="dialog" aria-label="Kripto seçimi">
+    <div class="grab"></div>
+    <div class="k-sheet-head"><h3 id="cs-title">Kripto Tipi Seçimi</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <label class="search cs-search"><svg width="20" height="20" style="color:#0576b8"><use href="#i-search"/></svg><input id="cs-q" type="search" placeholder="Kripto arayın" autocomplete="off" autocorrect="off" spellcheck="false"></label>
+    <div class="cs-list" id="cs-list"></div>
+  </div>
+  <div class="sheet" id="acct-sheet" role="dialog" aria-label="Hesap seçimi">
+    <div class="grab"></div>
+    <div class="k-sheet-head"><h3 id="as-title">Hesap Seçimi</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <div id="as-list"></div>
   </div>
 </div>
 <script src="../common.js"></script>
