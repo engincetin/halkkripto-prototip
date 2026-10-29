@@ -91,6 +91,9 @@
     <symbol id="i-plus" viewBox="0 0 10 10"><path d="M5 1.5v7M1.5 5h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-minus" viewBox="0 0 10 10"><path d="M1.5 5h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="k-hist" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.8 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.5 3.8v4.4h4.4"/><path d="M12 7.6V12l3 2"/></g></symbol>
+    <symbol id="k-power" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.6 6.2a8 8 0 1 0 10.8 0"/></g></symbol>
+    <symbol id="k-pen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M15.5 4.5l4 4L8.5 19.5 3.5 20.5l1-5z"/><path d="M13 7l4 4"/></g></symbol>
+    <symbol id="k-mega" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M3.5 10v4h3l8 5V5l-8 5z"/><path d="M6.5 14l1.5 5h2.5"/><path d="M18 9.5a3.5 3.5 0 0 1 0 5"/></g></symbol>
     <symbol id="k-deposit" viewBox="0 0 24 24"><path d="M18 6 6.5 17.5M6 9v9h9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-withdraw" viewBox="0 0 24 24"><path d="M6 18 17.5 6.5M9 6h9v9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-orders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5l1.6 1.6L8 4.8"/><path d="M11 6.5h10M3 12h18M3 17.5h18"/></g></symbol>
@@ -242,6 +245,133 @@
     </div>
   </section>
 
+  <!-- ===================== PROFİL ===================== -->
+  <section class="screen" id="k-profile">
+    <header class="header">
+      <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
+      <h1>Profil ve Ayarlar</h1>
+      <div class="k-hright"><button class="press" data-ksheet="logout-sheet" aria-label="Çıkış"><svg width="24" height="24"><use href="#k-power"/></svg></button></div>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <button class="card kp-me press" data-kpush="k-personal">
+        <span class="avatar kp-av"></span>
+        <span class="kp-me-txt"><b>Deniz Yılmaz</b><small>Müşteri No: 48 215 903</small></span>
+        <svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg>
+      </button>
+
+      <div class="section-title">AYARLAR</div>
+      <div class="list-card kp-list">
+          <button class="kp-row press" data-cursheet><span>Para Birimi</span><span class="kp-val"><em id="kp-cur">TL</em></span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-ksheet="lang-sheet"><span>Dil</span><span class="kp-val">Türkçe</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-kpush="k-notif"><span>İletişim Tercihleri</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-soon><span>Fiyat Alarmları</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-soon><span>Kayıtlı Transfer Adresleri</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-ksheet="theme-sheet"><span>Uygulama Teması</span><span class="kp-val">Açık</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+      </div>
+
+      <button class="card kp-promo press" data-soon>
+        <span class="kp-promo-ic"><svg width="24" height="24"><use href="#k-mega"/></svg></span>
+        <span class="kp-me-txt"><b>Kampanyalar <em>YENİ</em></b><small>Size özel fırsatları keşfedin.</small></span>
+        <svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg>
+      </button>
+
+      <div class="section-title">GÜVENLİK VE GİZLİLİK</div>
+      <div class="list-card kp-list">
+          <button class="kp-row kp-sw press on" data-kpsw="faceid" role="switch" aria-checked="true"><span>Face ID ile Giriş</span><i></i></button>
+          <button class="kp-row press" data-soon><span>Şifre Değiştir</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-soon><span>SIM Kart Değişikliği</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-soon><span>Cihazlar</span><span class="kp-val">1 cihaz</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-kpush="k-limits"><span>İşlem Limitleri</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-soon><span>Sözleşmeler</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+      </div>
+
+      <div class="section-title">BİZE ULAŞIN</div>
+      <div class="list-card kp-list">
+          <button class="kp-row press" data-soon><span>İletişim Formu</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-soon><span>Müşteri İletişim Merkezi</span><span class="kp-val">0850 222 0 400</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-soon><span>Sıkça Sorulan Sorular</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+      </div>
+
+      <div class="section-title">UYGULAMA HAKKINDA</div>
+      <div class="list-card kp-list">
+          <button class="kp-row press" data-soon><span>Halk Kripto’yu Paylaş</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <button class="kp-row press" data-soon><span>Uygulamayı Değerlendir</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
+          <div class="kp-row"><span>Sürüm</span><span class="kp-val">1.0.0</span></div>
+      </div>
+
+      <button class="kp-close press" data-ksheet="close-sheet">Kripto Hesabımı Kapat</button>
+      <div style="height:calc(var(--sab) + 110px)"></div>
+    </div>
+    <nav class="tabbar" data-ktabbar="k-profile"></nav>
+  </section>
+
+  <!-- ===================== KİŞİSEL BİLGİLER ===================== -->
+  <section class="screen k-push" id="k-personal">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>Kişisel Bilgiler</h1></header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="kp-hero"><span class="avatar"></span><b>Deniz Yılmaz</b><small>Müşteri No: 48 215 903</small></div>
+      <div class="list-card kp-fields">
+        <div class="kp-field"><span>Doğum Yeri</span><b>İSTANBUL</b></div>
+        <div class="kp-field"><span>Doğum Tarihi</span><b>14/03/1990</b></div>
+        <div class="kp-field"><span>T.C. Kimlik No</span><b>123******78</b></div>
+      </div>
+      <div class="row-title kp-st"><span class="section-title">İLETİŞİM BİLGİLERİ</span><button class="press kp-edit" data-kedit aria-label="Düzenle"><svg width="20" height="20"><use href="#k-pen"/></svg></button></div>
+      <div class="list-card kp-fields">
+        <div class="kp-field"><span>E-posta</span><b>deniz.yilmaz@ornek.com</b></div>
+        <div class="kp-field"><span>Telefon</span><b>+90 5** *** ** 47</b></div>
+        <div class="kp-field"><span>Adres</span><b>ÖRNEK MAH. DEMO SK. NO:1 D:2<br>ÇANKAYA, ANKARA</b></div>
+      </div>
+      <div class="row-title kp-st"><span class="section-title">MESLEK VE GELİR BİLGİLERİ</span><button class="press kp-edit" data-kedit aria-label="Düzenle"><svg width="20" height="20"><use href="#k-pen"/></svg></button></div>
+      <div class="list-card kp-fields">
+        <div class="kp-field"><span>Meslek</span><b>YAZILIM UZMANI</b></div>
+        <div class="kp-field"><span>Unvan</span><b>ÜCRETLİ ÇALIŞAN</b></div>
+        <div class="kp-field"><span>Gelir Kaynakları</span><b>MAAŞ, KİRA GELİRİ</b></div>
+        <div class="kp-field"><span>Aylık Toplam Gelir</span><b>100.000 TL</b></div>
+      </div>
+      <div class="k-info ka-note"><svg width="20" height="20"><use href="#i-info"/></svg><span>Bilgileriniz Halkbank kayıtlarınızdan gelir. Değişiklikler Halkbank’ta güncellendiğinde burada da görünür.</span></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
+  <!-- ===================== İŞLEM LİMİTLERİ ===================== -->
+  <section class="screen k-push" id="k-limits">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>İşlem Limitleri</h1></header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="kh-types kp-ltabs" id="kp-ltabs"><button class="kh-chip press on" data-kplim="d">Günlük</button><button class="kh-chip press" data-kplim="m">Aylık</button></div>
+      <div id="kp-limits"></div>
+      <div class="k-info ka-note"><svg width="20" height="20"><use href="#i-info"/></svg><span>Limitler her gün 00:00’da yenilenir. Limit artışı için talep oluşturabilirsiniz.</span></div>
+      <div class="kp-btn"><button class="btn-primary press" data-soon>Limit Artırım Talebi</button></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
+  <!-- ===================== İLETİŞİM TERCİHLERİ ===================== -->
+  <section class="screen k-push" id="k-notif">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>İletişim Tercihleri</h1></header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="section-title first">İLETİŞİM KANALLARI</div>
+      <div class="list-card kp-list">
+          <button class="kp-row kp-sw press on" data-kpsw="push" role="switch" aria-checked="true"><span>Anlık Bildirim<small>Uygulama bildirimleri</small></span><i></i></button>
+          <button class="kp-row kp-sw press on" data-kpsw="sms" role="switch" aria-checked="true"><span>SMS<small>+90 5** *** ** 47</small></span><i></i></button>
+          <button class="kp-row kp-sw press" data-kpsw="mail" role="switch" aria-checked="false"><span>E-posta<small>deniz.yilmaz@ornek.com</small></span><i></i></button>
+          <button class="kp-row kp-sw press" data-kpsw="call" role="switch" aria-checked="false"><span>Telefon Araması</span><i></i></button>
+      </div>
+      <div class="section-title">BİLDİRİM KONULARI</div>
+      <div class="list-card kp-list">
+          <button class="kp-row kp-sw press on" data-kpsw="alarm" role="switch" aria-checked="true"><span>Fiyat Alarmları<small>Takip ettiğiniz kriptolar hedef fiyata ulaştığında</small></span><i></i></button>
+          <button class="kp-row kp-sw press on" data-kpsw="order" role="switch" aria-checked="true"><span>Emir Gerçekleşmeleri<small>Alım/satım emirleriniz gerçekleştiğinde</small></span><i></i></button>
+          <button class="kp-row kp-sw press on" data-kpsw="cash" role="switch" aria-checked="true"><span>Para Yatırma ve Çekme</span><i></i></button>
+          <button class="kp-row kp-sw press" data-kpsw="promo" role="switch" aria-checked="false"><span>Kampanya ve Duyurular</span><i></i></button>
+      </div>
+      <div class="k-info ka-note"><svg width="20" height="20"><use href="#i-info"/></svg><span>İşlem güvenliğiniz için şifre ve doğrulama mesajları her durumda gönderilir.</span></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
   <!-- ===================== ARAMA ===================== -->
   <section class="screen k-push" id="k-search">
     <header class="header">
@@ -299,6 +429,29 @@
   <div class="sheet" id="tx-sheet" role="dialog" aria-label="İşlem detayı">
     <div class="grab"></div>
     <div id="tx-body"></div>
+  </div>
+  <div class="sheet" id="lang-sheet" role="dialog" aria-label="Dil">
+    <div class="grab"></div>
+    <div class="k-sheet-head"><h3>Dil</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <button class="opt press" data-klang="tr"><span class="lbl2"><b>Türkçe</b></span><i class="radio"></i></button>
+    <button class="opt press" data-klang="en"><span class="lbl2"><b>English</b></span><i class="radio"></i></button>
+  </div>
+  <div class="sheet" id="theme-sheet" role="dialog" aria-label="Tema">
+    <div class="grab"></div>
+    <div class="k-sheet-head"><h3>Uygulama Teması</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <button class="opt press" data-ktheme="light"><span class="lbl2"><b>Açık</b><span>Halkbank kurumsal renkleri</span></span><i class="radio"></i></button>
+    <button class="opt press" data-ktheme="dark"><span class="lbl2"><b>Koyu</b><span>Göz yormayan karanlık görünüm</span></span><i class="radio"></i></button>
+    <button class="opt press" data-ktheme="auto"><span class="lbl2"><b>Cihaz Ayarları</b><span>iPhone ayarınıza göre otomatik</span></span><i class="radio"></i></button>
+  </div>
+  <div class="sheet" id="logout-sheet" role="dialog" aria-label="Çıkış">
+    <div class="grab"></div>
+    <div class="kp-dlg"><span class="kp-dlg-ic"><svg width="30" height="30"><use href="#k-power"/></svg></span><h3>Çıkış yapmak istiyor musunuz?</h3><p>Tekrar giriş yaptığınızda kaldığınız yerden devam edebilirsiniz.</p></div>
+    <div class="hf-btns"><button class="btn-secondary press" data-kclose>Vazgeç</button><button class="btn-primary press" data-klogout>Çıkış Yap</button></div>
+  </div>
+  <div class="sheet" id="close-sheet" role="dialog" aria-label="Hesap kapatma">
+    <div class="grab"></div>
+    <div class="kp-dlg"><span class="kp-dlg-ic warn"><svg width="30" height="30"><use href="#i-info"/></svg></span><h3>Kripto hesabınızı kapatmak üzeresiniz</h3><p id="kp-close-txt"></p></div>
+    <div class="hf-btns"><button class="btn-secondary press" data-kclose>Vazgeç</button><button class="btn-primary press" data-kclosego>Devam Et</button></div>
   </div>
 </div>
 <script src="../common.js"></script>

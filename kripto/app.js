@@ -402,13 +402,41 @@ function openTx(id) {
   openSheet('tx-sheet');
 }
 
+/* ---------- Profil ---------- */
+// Limitler: kullanılan tutar demo; günlük alım kullanımı geçmişteki bugünkü/dünkü alımlarla uyumlu
+const LIMITS = {
+  d: [['Kripto Alım', 1774.54, 250000], ['Kripto Satım', 0, 250000], ['TL Yatırma', 0, 500000], ['TL Çekme', 0, 100000], ['Kripto Transfer (Gönderme)', 0, 50000]],
+  m: [['Kripto Alım', 23128.04, 2500000], ['Kripto Satım', 35770, 2500000], ['TL Yatırma', 15000, 5000000], ['TL Çekme', 5000, 1000000], ['Kripto Transfer (Gönderme)', 0, 500000]],
+};
+let limTab = 'd';
+function renderLimits() {
+  $$('#kp-ltabs [data-kplim]').forEach((b) => b.classList.toggle('on', b.dataset.kplim === limTab));
+  $('#kp-limits').innerHTML = LIMITS[limTab].map(([n, used, max]) => {
+    const pct = Math.max((used / max) * 100, used ? 1.5 : 0);
+    return `
+    <div class="card kp-lim">
+      <div class="kp-lim-head"><b>${n}</b><span>${limTab === 'd' ? 'Günlük' : 'Aylık'} limit <em>${fmt(max, 0)} TL</em></span></div>
+      <div class="kp-bar"><i style="width:${pct}%"></i></div>
+      <div class="kp-lim-foot"><span>Kullanılan <b>${fmt(used)} TL</b></span><span>Kalan <b>${fmt(max - used)} TL</b></span></div>
+    </div>`;
+  }).join('');
+}
+const prefs = { lang: 'tr', theme: 'light' };
+function renderProfile() {
+  $('#kp-cur').textContent = state.cur;
+  $$('#lang-sheet [data-klang]').forEach((b) => b.classList.toggle('on', b.dataset.klang === prefs.lang));
+  $$('#theme-sheet [data-ktheme]').forEach((b) => b.classList.toggle('on', b.dataset.ktheme === prefs.theme));
+  const total = cashTL() + state.kripto;
+  $('#kp-close-txt').innerHTML = `Hesabınızı kapatmadan önce kripto varlıklarınızı satmanız ve nakit bakiyenizi Halkbank hesabınıza aktarmanız gerekir. Güncel toplam varlığınız: <b>${fmt(inCur(total))} ${state.cur}</b>`;
+}
+
 /* ---------- Ekranlar: alt menü sekmeleri ve üstten açılan ekranlar ---------- */
 let current = 'k-home';
 function tabbarHTML(active) {
   const t = (id, icon, label, w = 24) => `<button class="tab${active === id ? ' on' : ''}" ${id ? `data-ktabgo="${id}"` : 'data-soon'}><svg width="${w}" height="24"><use href="#${icon}"/></svg>${label}</button>`;
   return t('k-home', 't-home', 'Ana Sayfa', 23) + t('k-markets', 't-chart', 'Piyasalar')
     + '<div class="tab fab-slot"><button class="fab k-fab press" data-soon>Al/Sat<svg width="26" height="22"><use href="#i-transfer"/></svg></button></div>'
-    + t('k-assets', 't-pie', 'Varlıklarım') + t(null, 't-user', 'Profil');
+    + t('k-assets', 't-pie', 'Varlıklarım') + t('k-profile', 't-user', 'Profil');
 }
 function showTab(id) {
   if (id === current) return;
@@ -417,10 +445,12 @@ function showTab(id) {
   current = id;
   if (id === 'k-markets') renderMarkets();
   if (id === 'k-assets') renderAssets();
+  if (id === 'k-profile') renderProfile();
 }
 function pushScreen(id) {
   if (id === 'k-search') { $('#ks-q').value = ''; renderSearch(); }
   if (id === 'k-history') { $('#kh-q').value = ''; renderHistory(); }
+  if (id === 'k-limits') renderLimits();
   const s = $(`#${id}`);
   s.classList.add('active');
   requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add('open')));
@@ -446,6 +476,21 @@ function toast(msg) {
   const t = $('#toast');
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// Çıkış: açılış ekranı yeniden gelir ve uygulama ana sayfadan başlar
+function logout() {
+  const sp = $('#k-splash');
+  sp.classList.add('active');
+  requestAnimationFrame(() => sp.classList.remove('gone'));
+  setTimeout(() => {
+    $$('.k-push.open').forEach((x) => x.classList.remove('open', 'active'));
+    $(`#${current}`).classList.remove('active');
+    current = 'k-home';
+    $('#k-home').classList.add('active');
+    sp.classList.add('gone');
+    setTimeout(() => sp.classList.remove('active'), 600);
+  }, 1600);
 }
 
 /* ---------- Ölçek (Halkbank uygulamasıyla aynı mantık) ---------- */
@@ -484,7 +529,7 @@ function layout() {
 function init() {
   layout();
   window.addEventListener('resize', layout);
-  renderTotal(); renderList(); renderAssets();
+  renderTotal(); renderList(); renderAssets(); renderProfile();
   $$('[data-ktabbar]').forEach((n) => (n.innerHTML = tabbarHTML(n.dataset.ktabbar)));
   $('#ks-q').addEventListener('input', renderSearch);
   $('#ka-q').addEventListener('input', renderAssets);
@@ -501,6 +546,13 @@ function init() {
     if (b.dataset.kpush) return pushScreen(b.dataset.kpush);
     if (b.hasAttribute('data-kpop')) return popScreen();
     if (b.dataset.ksheet) { if (b.dataset.ksheet === 'hf-sheet') { hfDraft = { ...kh }; renderHfSheet(); } return openSheet(b.dataset.ksheet); }
+    if (b.dataset.kpsw) { b.classList.toggle('on'); b.setAttribute('aria-checked', b.classList.contains('on')); return; }
+    if (b.dataset.kplim) { limTab = b.dataset.kplim; return renderLimits(); }
+    if (b.dataset.klang) { if (b.dataset.klang === 'en') return toast('İngilizce dil seçeneği demoda yer almıyor'); return closeSheet(); }
+    if (b.dataset.ktheme) { if (b.dataset.ktheme !== 'light') return toast('Koyu tema sıradaki adımda tasarlanacak'); return closeSheet(); }
+    if (b.hasAttribute('data-kedit')) return toast('Bilgilerinizi Halkbank uygulamasından güncelleyebilirsiniz');
+    if (b.hasAttribute('data-kclosego')) { closeSheet(); return toast('Hesap kapatma demoda yer almıyor'); }
+    if (b.hasAttribute('data-klogout')) { closeSheet(); return logout(); }
     if (b.dataset.khtype) { kh.type = b.dataset.khtype; return renderHistory(); }
     if (b.dataset.khclear) { kh[b.dataset.khclear] = b.dataset.khclear === 'period' ? '90' : 'all'; return renderHistory(); }
     if (b.hasAttribute('data-khreset')) { Object.assign(kh, { type: 'all', period: '90', status: 'all', asset: 'all' }); $('#kh-q').value = ''; return renderHistory(); }
@@ -522,7 +574,7 @@ function init() {
     if (b.dataset.dcur) {
       state.cur = b.dataset.dcur;
       $$('#cur-sheet [data-dcur]').forEach((x) => x.classList.toggle('on', x === b));
-      renderTotal(); renderList(); renderMarkets(); renderAssets();
+      renderTotal(); renderList(); renderMarkets(); renderAssets(); renderProfile();
       return setTimeout(closeSheet, 180);
     }
     if (b.dataset.kagroup) { ka.open[b.dataset.kagroup] = !ka.open[b.dataset.kagroup]; return b.parentElement.classList.toggle('open'); }
