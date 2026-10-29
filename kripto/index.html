@@ -88,6 +88,9 @@
     <symbol id="s-wifi" viewBox="0 0 18 13"><path d="M9 2.4c2.6 0 5 1 6.8 2.7l1.4-1.4A11.6 11.6 0 0 0 9 .4 11.6 11.6 0 0 0 .8 3.7l1.4 1.4A9.7 9.7 0 0 1 9 2.4zm0 4c1.5 0 2.9.6 4 1.6l1.4-1.4A7.7 7.7 0 0 0 9 4.4c-2 0-3.9.8-5.4 2.2L5 8c1.1-1 2.5-1.6 4-1.6zm0 4.1-2.6-1.6a3.7 3.7 0 0 1 5.2 0z" fill="currentColor"/></symbol>
     <symbol id="s-batt" viewBox="0 0 28 13"><rect x=".6" y=".6" width="23.8" height="11.8" rx="3.6" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-width="1.1"/><rect x="2.4" y="2.4" width="20.2" height="8.2" rx="2.2" fill="currentColor"/><path d="M26 4.4v4.2c.9-.3 1.4-1.1 1.4-2.1s-.5-1.8-1.4-2.1z" fill="currentColor" fill-opacity=".45"/></symbol>
     <!-- Halk Kripto ek ikonları -->
+    <symbol id="i-plus" viewBox="0 0 10 10"><path d="M5 1.5v7M1.5 5h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 10 10"><path d="M1.5 5h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="k-hist" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.8 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.5 3.8v4.4h4.4"/><path d="M12 7.6V12l3 2"/></g></symbol>
     <symbol id="k-deposit" viewBox="0 0 24 24"><path d="M18 6 6.5 17.5M6 9v9h9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-withdraw" viewBox="0 0 24 24"><path d="M6 18 17.5 6.5M9 6h9v9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-orders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5l1.6 1.6L8 4.8"/><path d="M11 6.5h10M3 12h18M3 17.5h18"/></g></symbol>
@@ -199,10 +202,11 @@
         <div class="grad-ext"></div>
         <div class="card kcard k-total bal" id="ka-total"></div>
 
-        <div class="kops k-kops">
+        <div class="kops k-kops k-kops4">
           <button class="kop press" data-soon><span class="ki"><svg width="16" height="16" viewBox="0 0 24 22"><use href="#i-transfer"/></svg></span>Al/Sat</button>
           <button class="kop press" data-soon><span class="ki"><svg width="16" height="16"><use href="#k-deposit"/></svg></span>Yatır</button>
           <button class="kop press" data-soon><span class="ki"><svg width="16" height="16"><use href="#k-withdraw"/></svg></span>Çek</button>
+          <button class="kop press" data-kpush="k-history"><span class="ki"><svg width="16" height="16"><use href="#k-hist"/></svg></span>Geçmiş</button>
         </div>
 
         <label class="search"><svg width="22" height="22" style="color:#0576b8"><use href="#i-search"/></svg><input id="ka-q" type="search" placeholder="Varlıklarınızda arayın" autocomplete="off" autocorrect="off" spellcheck="false"></label>
@@ -216,6 +220,26 @@
       </div>
     </div>
     <nav class="tabbar" data-ktabbar="k-assets"></nav>
+  </section>
+
+  <!-- ===================== İŞLEM GEÇMİŞİ ===================== -->
+  <section class="screen k-push" id="k-history">
+    <header class="header">
+      <button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button>
+      <h1>İşlem Geçmişi</h1>
+      <div class="k-hright">
+        <button class="press kh-fbtn" data-ksheet="hf-sheet" aria-label="Filtrele"><svg width="24" height="24"><use href="#k-filter"/></svg><i id="kh-badge" hidden></i></button>
+      </div>
+    </header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="card kh-sum" id="kh-sum"></div>
+      <div class="kh-types" id="kh-types"></div>
+      <label class="search"><svg width="22" height="22" style="color:#0576b8"><use href="#i-search"/></svg><input id="kh-q" type="search" placeholder="Varlık veya işlem no arayın" autocomplete="off" autocorrect="off" spellcheck="false"></label>
+      <div id="kh-active" class="kh-active"></div>
+      <div id="kh-list"></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
   </section>
 
   <!-- ===================== ARAMA ===================== -->
@@ -260,6 +284,21 @@
     <button class="opt k-pm press" data-kpm="bid"><span class="lbl2"><b>En İyi Alış Fiyatı <em>Satış yapmak için</em></b><span>Bir alıcının ödemeye hazır olduğu en yüksek fiyat</span></span><i class="radio"></i></button>
     <button class="opt k-pm press" data-kpm="ask"><span class="lbl2"><b>En İyi Satış Fiyatı <em>Alış yapmak için</em></b><span>Bir satıcının kabul edeceği en düşük fiyat</span></span><i class="radio"></i></button>
     <button class="opt k-pm press" data-kpm="avg"><span class="lbl2"><b>Ortalama Fiyat</b><span>En iyi alış ve en iyi satış fiyatının ortalaması</span></span><i class="radio"></i></button>
+  </div>
+  <div class="sheet" id="hf-sheet" role="dialog" aria-label="Filtrele">
+    <div class="grab"></div>
+    <div class="k-sheet-head"><h3>Filtrele</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <div class="hf-title">Tarih Aralığı</div>
+    <div class="hf-chips" id="hf-period"></div>
+    <div class="hf-title">İşlem Durumu</div>
+    <div class="hf-chips" id="hf-status"></div>
+    <div class="hf-title">Varlık</div>
+    <div class="hf-chips" id="hf-asset"></div>
+    <div class="hf-btns"><button class="btn-secondary press" id="hf-clear">Temizle</button><button class="btn-primary press" id="hf-apply">Uygula</button></div>
+  </div>
+  <div class="sheet" id="tx-sheet" role="dialog" aria-label="İşlem detayı">
+    <div class="grab"></div>
+    <div id="tx-body"></div>
   </div>
 </div>
 <script src="../common.js"></script>

@@ -768,7 +768,7 @@ function setupEvents() {
       }
       state.amt = ''; // sonraki gönderim boş tutarla başlasın
       state.last = { amount, cur, from: cur, ref: String(7683000000 + Math.floor(Math.random() * 999999)), date: today(), time: today(true) };
-      state.moves.unshift({ m: MONTHS[d.getMonth()], d: d.getDate(), y: d.getFullYear(), t: 'Halk Kripto Transferi', s: 'HALK KRİPTO HESABIMA GÖNDERİLEN', a: -amount, cur });
+      state.moves.unshift({ m: MONTHS[d.getMonth()], d: d.getDate(), y: d.getFullYear(), t: 'Halk Kripto Transferi', s: 'HALK KRİPTO HESABIMA GÖNDERİLEN', a: -amount, cur, ts: Date.now(), ref: state.last.ref });
       renderBalances(); renderMoves();
       push('sonuc');
       setTimeout(() => { btn.textContent = 'Onayla'; delete btn.dataset.loading; }, DUR + 50);
