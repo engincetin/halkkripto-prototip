@@ -197,7 +197,7 @@ function renderAssets() {
   $('#ka-cash').hidden = !!q && !cash.length;
   $('#ka-cash').innerHTML = groupHead('cash', 'Nakit Varlıklarım', cashTL()) + `
     <div class="ka-body">${pending('Emirdeki Nakit Tutar')}${cash.map((r) => `
-      <div class="coin-row tap" data-soon>
+      <div class="coin-row tap" data-kdfiat="${r.c}">
         ${coinIcon(r.k)}
         <div class="coin-name"><b>${r.c}</b><span>${r.n}</span></div>
         <div class="coin-val"><b class="amt">${fmt(r.v)} ${r.c}</b><span class="flat amt">${r.eq}</span></div>
@@ -662,6 +662,160 @@ function confirmTrade() {
   }, 900);
 }
 
+/* ---------- Yatır ---------- */
+// Ağlar: [ad, adres biçimi, minimum (adet), tahmini onay süresi]. Belirtilmeyen tokenlar Ethereum (ERC-20) ağındadır.
+const NETS = {
+  btc: [['Bitcoin', 'btc', 0.0001, '~30 dk (3 onay)']],
+  eth: [['Ethereum (ERC-20)', 'evm', 0.002, '~5 dk (12 onay)']],
+  usdt: [['Ethereum (ERC-20)', 'evm', 10, '~5 dk (12 onay)'], ['Tron (TRC-20)', 'trx', 5, '~2 dk (20 onay)'], ['Avalanche C-Chain', 'evm', 5, '~1 dk']],
+  usdc: [['Ethereum (ERC-20)', 'evm', 10, '~5 dk (12 onay)'], ['Solana (SPL)', 'sol', 5, '~1 dk'], ['Avalanche C-Chain', 'evm', 5, '~1 dk']],
+  xrp: [['XRP Ledger', 'xrp', 10, '~1 dk']],
+  sol: [['Solana', 'sol', 0.05, '~1 dk']],
+  ada: [['Cardano', 'ada', 10, '~10 dk (15 onay)']],
+  doge: [['Dogecoin', 'doge', 20, '~20 dk (20 onay)']],
+  ltc: [['Litecoin', 'ltc', 0.01, '~15 dk (6 onay)']],
+  avax: [['Avalanche C-Chain', 'evm', 0.1, '~1 dk']],
+  dot: [['Polkadot', 'dot', 2, '~2 dk']],
+  pol: [['Polygon PoS', 'evm', 5, '~5 dk (128 onay)'], ['Ethereum (ERC-20)', 'evm', 10, '~5 dk (12 onay)']],
+  inj: [['Injective', 'inj', 0.5, '~1 dk']],
+};
+const CUSTOMER_NO = '48215903';
+const FIAT = {
+  TL: { iban: 'TR12 0001 2009 4520 0058 0012 34', lim: [500000, 5000000] },
+  USD: { iban: 'TR85 0001 2009 4520 0058 0012 41', lim: [250000, 1000000] },
+};
+const PAYEE = 'Halk Kripto Varlık Alım Satım Platformu A.Ş.';
+const dep = { k: null, net: 0, fiat: null, next: null };
+
+function netsOf(k) {
+  if (NETS[k]) return NETS[k];
+  // ERC-20 tokenlar: minimum ≈ 15 USD, okunaklı bir sayıya yuvarlanır
+  const usd = coinOf(k).tl / USD_RATE, raw = 15 / usd, mag = 10 ** Math.floor(Math.log10(raw));
+  return [['Ethereum (ERC-20)', 'evm', Math.ceil(raw / mag) * mag, '~5 dk (12 onay)']];
+}
+// Demo adresleri: her kripto + ağ için hep aynı, gerçekçi biçimde ama gerçek olmayan adres
+function seeded(str) {
+  let h = 2166136261;
+  for (const ch of str) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  return () => { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
+}
+function fakeAddr(k, fmtKey) {
+  const r = seeded(`${k}:${fmtKey}:halk`);
+  const pick = (abc, n) => Array.from({ length: n }, () => abc[Math.floor(r() * abc.length)]).join('');
+  const HEX = '0123456789abcdef', B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', B32 = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+  return {
+    evm: () => `0x${pick(HEX, 40)}`, btc: () => `bc1q${pick(B32, 38)}`, trx: () => `T${pick(B58, 33)}`,
+    sol: () => pick(B58, 44), xrp: () => `r${pick(B58, 33)}`, ada: () => `addr1q${pick(B32, 52)}`,
+    doge: () => `D${pick(B58, 33)}`, ltc: () => `ltc1q${pick(B32, 38)}`, dot: () => `1${pick(B58, 46)}`, inj: () => `inj1${pick(B32, 38)}`,
+  }[fmtKey]();
+}
+const xrpTag = () => String(100000000 + Math.floor(seeded('tag')() * 899999999));
+
+function renderDepList() {
+  $('#kd-fiat').innerHTML = ['TL', 'USD'].map((cur) => `
+    <button class="kd-row press" data-kdfiat="${cur}">${coinIcon(cur === 'USD' ? 'usd' : 'try')}<span><b>${cur}</b> ${cur === 'USD' ? 'Amerikan Doları' : 'Türk Lirası'}</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>`).join('');
+  const q = $('#kd-q').value.trim().toLocaleLowerCase('tr-TR');
+  const list = COINS.filter((c) => !q || `${nameOf(c)} ${c.c}`.toLocaleLowerCase('tr-TR').includes(q));
+  $('#kd-list').innerHTML = list.map((c) => `
+    <button class="kd-row press" data-kdcoin="${c.k}">${coinIcon(c.k)}<span><b>${c.c}</b> ${nameOf(c)}</span>${netsOf(c.k).length > 1 ? `<em>${netsOf(c.k).length} ağ</em>` : ''}<svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>`).join('') || '<div class="k-empty">Sonuç bulunamadı</div>';
+}
+function openNetSheet(k, next) {
+  dep.k = k; dep.next = next;
+  if (next === 'info') dep.net = 0;
+  $('#net-list').innerHTML = netsOf(k).map(([n, , min], i) => `
+    <button class="opt press${i === dep.net ? ' on' : ''}" data-knet="${i}"><span class="lbl2"><b>${n}</b><span>Minimum ${fmt(min, min < 1 ? String(min).split('.')[1].length : 0)} ${coinOf(k).c}</span></span><i class="radio"></i></button>`).join('');
+  openSheet('net-sheet');
+}
+const RULES = {
+  crypto: ['Diğer platformlardan yapacağınız yatırma işlemlerini;<ol><li>Kimlik bilgilerinizle adınıza açılan,</li><li>Kripto Varlık Hizmet Sağlayıcı kuruluş tarafından sunulan</li></ol>bir hesap üzerinden yapabilirsiniz.',
+    'Transferiniz gerçekleştikten sonra hesabın size ait olduğunu doğrulamak için bilgi ve belge yükleme adımına yönlendirileceksiniz.',
+    'Bu koşullar sağlanmazsa tutar hesabınıza yansımaz; iade yalnızca koşulları sağlayan farklı bir hesabınıza yapılabilir.'],
+  TL: ['TL transferlerinizi <b>kendinize ait bir banka hesabından</b> Havale / EFT ile yapabilirsiniz.', 'Açıklama alanına <b>müşteri numaranızı</b> yazmayı unutmayın.', 'Halkbank hesaplarınızdan yapılan transferler anında hesabınıza geçer.', 'ATM ve kredi kartı ile yapılan transferler kabul edilmez.'],
+  USD: ['USD transferlerinizi <b>kendinize ait bir Halkbank USD hesabından</b> IBAN’a transfer ile yapabilirsiniz.', 'Açıklama alanına <b>müşteri numaranızı</b> yazmayı unutmayın.', 'ATM ve kredi kartı ile yapılan transferler kabul edilmez.'],
+};
+function openInfo(kind, then) {
+  dep.next = then;
+  $('#di-title').textContent = kind === 'crypto' ? 'Halk Kripto’ya gönderim yapmadan önce bilmeniz gerekenler' : `Halk Kripto’ya ${kind} transferi yapmadan önce bilmeniz gerekenler`;
+  const extra = kind === 'crypto' && dep.k === 'xrp' ? ['XRP gönderimlerinde <b>Hedef Etiket (Destination Tag)</b> yazmanız zorunludur; etiketsiz gönderimler hesabınıza yansımaz.'] : [];
+  $('#di-list').innerHTML = [...extra, ...RULES[kind]].map((t) => `<li>${t}</li>`).join('');
+  $('#di-ok').textContent = then ? 'Anladım, Devam Et' : 'Tamam';
+  openSheet('dinfo-sheet');
+}
+function copyRow(label, val, key, mono) {
+  return `<div class="kd-irow"><span>${label}</span><button class="kd-copy press" data-kcopy="${key}"><b class="${mono ? 'mono' : ''}">${val}</b><svg width="20" height="20"><use href="#i-copy"/></svg></button></div>`;
+}
+function depValue(key) {
+  if (dep.fiat) return { iban: FIAT[dep.fiat].iban.replace(/ /g, ''), name: PAYEE, ref: CUSTOMER_NO }[key];
+  const [, f] = netsOf(dep.k)[dep.net];
+  return key === 'tag' ? xrpTag() : fakeAddr(dep.k, f);
+}
+function renderDepDetail() {
+  if (dep.fiat) {
+    const cur = dep.fiat, F = FIAT[cur], li = (i) => (cur === 'TL' ? [LIMITS.d[2], LIMITS.m[2]][i] : [null, null][i]);
+    const lim = [0, 1].map((i) => { const L = li(i); const max = F.lim[i]; const used = L ? L[1] : 0; return [max - used, max]; });
+    $('#kdd-title').textContent = `${cur} Yatır`;
+    $('#kdd-body').innerHTML = `
+      <p class="kd-lead"><b>Halkbank’ta Kripto İşlemleri → Kripto’ya Para Gönder</b> adımından IBAN ve alıcı adı girmeden hızlıca transferinizi yapabilirsiniz.</p>
+      <button class="see-all kd-link press" data-kbanksend="${cur}">Halkbank’tan Para Gönder <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>
+      <div class="section-title">HESAP BİLGİLERİ</div>
+      <div class="card kd-card">
+        <div class="kd-irow"><span>Varlık</span><b class="kd-asset">${coinIcon(cur === 'USD' ? 'usd' : 'try')}${cur} ${cur === 'USD' ? 'Amerikan Doları' : 'Türk Lirası'}</b></div>
+        ${copyRow('IBAN', F.iban, 'iban', true)}
+        ${copyRow('Alıcı Adı', PAYEE, 'name')}
+        ${copyRow('Açıklama', CUSTOMER_NO, 'ref', true)}
+      </div>
+      <div class="row-title kd-limh"><span class="section-title">İŞLEM LİMİTLERİ</span><small>Kullanılabilir / Toplam</small></div>
+      <div class="card kd-card kd-lims">
+        ${['Günlük Limit', 'Aylık Limit'].map((n, i) => `<div class="info-row"><span>${n}</span><b>${fmt(lim[i][0])} / ${fmt(lim[i][1])} ${cur}</b></div>`).join('')}
+      </div>
+      <div class="k-info ka-note"><svg width="20" height="20"><use href="#i-info"/></svg><span>Hafta sonu ve resmi tatillerde EFT ile gönderilen tutarlar ilk iş günü hesabınıza geçer. Halkbank’tan yapılan transferler 7/24 anında geçer.</span></div>`;
+    return;
+  }
+  const c = coinOf(dep.k), [net, f, min, eta] = netsOf(dep.k)[dep.net];
+  $('#kdd-title').textContent = `${c.c} Yatır`;
+  $('#kdd-body').innerHTML = `
+    <p class="kd-lead">Halk Kripto’ya ${nameOf(c)} göndermek için adres ve QR bilgileriniz aşağıdadır.</p>
+    <button class="see-all kd-link press" data-kdhow>Yatırma işlemini nasıl yaparım? <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>
+    <div class="section-title">ADRES BİLGİLERİ</div>
+    <div class="card kd-card">
+      <div class="kd-irow"><span>Kripto Varlık</span><b class="kd-asset">${coinIcon(c.k)}${nameOf(c)}</b></div>
+      <div class="kd-irow"><span>Ağ</span><button class="kd-copy press" data-kdnet><b>${net}</b><svg width="20" height="20"><use href="#i-info"/></svg></button></div>
+      ${copyRow(`${c.c} Adresi`, depValue('addr'), 'addr', true)}
+      ${f === 'xrp' ? copyRow('Hedef Etiket (Tag)', xrpTag(), 'tag', true) : ''}
+      <div class="kd-irow"><span>Adres QR Kodu</span><button class="kd-copy press" data-kdqr><b>QR Görüntüle</b><svg width="20" height="20"><use href="#i-qr"/></svg></button></div>
+    </div>
+    <div class="card kd-card kd-lims">
+      <div class="info-row"><span>Minimum Yatırma Tutarı</span><b>${fmt(min, min < 1 ? String(min).split('.')[1].length : 0)} ${c.c}</b></div>
+      <div class="info-row"><span>Maksimum Yatırma Tutarı</span><b>Limitsiz</b></div>
+      <div class="info-row"><span>Tahmini Süre</span><b>${eta}</b></div>
+    </div>
+    <div class="kd-warn"><svg width="22" height="22"><use href="#i-info"/></svg><span>Bu adrese yalnızca <b>${net}</b> ağı üzerinden <b>${c.c}</b> gönderin. Minimum tutarın altındaki yatırma işlemleri iade edilmez.</span></div>`;
+}
+// Demo QR: adrese göre hep aynı desen (taranabilir değildir)
+function qrSVG(text) {
+  const N = 29, r = seeded(text), cells = [];
+  const finder = (x, y) => [x, y, x + 6, y + 6];
+  const inF = (x, y) => [finder(0, 0), finder(N - 7, 0), finder(0, N - 7)].some(([a, b, c2, d]) => x >= a - 1 && x <= c2 + 1 && y >= b - 1 && y <= d + 1);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (!inF(x, y) && r() > 0.52) cells.push(`M${x} ${y}h1v1h-1z`);
+  const fp = (x, y) => `<path d="M${x} ${y}h7v7h-7zM${x + 1} ${y + 1}v5h5v-5z" fill-rule="evenodd"/><path d="M${x + 2} ${y + 2}h3v3h-3z"/>`;
+  return `<svg viewBox="-2 -2 ${N + 4} ${N + 4}" width="220" height="220" shape-rendering="crispEdges"><rect x="-2" y="-2" width="${N + 4}" height="${N + 4}" fill="#fff"/><g fill="#0b2545">${fp(0, 0)}${fp(N - 7, 0)}${fp(0, N - 7)}<path d="${cells.join('')}"/></g></svg>`;
+}
+function openQR() {
+  const c = coinOf(dep.k), [net] = netsOf(dep.k)[dep.net], addr = depValue('addr');
+  $('#qr-title').textContent = `${c.c} Adres QR Kodu`;
+  $('#qr-box').innerHTML = `<div class="kd-qr-img">${qrSVG(addr)}<span>${coinIcon(c.k)}</span></div><b>${nameOf(c)} · ${net}</b><code>${addr}</code>`;
+  openSheet('qr-sheet');
+}
+async function copyText(key) {
+  const v = depValue(key);
+  try { await navigator.clipboard.writeText(v); } catch (e) { /* demo: izin yoksa yine de bildir */ }
+  toast({ addr: 'Adres kopyalandı', tag: 'Hedef etiket kopyalandı', iban: 'IBAN kopyalandı', name: 'Alıcı adı kopyalandı', ref: 'Müşteri numarası kopyalandı' }[key]);
+}
+function openDepDetail() {
+  renderDepDetail();
+  if (!stack.includes('k-depd')) pushScreen('k-depd');
+}
+
 /* ---------- Ekranlar: alt menü sekmeleri ve üstten açılan ekranlar ---------- */
 let current = 'k-home';
 function tabbarHTML(active) {
@@ -684,6 +838,7 @@ function pushScreen(id) {
   if (id === 'k-search') { $('#ks-q').value = ''; renderSearch(); }
   if (id === 'k-history') { $('#kh-q').value = ''; renderHistory(); }
   if (id === 'k-limits') renderLimits();
+  if (id === 'k-dep') { $('#kd-q').value = ''; renderDepList(); }
   const s = $(`#${id}`);
   if (stack.includes(id)) return;
   stack.push(id);
@@ -777,13 +932,14 @@ function init() {
   $('#kt-qty').addEventListener('input', onQty);
   $('#kt-amt').addEventListener('input', onAmt);
   $('#cs-q').addEventListener('input', renderCoinSheet);
-  ['#kt-qty', '#kt-amt', '#cs-q'].forEach((q) => $(q).addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); }));
+  $('#kd-q').addEventListener('input', renderDepList);
+  ['#kt-qty', '#kt-amt', '#cs-q', '#kd-q'].forEach((q) => $(q).addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); }));
   $('#kh-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
   $('#ka-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
   $('#ks-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
 
   document.addEventListener('click', (e) => {
-    const b = e.target.closest('button, [data-soon], [data-kpair], [data-kpick], [data-tx]');
+    const b = e.target.closest('button, [data-soon], [data-kpair], [data-kpick], [data-tx], [data-kdfiat]');
     if (!b) return;
     if (b.hasAttribute('data-bank')) return window.parent.postMessage({ type: 'halkkripto:back' }, location.origin);
     if (b.dataset.ktabgo) return showTab(b.dataset.ktabgo);
@@ -793,6 +949,20 @@ function init() {
     if (b.dataset.ktrade !== undefined) { const [k, q, sd] = (b.dataset.ktrade || 'btc').split('/'); closeSheet(); return openTrade(k, q || state.cur, sd || 'buy'); }
     if (b.dataset.kside) { if (b.dataset.kside === 'sell' && !holding(tr.k)) { const h = ASSETS.find((a) => a.v > 0.005); if (!h) return toast('Satılabilir kripto varlığınız yok'); toast(`${coinOf(tr.k).c} varlığınız yok, ${h.c} seçildi`); tr.k = h.k; } tr.side = b.dataset.kside; tr.qty = tr.amt = 0; $('#kt-qty').value = ''; $('#kt-amt').value = ''; return renderTrade(); }
     if (b.hasAttribute('data-krefresh')) return refreshPrice();
+    if (b.dataset.kdcoin) return openNetSheet(b.dataset.kdcoin, 'info');
+    if (b.dataset.kdfiat) { dep.fiat = b.dataset.kdfiat; return openInfo(dep.fiat, 'detail'); }
+    if (b.dataset.knet) { dep.net = +b.dataset.knet; $$('#net-list [data-knet]').forEach((x) => x.classList.toggle('on', x === b)); return; }
+    if (b.id === 'net-go') { closeSheet(); dep.fiat = null; if (dep.next === 'info') return setTimeout(() => openInfo('crypto', 'detail'), 320); return renderDepDetail(); }
+    if (b.id === 'di-ok') { closeSheet(); if (dep.next === 'detail') openDepDetail(); return; }
+    if (b.hasAttribute('data-kdhow')) return openInfo('crypto', null);
+    if (b.hasAttribute('data-kdnet')) return openNetSheet(dep.k, 'detail');
+    if (b.hasAttribute('data-kdqr')) return openQR();
+    if (b.dataset.kcopy) return copyText(b.dataset.kcopy);
+    if (b.hasAttribute('data-kshare')) return toast('Paylaşım menüsü demoda yer almıyor');
+    if (b.dataset.kbanksend) {
+      if (embedded) return window.parent.postMessage({ type: 'halkkripto:send', cur: b.dataset.kbanksend }, location.origin);
+      return toast('Bu adım Halkbank uygulamasında açılır');
+    }
     if (b.dataset.kpct) return setPct(+b.dataset.kpct);
     if (b.id === 'kt-go') return goSummary();
     if (b.id === 'kt-confirm') return confirmTrade();

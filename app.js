@@ -746,7 +746,13 @@ function setupEvents() {
   $('#redir-bg').addEventListener('click', closeRedirect);
   $('#redir-go').addEventListener('click', openKriptoApp);
   window.addEventListener('message', (e) => {
-    if (e.origin === location.origin && e.data && e.data.type === 'halkkripto:back') closeKriptoApp();
+    if (e.origin !== location.origin || !e.data) return;
+    if (e.data.type === 'halkkripto:back') closeKriptoApp();
+    // Halk Kripto "TL/USD Yatır" → Halkbank'ta Kripto'ya Para Gönder, ilgili hesap seçili
+    if (e.data.type === 'halkkripto:send') {
+      closeKriptoApp();
+      setTimeout(() => { setFromAcc(e.data.cur === 'USD' ? 'USD' : 'TL'); push('gonder'); }, 450);
+    }
   });
   $('#kp-done').addEventListener('click', closeKeypad);
   $('#gonder-scroll').addEventListener('click', (e) => { if (keypadOpen && !e.target.closest('#amount-field')) closeKeypad(); });
