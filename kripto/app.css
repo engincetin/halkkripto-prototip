@@ -321,7 +321,9 @@
 #k-tsum .section-title { margin-top: 18px; }
 /* Kripto seçimi menüsü */
 .kt-sheet { max-height: 86%; display: flex; flex-direction: column; }
-.cs-search { margin: 12px 0 4px; height: 46px; box-shadow: none; background: var(--bg-home); }
+.kt-sheet > * { flex: none; }
+.kt-sheet > .cs-list { flex: 1; min-height: 0; }
+.cs-search { flex: none; margin: 12px 0 8px; height: 50px; box-shadow: none; background: var(--bg-home); }
 .cs-search input::placeholder { color: #9aa3ad; }
 .cs-list { overflow-y: auto; margin: 0 -19px; padding: 0 19px 4px; -webkit-overflow-scrolling: touch; }
 .cs-list .opt { gap: 12px; padding: 10px 14px; }

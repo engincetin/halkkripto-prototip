@@ -156,7 +156,8 @@ function renderAssets() {
         <div class="plr"><em>Kar/Zarar</em><span class="${chClass(a.pct)}">%${fmt(Math.abs(a.pct))}</span></div>
       </div>
       <div class="coin-val"><b class="amt">~ ${fmt(inCur(a.v))} ${state.cur}</b><b class="amt" style="margin-top:5px">${assetCalc(a).qty}</b><span class="${chClass(a.pct)} amt">${signed(inCur(assetCalc(a).pl))} ${state.cur}</span></div>
-    </div>`).join('');
+    </div>
+    <div class="row-trade"><button class="press" data-rtrade="${a.c}/${state.cur}/Al">Al</button><button class="press" data-rtrade="${a.c}/${state.cur}/Sat">Sat</button></div>`).join('');
 }
 
 /* ================= Kripto detay ================= */
@@ -714,7 +715,9 @@ function setupEvents() {
     if (b.dataset.seg) return setSeg(b.dataset.seg);
     if (b.dataset.r) { cd.range = b.dataset.r; $$('#ranges button').forEach((x) => x.classList.toggle('on', x === b)); return drawChart(true); }
     if (b.dataset.trade) return openRedirect(`${COINS.find((x) => x.k === cd.k).c}/${cd.cur}`, b.dataset.trade);
-    if (b.hasAttribute('data-redirect')) return openRedirect();
+    // Halk Kripto doğrudan Al/Sat ekranında açılır (varsayılan BTC alış)
+    if (b.dataset.rtrade) { const [c, q, sd] = b.dataset.rtrade.split('/'); return openRedirect(`${c}/${q}`, sd); }
+    if (b.hasAttribute('data-redirect')) return openRedirect(`BTC/${state.cur}`, 'Al');
     if (b.hasAttribute('data-redir-close')) return closeRedirect();
     if (b.id === 'coin-fav') { favs.has(cd.k) ? favs.delete(cd.k) : favs.add(cd.k); b.classList.toggle('on', favs.has(cd.k)); return toast(favs.has(cd.k) ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı'); }
     if (b.hasAttribute('data-back')) return back();
