@@ -38,7 +38,7 @@ function renderTotal() {
     <div class="amt-big amt">${money(inCur(total), state.cur)}</div>
     <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}</b><b class="${chClass(tp.pl)} money-sm amt">${signed(plv).split(',')[0]}<small>,${fmt(plv).split(',')[1]} ${state.cur}</small></b></div>
     <hr>
-    <button class="see-all press" data-soon>Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
+    <button class="see-all press" data-ktabgo="k-assets">Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
   $('#device').classList.toggle('hidden-amt', state.hidden);
 }
 
@@ -143,13 +143,104 @@ function pickPair(pair) {
   toast(`${c.c}/${q} Al/Sat ekranı sıradaki adımda tasarlanacak`);
 }
 
+/* ---------- Varlıklarım ---------- */
+// Daha önce işlem yapılmış ama şu an bakiyesi olmayan varlıklar ("Sıfır bakiyeli varlıkları gizle" kapatılınca görünür)
+const ZERO = ['usdt', 'avax', 'doge'];
+const ka = { hideZero: true, open: { cash: true, crypto: true } };
+// Dağılım çubuğu renkleri: Halkbank mavileri + turuncu
+const DIST_COLORS = ['#025193', '#0576b8', '#02a6e6', '#7fcdf2', '#f39200', '#c3cbd4'];
+
+function distribution() {
+  const parts = ASSETS.map((a) => ({ c: a.c, v: a.v }));
+  parts.push({ c: 'Nakit', v: cashTL() });
+  parts.sort((a, b) => b.v - a.v);
+  const top = parts.slice(0, 5);
+  const rest = parts.slice(5).reduce((t, p) => t + p.v, 0);
+  if (rest) top.push({ c: 'Diğer', v: rest });
+  const total = parts.reduce((t, p) => t + p.v, 0);
+  return top.map((p, i) => ({ ...p, pct: (p.v / total) * 100, color: DIST_COLORS[i] }));
+}
+
+function groupHead(id, title, valTL) {
+  const cur = state.cur;
+  return `<button class="ka-head press" data-kagroup="${id}"><b>${title}</b><span class="amt">≈ ${fmt(inCur(valTL))} ${cur}</span><svg class="ka-chev" width="14" height="8"><use href="#i-chev-down"/></svg></button>`;
+}
+
+function renderAssets() {
+  const cur = state.cur, total = cashTL() + state.kripto, tp = portfolioPL(), plv = inCur(tp.pl);
+  const dist = distribution();
+  $('#ka-total').innerHTML = `
+    <div class="acct-head">
+      <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
+      <span class="name">Toplam Varlığım</span>
+      <button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#${state.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></button>
+      <button class="pill-orange press" data-cursheet>${cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
+    </div>
+    <div class="lbl" style="margin-top:13px">Kripto ve Nakit Bakiye</div>
+    <div class="amt-big amt">${money(inCur(total), cur)}</div>
+    <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}</b><b class="${chClass(tp.pl)} money-sm amt">${signed(plv).split(',')[0]}<small>,${fmt(plv).split(',')[1]} ${cur}</small></b></div>
+    <div class="ka-dist">${dist.map((d) => `<i style="flex:${d.pct};background:${d.color}"></i>`).join('')}</div>
+    <div class="ka-legend">${dist.map((d) => `<span><i style="background:${d.color}"></i>${d.c} <b>%${fmt(d.pct, d.pct < 10 ? 1 : 0)}</b></span>`).join('')}</div>
+    <hr>
+    <div class="ka-links">
+      <button class="see-all press" data-soon>İşlem Geçmişi <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>
+      <button class="see-all press" data-soon>Emirlerim <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>
+    </div>`;
+
+  const q = $('#ka-q').value.trim().toLocaleLowerCase('tr-TR');
+  const match = (...t) => !q || t.join(' ').toLocaleLowerCase('tr-TR').includes(q);
+  const open = (id) => !!q || ka.open[id];
+  const pending = (label) => `<div class="ka-pending"><span>${label}</span><b class="amt">≈ 0,00 ${cur}</b></div>`;
+
+  // Nakit
+  const cash = [
+    { k: 'try', n: 'Türk Lirası', c: 'TL', v: state.nakit, eq: `≈ ${fmt(state.nakit / USD_RATE)} USD` },
+    { k: 'usd', n: 'Amerikan Doları', c: 'USD', v: state.nakitUsd, eq: `≈ ${fmt(state.nakitUsd * USD_RATE)} TL` },
+  ].filter((r) => match(r.n, r.c));
+  $('#ka-cash').classList.toggle('open', open('cash'));
+  $('#ka-cash').hidden = !!q && !cash.length;
+  $('#ka-cash').innerHTML = groupHead('cash', 'Nakit Varlıklarım', cashTL()) + `
+    <div class="ka-body">${pending('Emirdeki Nakit Tutar')}${cash.map((r) => `
+      <div class="coin-row tap" data-soon>
+        ${coinIcon(r.k)}
+        <div class="coin-name"><b>${r.c}</b><span>${r.n}</span></div>
+        <div class="coin-val"><b class="amt">${fmt(r.v)} ${r.c}</b><span class="flat amt">${r.eq}</span></div>
+        <svg class="ka-go" width="7" height="12"><use href="#i-chev-right"/></svg>
+      </div>`).join('')}</div>`;
+
+  // Kripto
+  const rows = [...ASSETS, ...ZERO.map((k) => { const c = COINS.find((x) => x.k === k); return { k, n: c.n, c: c.c, v: 0, pct: 0, dq: 2 }; })]
+    .filter((a) => !(ka.hideZero && !a.v) && match(a.n, a.c));
+  $('#ka-crypto').classList.toggle('open', open('crypto'));
+  $('#ka-crypto').hidden = !!q && !rows.length;
+  $('#ka-crypto').innerHTML = groupHead('crypto', 'Kripto Varlıklarım', state.kripto) + `
+    <div class="ka-body">${pending('Emirdeki Kripto Tutar')}${rows.map((a) => {
+      const calc = a.v ? assetCalc(a) : { qty: `0 ${a.c}`, pl: 0 };
+      return `
+      <div class="asset-row tap" data-kpair="${a.k}/${cur}">
+        ${coinIcon(a.k)}
+        <div class="coin-name">
+          <b>${a.c}</b><span>${a.n}</span>
+          ${a.v ? `<div class="plr"><em>Kar/Zarar</em><span class="${chClass(a.pct)}">%${fmt(Math.abs(a.pct))}</span></div>` : ''}
+        </div>
+        <div class="coin-val"><b class="amt">${calc.qty}</b><b class="amt ka-eq">≈ ${fmt(inCur(a.v))} ${cur}</b>${a.v ? `<span class="${chClass(a.pct)} amt">${signed(inCur(calc.pl))} ${cur}</span>` : ''}</div>
+        <svg class="ka-go" width="7" height="12"><use href="#i-chev-right"/></svg>
+      </div>`;
+    }).join('') || '<div class="k-empty">Sonuç bulunamadı</div>'}</div>`;
+
+  $('#ka-zero').classList.toggle('on', ka.hideZero);
+  $('#ka-zero').setAttribute('aria-checked', ka.hideZero);
+  $('#ka-empty')?.remove();
+  if (q && !cash.length && !rows.length) $('#ka-crypto').insertAdjacentHTML('afterend', '<div class="k-empty" id="ka-empty">Sonuç bulunamadı</div>');
+}
+
 /* ---------- Ekranlar: alt menü sekmeleri ve üstten açılan ekranlar ---------- */
 let current = 'k-home';
 function tabbarHTML(active) {
   const t = (id, icon, label, w = 24) => `<button class="tab${active === id ? ' on' : ''}" ${id ? `data-ktabgo="${id}"` : 'data-soon'}><svg width="${w}" height="24"><use href="#${icon}"/></svg>${label}</button>`;
   return t('k-home', 't-home', 'Ana Sayfa', 23) + t('k-markets', 't-chart', 'Piyasalar')
     + '<div class="tab fab-slot"><button class="fab k-fab press" data-soon>Al/Sat<svg width="26" height="22"><use href="#i-transfer"/></svg></button></div>'
-    + t(null, 't-pie', 'Varlıklarım') + t(null, 't-user', 'Profil');
+    + t('k-assets', 't-pie', 'Varlıklarım') + t(null, 't-user', 'Profil');
 }
 function showTab(id) {
   if (id === current) return;
@@ -157,6 +248,7 @@ function showTab(id) {
   $(`#${id}`).classList.add('active');
   current = id;
   if (id === 'k-markets') renderMarkets();
+  if (id === 'k-assets') renderAssets();
 }
 function pushScreen(id) {
   if (id === 'k-search') { $('#ks-q').value = ''; renderSearch(); }
@@ -223,9 +315,11 @@ function layout() {
 function init() {
   layout();
   window.addEventListener('resize', layout);
-  renderTotal(); renderList();
+  renderTotal(); renderList(); renderAssets();
   $$('[data-ktabbar]').forEach((n) => (n.innerHTML = tabbarHTML(n.dataset.ktabbar)));
   $('#ks-q').addEventListener('input', renderSearch);
+  $('#ka-q').addEventListener('input', renderAssets);
+  $('#ka-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
   $('#ks-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
 
   document.addEventListener('click', (e) => {
@@ -244,14 +338,16 @@ function init() {
     if (b.dataset.kpick) return pickPair(b.dataset.kpick);
     if (b.dataset.kpair) { const [k, q] = b.dataset.kpair.split('/'); return toast(`${COINS.find((x) => x.k === k).c}/${q} Al/Sat ekranı sıradaki adımda tasarlanacak`); }
     if (b.id === 'k-promo-x') return $('#k-promo').classList.add('gone');
-    if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; return renderTotal(); }
+    if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; renderTotal(); return renderAssets(); }
     if (b.hasAttribute('data-cursheet')) return openSheet();
     if (b.dataset.dcur) {
       state.cur = b.dataset.dcur;
       $$('#cur-sheet [data-dcur]').forEach((x) => x.classList.toggle('on', x === b));
-      renderTotal(); renderList(); renderMarkets();
+      renderTotal(); renderList(); renderMarkets(); renderAssets();
       return setTimeout(closeSheet, 180);
     }
+    if (b.dataset.kagroup) { ka.open[b.dataset.kagroup] = !ka.open[b.dataset.kagroup]; return b.parentElement.classList.toggle('open'); }
+    if (b.id === 'ka-zero') { ka.hideZero = !ka.hideZero; return renderAssets(); }
     if (b.dataset.ktab) { kTab = b.dataset.ktab; return renderList(); }
     if (b.hasAttribute('data-soon')) return toast('Bu ekran sıradaki adımda tasarlanacak');
   });

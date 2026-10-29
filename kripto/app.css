@@ -91,3 +91,38 @@
 .k-sheet-head button { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--blue); }
 .k-pm .lbl2 b em { font-style: normal; font-size: 12px; font-weight: 800; color: var(--blue); background: var(--tile); border-radius: 6px; padding: 2px 7px; margin-left: 6px; vertical-align: 2px; }
 .k-pm .lbl2 span { font-size: 14px; }
+
+/* ---------- Varlıklarım ---------- */
+#k-assets { background: var(--bg-home); }
+#k-assets .kcard { margin-bottom: 0; }
+#k-assets .k-kops { margin-top: 16px; }
+.ka-dist { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 16px; }
+.ka-dist i { min-width: 3px; }
+.ka-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 13px; color: var(--ink-3); }
+.ka-legend span { display: flex; align-items: center; gap: 5px; }
+.ka-legend i { width: 8px; height: 8px; border-radius: 50%; }
+.ka-legend b { color: var(--ink); font-weight: 800; }
+.ka-links { display: flex; justify-content: space-between; }
+.ka-toggle { display: flex; align-items: center; justify-content: space-between; width: calc(100% - 38px); margin: 16px 19px 0; font-size: 15px; font-weight: 700; color: var(--ink-3); text-align: left; }
+.ka-toggle i { position: relative; width: 50px; height: 30px; border-radius: 15px; background: #c9d0d8; transition: background .2s; flex: none; }
+.ka-toggle i::after { content: ''; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+.ka-toggle.on i { background: var(--blue); }
+.ka-toggle.on i::after { transform: translateX(20px); }
+.ka-group { margin: 14px 19px 0; padding: 0 20px; }
+.ka-group + .ka-group { margin-top: 12px; }
+.ka-head { display: flex; align-items: center; gap: 10px; width: 100%; height: 60px; text-align: left; }
+.ka-head b { flex: 1; font-size: 16px; font-weight: 800; color: var(--blue); }
+.ka-head span { font-size: 15px; font-weight: 800; color: var(--ink); letter-spacing: .3px; }
+.ka-chev { color: var(--orange); transition: transform .25s; }
+.ka-group.open .ka-chev { transform: rotate(180deg); }
+.ka-body { display: none; border-top: 1px solid var(--line); }
+.ka-group.open .ka-body { display: block; }
+.ka-pending { display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--gray-2); }
+.ka-pending b { color: var(--ink-3); font-weight: 700; }
+.ka-group .coin-row, .ka-group .asset-row { align-items: center; }
+.ka-group .asset-row .coin-name { align-self: flex-start; }
+.ka-group .coin-name b { font-size: 16px; }
+.ka-group .asset-row .coin-val b + b.ka-eq { font-weight: 700; color: var(--gray-2); }
+.ka-go { color: #b9c2cc; flex: none; margin-left: -2px; }
+.ka-note { margin-top: 18px; align-items: flex-start; }
+.ka-note svg { flex: none; margin-top: 1px; }

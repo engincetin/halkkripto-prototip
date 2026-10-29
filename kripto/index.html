@@ -184,6 +184,40 @@
     <nav class="tabbar" data-ktabbar="k-markets"></nav>
   </section>
 
+  <!-- ===================== VARLIKLARIM ===================== -->
+  <section class="screen" id="k-assets">
+    <header class="header">
+      <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
+      <h1>Varlıklarım</h1>
+      <div class="k-hright">
+        <button class="press" data-soon aria-label="Emirlerim"><svg width="24" height="24"><use href="#k-orders"/></svg></button>
+      </div>
+    </header>
+    <div class="scroll pull-blue">
+      <div class="pad-header"></div>
+      <div class="pull-content">
+        <div class="grad-ext"></div>
+        <div class="card kcard k-total bal" id="ka-total"></div>
+
+        <div class="kops k-kops">
+          <button class="kop press" data-soon><span class="ki"><svg width="16" height="16" viewBox="0 0 24 22"><use href="#i-transfer"/></svg></span>Al/Sat</button>
+          <button class="kop press" data-soon><span class="ki"><svg width="16" height="16"><use href="#k-deposit"/></svg></span>Yatır</button>
+          <button class="kop press" data-soon><span class="ki"><svg width="16" height="16"><use href="#k-withdraw"/></svg></span>Çek</button>
+        </div>
+
+        <label class="search"><svg width="22" height="22" style="color:#0576b8"><use href="#i-search"/></svg><input id="ka-q" type="search" placeholder="Varlıklarınızda arayın" autocomplete="off" autocorrect="off" spellcheck="false"></label>
+        <button class="ka-toggle press" id="ka-zero" role="switch" aria-checked="true"><span>Sıfır bakiyeli varlıkları gizle</span><i></i></button>
+
+        <div class="card ka-group bal" id="ka-cash"></div>
+        <div class="card ka-group bal" id="ka-crypto"></div>
+
+        <div class="k-info ka-note"><svg width="20" height="20"><use href="#i-info"/></svg><span>Diğer para birimindeki tutarlar güncel kur ile hesaplanır, kur değiştikçe farklılık gösterebilir.</span></div>
+        <div style="height:calc(var(--sab) + 110px)"></div>
+      </div>
+    </div>
+    <nav class="tabbar" data-ktabbar="k-assets"></nav>
+  </section>
+
   <!-- ===================== ARAMA ===================== -->
   <section class="screen k-push" id="k-search">
     <header class="header">
