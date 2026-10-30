@@ -585,41 +585,44 @@ function renderAcctSheet() {
     </button>`).join('');
 }
 
-// Özet ekranı: fiyat 20 saniye geçerli, süre dolunca güncel fiyatla yeniden hesaplanır
-let timerT = null, timerLeft = 0;
-function stopTimer() { clearInterval(timerT); timerT = null; }
-function startTimer() {
-  stopTimer(); timerLeft = 20; drawTimer();
-  timerT = setInterval(() => {
-    timerLeft -= 1;
-    if (timerLeft <= 0) { refreshPrice(true); renderSummary(); timerLeft = 20; toast('Fiyat güncellendi'); }
-    drawTimer();
-  }, 1000);
-}
-function drawTimer() {
-  $('#kt-timer').innerHTML = `<i style="--p:${(timerLeft / 20) * 100}%"></i><span>Fiyat <b>${timerLeft} sn</b> geçerlidir</span>`;
-}
+// Piyasa emri: gösterilen fiyat tahminidir; Onayla anındaki fiyattan gerçekleşir.
+// Fiyat, gösterilenden en fazla SLIP kadar kötüleşebilir (kayma toleransı); aşarsa işlem gerçekleşmez.
+const SLIP = 0.005;
 function renderSummary() {
   const c = coinOf(tr.k), buy = tr.side === 'buy', p = tradePrice(), cur = tr.cur;
   const { fee, total } = tradeTotals();
   const has = !!holdQty(tr.k);
+  const worst = buy ? p * (1 + SLIP) : p * (1 - SLIP);
   const row = (a, b) => `<div class="sum-row"><span>${a}</span><b>${b}</b></div>`;
+  const pf = (v) => `${fmt(v, priceDec(v))} ${cur}`;
   $('#kts-title').textContent = buy ? 'ALIŞ BİLGİLERİ' : 'SATIŞ BİLGİLERİ';
-  $('#kts-card').innerHTML = row('İşlem Türü', `Kripto ${buy ? 'Alış' : 'Satış'} (Piyasa Emri)`)
+  let rows = row('İşlem Türü', `Kripto ${buy ? 'Alış' : 'Satış'} (Piyasa Emri)`)
     + (buy ? row('Paranın Çekileceği Hesap', `Halk Kripto ${cur} Hesabı`) + row('Kriptonun Aktarılacağı Hesap', has ? `Halk Kripto ${c.c} Hesabı` : 'İşlem sonunda açılacaktır.')
       : row('Kriptonun Çekileceği Hesap', `Halk Kripto ${c.c} Hesabı`) + row('Paranın Aktarılacağı Hesap', `Halk Kripto ${cur} Hesabı`))
-    + row(`${c.c} ${buy ? 'Alış' : 'Satış'} Fiyatı`, `${fmt(p, priceDec(p))} ${cur}`)
-    + row(buy ? 'Alınacak Kripto Miktarı' : 'Satılacak Kripto Miktarı', `${fmt(tr.qty, qtyDec(c))} ${c.c}`)
-    + row(`${cur} Karşılığı`, `${fmt(tr.amt)} ${cur}`)
-    + row('Komisyon (%0,20)', `${fmt(fee)} ${cur}`)
-    + row(buy ? 'Toplam İşlem Tutarı' : 'Hesabınıza Geçecek Tutar', `${fmt(total)} ${cur}`);
+    + row(`Tahmini ${c.c} ${buy ? 'Alış' : 'Satış'} Fiyatı`, pf(p))
+    + row(buy ? `En Yüksek Alış Fiyatı (%${fmt(SLIP * 100)} tolerans)` : `En Düşük Satış Fiyatı (%${fmt(SLIP * 100)} tolerans)`, pf(worst));
+  if (buy) {
+    rows += row(`${cur} Tutarı`, `${fmt(tr.amt)} ${cur}`)
+      + row('Tahmini Alınacak Miktar', `≈ ${fmt(tr.qty, qtyDec(c))} ${c.c}`)
+      + row('En Az Alınacak Miktar', `${fmt(tr.amt / worst, qtyDec(c))} ${c.c}`)
+      + row('Komisyon (%0,20)', `${fmt(fee)} ${cur}`)
+      + row('Toplam İşlem Tutarı', `${fmt(total)} ${cur}`);
+  } else {
+    const minNet = tr.qty * worst * (1 - FEE);
+    rows += row('Satılacak Kripto Miktarı', `${fmt(tr.qty, qtyDec(c))} ${c.c}`)
+      + row(`Tahmini ${cur} Karşılığı`, `≈ ${fmt(tr.amt)} ${cur}`)
+      + row('Komisyon (%0,20)', `≈ ${fmt(fee)} ${cur}`)
+      + row('Tahmini Hesabınıza Geçecek', `≈ ${fmt(total)} ${cur}`)
+      + row('En Az Hesabınıza Geçecek', `${fmt(minNet)} ${cur}`);
+  }
+  $('#kts-card').innerHTML = rows;
+  $('#kt-slip').innerHTML = `<svg width="20" height="20"><use href="#i-info"/></svg><span><b>Piyasa emri:</b> İşleminiz Onayla’ya bastığınız anda piyasadaki en iyi fiyattan gerçekleşir. Fiyat, gösterilen fiyattan en fazla <b>%${fmt(SLIP * 100)}</b> farklı olabilir; bu aralık aşılırsa işlem gerçekleşmez ve hesabınızdan tutar düşülmez.</span>`;
 }
 function goSummary() {
   if ($('#kt-go').disabled) return;
   $$('input').forEach((i) => i.blur());
   renderSummary();
   pushScreen('k-tsum');
-  startTimer();
 }
 
 // Onay: bakiyeler, varlıklar, geçmiş ve limitler güncellenir (Halkbank ile ortak veri)
@@ -627,10 +630,13 @@ function confirmTrade() {
   const btn = $('#kt-confirm');
   if (btn.dataset.loading) return;
   btn.dataset.loading = '1'; btn.textContent = 'İşleniyor…';
-  stopTimer();
   setTimeout(() => {
-    const c = coinOf(tr.k), buy = tr.side === 'buy', cur = tr.cur, p = tradePrice();
+    const c = coinOf(tr.k), buy = tr.side === 'buy', cur = tr.cur, shown = tradePrice();
+    // Gerçekleşme: gösterilen fiyattan ±%0,2 içinde (demo; tolerans %0,5 olduğu için işlem hep gerçekleşir)
+    const p = shown * (1 + (Math.random() - 0.5) * 0.004);
+    if (buy) tr.qty = tr.amt / p; else tr.amt = tr.qty * p;
     const { fee, total } = tradeTotals();
+    const diff = ((p - shown) / shown) * 100;
     const valTL = tr.qty * c.tl; // varlığın güncel TL değeri
     if (buy) {
       if (cur === 'USD') state.nakitUsd -= total; else state.nakit -= total;
@@ -658,6 +664,7 @@ function confirmTrade() {
     $('#ktr-text').innerHTML = buy
       ? `Halk Kripto ${cur} Hesabınızdan <b>${fmt(total)} ${cur}</b> karşılığında <b>${fmt(tr.qty, qtyDec(c))} ${c.c}</b> alınmıştır.`
       : `<b>${fmt(tr.qty, qtyDec(c))} ${c.c}</b> satılarak Halk Kripto ${cur} Hesabınıza <b>${fmt(total)} ${cur}</b> aktarılmıştır.`;
+    $('#ktr-text').innerHTML += `<span class="ktr-fill">Gerçekleşen fiyat: <b>${fmt(p, priceDec(p))} ${cur}</b> <em class="${(buy ? -diff : diff) >= 0 ? 'up' : 'down'}">(%${fmt(Math.abs(diff))} ${(buy ? diff <= 0 : diff >= 0) ? 'daha iyi' : 'fark'})</em></span>`;
     $('#ktr-ref').textContent = id;
     renderTotal(); renderList(); renderAssets();
     pushScreen('k-tres');
@@ -855,7 +862,6 @@ function popScreen() {
   if (!id) return;
   const s = $(`#${id}`);
   $$('input').forEach((i) => i.blur());
-  if (id === 'k-tsum') stopTimer();
   s.classList.remove('open');
   setTimeout(() => s.classList.remove('active'), 360);
 }
@@ -882,7 +888,7 @@ function logout() {
   sp.classList.add('active');
   requestAnimationFrame(() => sp.classList.remove('gone'));
   setTimeout(() => {
-    stack.length = 0; stopTimer();
+    stack.length = 0;
     $$('.k-push.open').forEach((x) => x.classList.remove('open', 'active'));
     $(`#${current}`).classList.remove('active');
     current = 'k-home';
