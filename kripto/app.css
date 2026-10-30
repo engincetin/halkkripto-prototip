@@ -91,12 +91,6 @@
 #k-assets { background: var(--bg-home); }
 #k-assets .kcard { margin-bottom: 0; }
 #k-assets .k-kops { margin-top: 16px; }
-.ka-dist { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 16px; }
-.ka-dist i { min-width: 3px; }
-.ka-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 13px; color: var(--ink-3); }
-.ka-legend span { display: flex; align-items: center; gap: 5px; }
-.ka-legend i { width: 8px; height: 8px; border-radius: 50%; }
-.ka-legend b { color: var(--ink); font-weight: 800; }
 .ka-links { display: flex; justify-content: space-between; }
 .ka-toggle { display: flex; align-items: center; justify-content: space-between; width: calc(100% - 38px); margin: 16px 19px 0; font-size: 15px; font-weight: 700; color: var(--ink-3); text-align: left; }
 .ka-toggle i { position: relative; width: 50px; height: 30px; border-radius: 15px; background: #c9d0d8; transition: background .2s; flex: none; }
@@ -432,3 +426,27 @@
 #km-card .pl-row b, #kh-month .pl-row b { font-size: 16px; }
 #kh-month .vrow b { font-size: 16px; }
 #k-markets .k-tabs { margin-top: 16px; }
+
+/* Ana sayfa: Son İşlemlerim (Halkbank Hesap Hareketleri kartı) */
+.k-movescard { margin: 16px 19px 0; }
+.k-movescard .mv { padding: 13px 0; }
+/* Varlıklarım üst kartı: Halkbank "Varlıklar Dağılım" kartı */
+#ka-total { padding: 18px 20px 0; }
+.ka-dhead { display: flex; align-items: center; gap: 16px; }
+.ka-dhead b { flex: 1; font-size: 18px; font-weight: 800; color: var(--ink); }
+.ka-radio { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; color: var(--ink); }
+.ka-radio i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #c3c9d0; position: relative; }
+.ka-radio.on i { border-color: var(--blue); background: var(--blue); }
+.ka-radio.on i::after { content: ''; position: absolute; left: 6px; top: 2.5px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg); }
+.ka-donut { position: relative; width: 220px; height: 220px; margin: 16px auto 0; }
+.ka-donut-svg { width: 100%; height: 100%; display: block; }
+.ka-donut > div { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ka-donut span { font-size: 15px; color: var(--ink-3); }
+.ka-donut b { font-size: 21px; font-weight: 800; color: var(--ink); margin-top: 4px; letter-spacing: .3px; }
+.ka-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.ka-chips span { padding: 7px 13px; border: 1.3px solid #d3d8de; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--ink-3); }
+.ka-net { display: flex; justify-content: space-between; align-items: center; margin: 16px -20px 0; padding: 16px 20px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-3); }
+.ka-net b { font-size: 17px; font-weight: 800; white-space: nowrap; }
+.ka-net b small { font-size: 13px; }
+.ka-net b.up { color: var(--green); } .ka-net b.down { color: var(--red); }
+.ka-dot { width: 14px; height: 14px; border-radius: 50%; flex: none; }

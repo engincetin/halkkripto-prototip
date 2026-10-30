@@ -42,6 +42,10 @@ function renderTotal() {
   $('#device').classList.toggle('hidden-amt', state.hidden);
 }
 
+// Ana sayfa "Son İşlemlerim": Halkbank ana sayfasındaki Hesap Hareketleri kartının aynısı (son 2 işlem)
+function renderHomeMoves() {
+  $('#k-moves').innerHTML = buildTx().slice(0, 2).map(txItem).join('');
+}
 function renderList() {
   let list;
   if (kTab === 'up') list = COINS.filter((c) => c.ch > 0).sort((a, b) => b.ch - a.ch);
@@ -165,41 +169,28 @@ function pickPair(pair) {
 // Daha önce işlem yapılmış ama şu an bakiyesi olmayan varlıklar ("Sıfır bakiyeli varlıkları gizle" kapatılınca görünür)
 const ZERO = ['usdt', 'avax', 'doge'];
 const ka = { hideZero: true, open: { cash: true, crypto: true } };
-// Dağılım çubuğu renkleri: Halkbank mavileri + turuncu
-const DIST_COLORS = ['#025193', '#0576b8', '#02a6e6', '#7fcdf2', '#f39200', '#c3cbd4'];
-
-function distribution() {
-  const parts = ASSETS.map((a) => ({ c: a.c, v: a.v }));
-  parts.push({ c: 'Nakit', v: cashTL() });
-  parts.sort((a, b) => b.v - a.v);
-  const top = parts.slice(0, 5);
-  const rest = parts.slice(5).reduce((t, p) => t + p.v, 0);
-  if (rest) top.push({ c: 'Diğer', v: rest });
-  const total = parts.reduce((t, p) => t + p.v, 0);
-  return top.map((p, i) => ({ ...p, pct: (p.v / total) * 100, color: DIST_COLORS[i] }));
+// Halkbank Varlıklar ekranındaki gibi iki ana grup: Nakit (mavi) ve Kripto (turuncu-altın)
+const GROUP_COLORS = { cash: '#0576b8', crypto: '#f2a900' };
+function donut(parts) {
+  const R = 92, C = 2 * Math.PI * R; let off = 0;
+  const segs = parts.filter((p) => p.pct > 0).map((p) => { const len = (p.pct / 100) * C; const seg = `<circle cx="120" cy="120" r="${R}" fill="none" stroke="${p.color}" stroke-width="20" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-off}" transform="rotate(-90 120 120)"/>`; off += len; return seg; }).join('');
+  return `<svg viewBox="0 0 240 240" class="ka-donut-svg"><circle cx="120" cy="120" r="116" fill="none" stroke="#dfe3e8" stroke-width="1.5"/>${segs}</svg>`;
 }
-
 function groupHead(id, title, valTL) {
   const cur = state.cur;
-  return `<button class="ka-head press" data-kagroup="${id}"><b>${title}</b><span class="amt">≈ ${fmt(inCur(valTL))} ${cur}</span><svg class="ka-chev" width="14" height="8"><use href="#i-chev-down"/></svg></button>`;
+  return `<button class="ka-head press" data-kagroup="${id}"><i class="ka-dot" style="background:${GROUP_COLORS[id]}"></i><b>${title}</b><span class="amt">≈ ${fmt(inCur(valTL))} ${cur}</span><svg class="ka-chev" width="14" height="8"><use href="#i-chev-down"/></svg></button>`;
 }
 
 function renderAssets() {
   const cur = state.cur, total = cashTL() + state.kripto, tp = portfolioPL(), plv = inCur(tp.pl);
-  const dist = distribution();
+  // Üst kart: Halkbank "Varlıklar Dağılım" kartının aynısı
+  const parts = [{ n: 'Nakit', pct: (cashTL() / total) * 100, color: GROUP_COLORS.cash }, { n: 'Kripto', pct: (state.kripto / total) * 100, color: GROUP_COLORS.crypto }];
+  const radio = (c) => `<button class="ka-radio press${cur === c ? ' on' : ''}" data-dcur="${c}"><i></i>${c}</button>`;
   $('#ka-total').innerHTML = `
-    <div class="acct-head">
-      <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
-      <span class="name">Toplam Varlığım</span>
-      <button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#${state.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></button>
-      <button class="pill-orange press" data-cursheet>${cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
-    </div>
-    <div class="lbl" style="margin-top:13px">Kripto ve Nakit Bakiye</div>
-    <div class="amt-big amt">${money(inCur(total), cur)}</div>
-    <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}</b><b class="${chClass(tp.pl)} money-sm amt">${signed(plv).split(',')[0]}<small>,${fmt(plv).split(',')[1]} ${cur}</small></b></div>
-    <div class="ka-dist">${dist.map((d) => `<i style="flex:${d.pct};background:${d.color}"></i>`).join('')}</div>
-    <div class="ka-legend">${dist.map((d) => `<span><i style="background:${d.color}"></i>${d.c} <b>%${fmt(d.pct, d.pct < 10 ? 1 : 0)}</b></span>`).join('')}</div>
-`;
+    <div class="ka-dhead"><b>Varlık Dağılımı</b>${radio('TL')}${radio('USD')}</div>
+    <div class="ka-donut">${donut(parts)}<div><span>Toplam Varlık</span><b class="amt">${fmt(inCur(total))} ${cur}</b></div></div>
+    <div class="ka-chips">${parts.map((p) => `<span>${p.n} %${fmt(p.pct)}</span>`).join('')}</div>
+    <div class="ka-net"><span>Olası Kâr / Zarar</span><b class="amt ${chClass(tp.pl)}">${signed(plv)} ${cur} <small>(%${fmt(Math.abs(tp.pct))})</small></b></div>`;
 
   const q = $('#ka-q').value.trim().toLocaleLowerCase('tr-TR');
   const match = (...t) => !q || t.join(' ').toLocaleLowerCase('tr-TR').includes(q);
@@ -695,7 +686,7 @@ function confirmTrade() {
       : `<b>${fmt(tr.qty, qtyDec(c))} ${c.c}</b> satılarak Halk Kripto ${cur} Hesabınıza <b>${fmt(total)} ${cur}</b> aktarılmıştır.`;
     $('#ktr-text').innerHTML += `<span class="ktr-fill">İşlem fiyatı: <b>${fmt(p, priceDec(p))} ${cur}</b></span>`;
     $('#ktr-ref').textContent = id;
-    renderTotal(); renderList(); renderAssets();
+    renderTotal(); renderList(); renderAssets(); renderHomeMoves();
     pushScreen('k-tres');
     const ck = $('#kt-check'); ck.classList.remove('pop'); void ck.offsetWidth; ck.classList.add('pop');
     btn.textContent = 'Onayla'; delete btn.dataset.loading;
@@ -872,6 +863,7 @@ function showTab(id) {
   if (id === 'k-markets') renderMarkets();
   if (id === 'k-assets') renderAssets();
   if (id === 'k-history') renderHistory();
+  if (id === 'k-home') renderHomeMoves();
 }
 const stack = []; // üst üste açılan ekranlar (Al/Sat → Özet → Sonuç)
 function pushScreen(id) {
@@ -963,7 +955,7 @@ function layout() {
 function init() {
   layout();
   window.addEventListener('resize', layout);
-  renderTotal(); renderList(); renderAssets(); renderProfile();
+  renderTotal(); renderList(); renderAssets(); renderProfile(); renderHomeMoves();
   $$('[data-ktabbar]').forEach((n) => (n.innerHTML = tabbarHTML(n.dataset.ktabbar)));
   $('#ks-q').addEventListener('input', renderSearch);
   $('#ka-q').addEventListener('input', renderAssets);
@@ -1040,7 +1032,7 @@ function init() {
     if (b.dataset.dcur) {
       state.cur = b.dataset.dcur;
       $$('#cur-sheet [data-dcur]').forEach((x) => x.classList.toggle('on', x === b));
-      renderTotal(); renderList(); renderMarkets(); renderAssets(); renderProfile();
+      renderTotal(); renderList(); renderMarkets(); renderAssets(); renderProfile(); renderHistory();
       return setTimeout(closeSheet, 180);
     }
     if (b.dataset.kagroup) { ka.open[b.dataset.kagroup] = !ka.open[b.dataset.kagroup]; return b.parentElement.classList.toggle('open'); }
