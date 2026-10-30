@@ -153,6 +153,24 @@ function renderMarketCard() {
     <button class="see-all press" data-ktabgo="k-assets">Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
 
 }
+// Kart süsü: yarı saydam yükselen çubuklar + yumuşak eğri + parlayan uç noktası (düşüşte ters yön)
+function trendArt(rate, id) {
+  const up = rate >= 0, g = `g${id}`;
+  const ys = up ? [70, 62, 66, 50, 40, 28, 18] : [20, 30, 26, 42, 52, 62, 72];
+  const xs = ys.map((_, i) => 6 + i * 16.3);
+  const pts = xs.map((x, i) => [x, ys[i]]);
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], cx = (x0 + x1) / 2; d += ` C${cx} ${y0} ${cx} ${y1} ${x1} ${y1}`; }
+  const [ex, ey] = pts.at(-1), halo = up ? '#3ddc84' : '#ff6b6b';
+  const bars = [0, 1, 2, 3].map((i) => { const h = up ? 18 + i * 14 : 60 - i * 14; return `<rect x="${14 + i * 24}" y="${96 - h}" width="14" height="${h}" rx="5" fill="#fff" opacity="${0.1 + i * 0.04}"/>`; }).join('');
+  return `<svg class="km-ill" viewBox="0 0 112 100" width="112" height="100">
+    <defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+    ${bars}
+    <path d="${d} L${ex} 100 L${pts[0][0]} 100Z" fill="url(#${g})"/>
+    <path d="${d}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="${ex}" cy="${ey}" r="11" fill="${halo}" opacity=".35"/><circle cx="${ex}" cy="${ey}" r="5.5" fill="#fff"/><circle cx="${ex}" cy="${ey}" r="2.6" fill="${halo}"/>
+  </svg>`;
+}
 // Ana sayfa "Günün Özeti": Halkbank ana sayfasındaki kaydırmalı bilgi kartları gibi; kişisel durum + kampanya
 function renderSlides() {
   const cur = state.cur;
@@ -175,7 +193,7 @@ function renderSlides() {
       <b><svg width="14" height="14"><use href="#k-spark"/></svg>${x.title}</b>
       <p>${x.text}</p>
       <div class="km-sl-btns"><button class="press" data-kslx="${x.id}">Kapat</button><button class="press" ${x.attr}>${x.act}</button></div>
-      <span class="km-sl-art"><span class="km-rate ${x.ratio ? 'flat' : chClass(x.rate)}">${x.ratio ? `<svg width="30" height="30"><use href="#${x.ic}"/></svg>` : '<svg width="34" height="34"><use href="#k-up"/></svg>'}</span></span>
+      <span class="km-sl-art">${x.ratio ? `<span class="km-ill-ic"><svg width="44" height="44"><use href="#${x.ic}"/></svg></span>` : trendArt(x.rate, x.id)}</span>
     </div>`).join('');
   $('#km-dots').innerHTML = slides.length > 1 ? slides.map((_, i) => `<i${i ? '' : ' class="on"'}></i>`).join('') : '';
   $('#km-slider').scrollLeft = 0;

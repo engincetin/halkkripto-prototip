@@ -634,3 +634,8 @@
 .km-rate.flat { color: var(--blue); }
 .km-rate.flat svg { width: 28px; height: 28px; }
 .km-sl-art { width: 96px; height: 96px; right: 14px; background: rgba(255,255,255,.16); box-shadow: 0 0 0 11px rgba(255,255,255,.07); }
+/* Günün Özeti: düğme gibi değil, karta işlenmiş illüstrasyon */
+.km-sl-art { width: 112px; height: 100px; right: 6px; top: auto; bottom: 14px; transform: none; background: none; box-shadow: none; border-radius: 0; }
+.km-ill { display: block; overflow: visible; }
+.km-ill-ic { width: 96px; height: 96px; margin: 2px 0 0 10px; border-radius: 50%; background: rgba(255,255,255,.13); box-shadow: 0 0 0 10px rgba(255,255,255,.06); display: flex; align-items: center; justify-content: center; color: #fff; opacity: .95; }
+.km-sl { padding-right: 116px; }

@@ -1,5 +1,5 @@
 // Çevrimdışı çalışma için basit önbellek. Dosyaları değiştirince VERSION'ı artırın.
-const VERSION = 'hk-v63';
+const VERSION = 'hk-v64';
 const FILES = [
   './', 'index.html', 'styles.css', 'common.js', 'app.js', 'manifest.webmanifest',
   'fonts/nunitosans-latin.woff2', 'fonts/nunitosans-latin-ext.woff2',
