@@ -167,7 +167,7 @@ function renderSlides() {
     held.length && { id: 'day', tone: 'gold', title: 'Varlıklarınız Bugün', text: `Kripto varlıklarınız bugün <b>%${fmt(Math.abs(pct))}</b> ${pct >= 0 ? 'değer kazandı' : 'değer kaybetti'}. ${up.length} varlığınız yükselişte, ${down.length} varlığınız düşüşte.`, act: 'Varlıklarım', attr: 'data-ktabgo="k-assets"', ic: 'i-pie', rate: pct, cap: 'Bugün' },
     top && { id: 'top', tone: 'blue', title: `En Büyük Payınız: ${nameOf(top.c)}`, text: `Kripto varlıklarınızın <b>%${fmt((top.a.v / val) * 100, 0)}</b>’i ${nameOf(top.c)}. Alış maliyetinize göre <b>%${fmt(Math.abs(top.a.pct))}</b> ${top.a.pct >= 0 ? 'kârdasınız' : 'zarardasınız'}.`, act: `${top.c.c} Al/Sat`, attr: `data-ktrade="${top.a.k}/${cur}/buy"`, coin: top.a.k, rate: top.a.pct, cap: 'Kâr / Zarar' },
     { id: 'gain', tone: 'sky', title: `Günün Yükseleni: ${nameOf(gainer)}`, text: `${nameOf(gainer)} son 24 saatte <b>%${fmt(gainer.ch)}</b> yükseldi.${held.some((h) => h.a.k === gainer.k) ? ' Portföyünüzde bulunuyor.' : ' Portföyünüzde bulunmuyor.'}`, act: 'İncele', attr: `data-ktrade="${gainer.k}/${cur}/buy"`, coin: gainer.k, rate: gainer.ch, cap: '24 saat' },
-    { id: 'promo', tone: 'navy', tag: 'Kampanya', title: 'TL Limit Emirlerde %0 Komisyon!', text: '31 Aralık’a kadar gerçekleşen TL limit emirlerinizde komisyon ödemezsiniz.', act: 'Detaylı Bilgi', attr: 'data-soon', ic: 'k-mega', ratio: '%0', cap: 'Komisyon' },
+    { id: 'promo', tone: 'navy', tag: 'Kampanya', title: 'Halkbank’tan Ücretsiz Transfer', text: 'Halkbank hesabınızdan Halk Kripto hesabınıza 7/24, anında ve ücretsiz para gönderin.', act: 'Para Yatır', attr: 'data-kpush="k-dep"', ic: 'k-deposit', ratio: '0 TL', cap: 'Ücret' },
     favs.size && { id: 'fav', tone: 'navy', title: 'Favorileriniz', text: `Favori listenizdeki <b>${favs.size}</b> kriptodan ${favUp ? `<b>${favUp}</b>’i yükselişte` : 'hiçbiri bugün yükselişte değil'}.`, act: 'Favorilerim', attr: 'data-ktab="fav"', ic: 'k-star', ratio: `${favUp}/${favs.size}`, cap: 'Yükselişte' },
   ].filter((x) => x && !slDismissed.has(x.id));
   $('#km-slider').innerHTML = slides.map((x) => `
@@ -982,7 +982,7 @@ const notifs = [
   { id: 'n1', k: 'alarm', title: 'Fiyat Alarmı', text: 'Bitcoin 4.000.000 TL seviyesinin üzerine çıktı.', ts: Date.now() - 35 * 60e3, read: false, go: { trade: 'btc' } },
   { id: 'n2', k: 'trade', title: 'İşleminiz Gerçekleşti', text: '0,35 SOL alış işleminiz gerçekleşti.', ts: Date.now() - 864e5, read: false, go: { tx: 'HK48213907' } },
   { id: 'n3', k: 'dep', title: 'Para Yatırma', text: '15.000,00 TL Halk Kripto TL hesabınıza geçti.', ts: Date.now() - 4 * 864e5, read: true },
-  { id: 'n4', k: 'promo', title: 'Kampanya', text: 'TL limit emirlerde %0 komisyon fırsatı 31 Aralık’a kadar devam ediyor.', ts: Date.now() - 6 * 864e5, read: true },
+  { id: 'n4', k: 'promo', title: 'Kampanya', text: 'Halkbank hesabınızdan Halk Kripto’ya 7/24 ücretsiz para gönderebilirsiniz.', ts: Date.now() - 6 * 864e5, read: true },
 ];
 function agoText(ts) {
   const m = Math.round((Date.now() - ts) / 60e3);
