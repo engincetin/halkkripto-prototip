@@ -626,3 +626,11 @@
 .km-rate .coin-ic svg { width: 13px; height: 13px; }
 .km-rate-arrow { top: 14px; right: 15px; }
 .km-sl .km-sl-btns button:first-child { background: none; color: #fff; font-weight: 600; }
+/* Günün Özeti rozeti: yalnızca yön (yukarı yeşil / aşağı kırmızı) ya da kartın ikonu */
+.km-rate { width: 68px; height: 68px; box-shadow: 0 6px 16px rgba(0,0,0,.16) !important; }
+.km-rate.up { color: var(--green); }
+.km-rate.down { color: var(--red); }
+.km-rate.down svg { transform: rotate(180deg); }
+.km-rate.flat { color: var(--blue); }
+.km-rate.flat svg { width: 28px; height: 28px; }
+.km-sl-art { width: 96px; height: 96px; right: 14px; background: rgba(255,255,255,.16); box-shadow: 0 0 0 11px rgba(255,255,255,.07); }

@@ -175,11 +175,7 @@ function renderSlides() {
       <b><svg width="14" height="14"><use href="#k-spark"/></svg>${x.title}</b>
       <p>${x.text}</p>
       <div class="km-sl-btns"><button class="press" data-kslx="${x.id}">Kapat</button><button class="press" ${x.attr}>${x.act}</button></div>
-      <span class="km-sl-art"><span class="km-rate ${x.ratio ? 'flat' : chClass(x.rate)}">
-        ${x.coin ? coinIcon(x.coin) : `<span class="coin-ic"><svg width="24" height="24"><use href="#${x.ic}"/></svg></span>`}
-        <b>${x.ratio || `${x.rate > 0 ? '+' : x.rate < 0 ? '−' : ''}%${fmt(Math.abs(x.rate))}`}</b>${x.ratio ? '' : '<i class="km-rate-arrow"></i>'}
-        <small>${x.cap}</small>
-      </span></span>
+      <span class="km-sl-art"><span class="km-rate ${x.ratio ? 'flat' : chClass(x.rate)}">${x.ratio ? `<svg width="30" height="30"><use href="#${x.ic}"/></svg>` : '<svg width="34" height="34"><use href="#k-up"/></svg>'}</span></span>
     </div>`).join('');
   $('#km-dots').innerHTML = slides.length > 1 ? slides.map((_, i) => `<i${i ? '' : ' class="on"'}></i>`).join('') : '';
   $('#km-slider').scrollLeft = 0;
