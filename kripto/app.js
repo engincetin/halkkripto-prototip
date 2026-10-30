@@ -164,22 +164,20 @@ function renderSlides() {
   const top = held[0], gainer = [...COINS].sort((x, y) => y.ch - x.ch)[0];
   const favUp = COINS.filter((c) => favs.has(c.k) && c.ch > 0).length;
   const slides = [
-    held.length && { id: 'day', tone: 'gold', title: 'Varlıklarınız Bugün', text: `Kripto varlıklarınız bugün <b>%${fmt(Math.abs(pct))}</b> ${pct >= 0 ? 'değer kazandı' : 'değer kaybetti'}. ${up.length} varlığınız yükselişte, ${down.length} varlığınız düşüşte.`, act: 'Varlıklarım', attr: 'data-ktabgo="k-assets"', ic: 'i-pie', rate: pct, cap: 'Bugün' },
-    top && { id: 'top', tone: 'blue', title: `En Büyük Payınız: ${nameOf(top.c)}`, text: `Kripto varlıklarınızın <b>%${fmt((top.a.v / val) * 100, 0)}</b>’i ${nameOf(top.c)}. Alış maliyetinize göre <b>%${fmt(Math.abs(top.a.pct))}</b> ${top.a.pct >= 0 ? 'kârdasınız' : 'zarardasınız'}.`, act: `${top.c.c} Al/Sat`, attr: `data-ktrade="${top.a.k}/${cur}/buy"`, coin: top.a.k, rate: top.a.pct, cap: 'Kâr / Zarar' },
-    { id: 'gain', tone: 'sky', title: `Günün Yükseleni: ${nameOf(gainer)}`, text: `${nameOf(gainer)} son 24 saatte <b>%${fmt(gainer.ch)}</b> yükseldi.${held.some((h) => h.a.k === gainer.k) ? ' Portföyünüzde bulunuyor.' : ' Portföyünüzde bulunmuyor.'}`, act: 'İncele', attr: `data-ktrade="${gainer.k}/${cur}/buy"`, coin: gainer.k, rate: gainer.ch, cap: '24 saat' },
-    { id: 'promo', tone: 'navy', tag: 'Kampanya', title: 'Halkbank’tan Ücretsiz Transfer', text: 'Halkbank hesabınızdan Halk Kripto hesabınıza 7/24, anında ve ücretsiz para gönderin.', act: 'Para Yatır', attr: 'data-kpush="k-dep"', ic: 'k-deposit', ratio: '0 TL', cap: 'Ücret' },
-    favs.size && { id: 'fav', tone: 'navy', title: 'Favorileriniz', text: `Favori listenizdeki <b>${favs.size}</b> kriptodan ${favUp ? `<b>${favUp}</b>’i yükselişte` : 'hiçbiri bugün yükselişte değil'}.`, act: 'Favorilerim', attr: 'data-ktab="fav"', ic: 'k-star', ratio: `${favUp}/${favs.size}`, cap: 'Yükselişte' },
+    held.length && { id: 'day', tone: 'gold', title: 'Varlıklarınız Bugün', text: `Varlıklarınız bugün <b>%${fmt(Math.abs(pct))}</b> ${pct >= 0 ? 'değer kazandı' : 'değer kaybetti'}; ${up.length} yükselişte, ${down.length} düşüşte.`, act: 'Varlıklarım', attr: 'data-ktabgo="k-assets"', ic: 'i-pie', rate: pct, cap: 'Bugün' },
+    top && { id: 'top', tone: 'blue', title: `En Büyük Payınız: ${top.c.c}`, text: `Varlıklarınızın <b>%${fmt((top.a.v / val) * 100, 0)}</b>’i ${nameOf(top.c)}; maliyetinize göre ${top.a.pct >= 0 ? 'kârdasınız' : 'zarardasınız'}.`, act: `${top.c.c} Al/Sat`, attr: `data-ktrade="${top.a.k}/${cur}/buy"`, coin: top.a.k, rate: top.a.pct, cap: 'Kâr / Zarar' },
+    { id: 'gain', tone: 'sky', title: `Günün Yükseleni: ${nameOf(gainer)}`, text: `Son 24 saatte <b>%${fmt(gainer.ch)}</b> yükseldi.${held.some((h) => h.a.k === gainer.k) ? ' Portföyünüzde bulunuyor.' : ' Portföyünüzde bulunmuyor.'}`, act: 'İncele', attr: `data-ktrade="${gainer.k}/${cur}/buy"`, coin: gainer.k, rate: gainer.ch, cap: '24 saat' },
+    { id: 'promo', tone: 'navy', title: 'Ücretsiz Transfer', text: 'Halkbank’tan Halk Kripto’ya 7/24, anında ve ücretsiz para gönderin.', act: 'Para Yatır', attr: 'data-kpush="k-dep"', ic: 'k-deposit', ratio: '0 TL', cap: 'Ücret' },
+    favs.size && { id: 'fav', tone: 'navy', title: 'Favorileriniz', text: `Favori listenizdeki <b>${favs.size}</b> kriptodan ${favUp ? `<b>${favUp}</b>’i yükselişte.` : 'hiçbiri bugün yükselişte değil.'}`, act: 'Favorilerim', attr: 'data-ktab="fav"', ic: 'k-star', ratio: `${favUp}/${favs.size}`, cap: 'Yükselişte' },
   ].filter((x) => x && !slDismissed.has(x.id));
   $('#km-slider').innerHTML = slides.map((x) => `
     <div class="km-sl ${x.tone}">
-      <span class="km-sl-tag"><svg width="13" height="13"><use href="#${x.tag ? 'k-mega' : 'k-spark'}"/></svg>${x.tag || 'Günün Özeti'}</span>
-      <b>${x.title}</b>
+      <b><svg width="14" height="14"><use href="#k-spark"/></svg>${x.title}</b>
       <p>${x.text}</p>
-      <div class="km-sl-btns"><button class="press" ${x.attr}>${x.act}</button></div>
-      <button class="km-sl-x press" data-kslx="${x.id}" aria-label="Kapat"><svg width="14" height="14" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
+      <div class="km-sl-btns"><button class="press" data-kslx="${x.id}">Kapat</button><button class="press" ${x.attr}>${x.act}</button></div>
       <span class="km-sl-art"><span class="km-rate ${x.ratio ? 'flat' : chClass(x.rate)}">
         ${x.coin ? coinIcon(x.coin) : `<span class="coin-ic"><svg width="24" height="24"><use href="#${x.ic}"/></svg></span>`}
-        <b>${x.ratio || `${x.rate > 0 ? '+' : x.rate < 0 ? '−' : ''}%${fmt(Math.abs(x.rate))}`}</b>${x.ratio ? '' : `<i class="km-rate-arrow"></i>`}
+        <b>${x.ratio || `${x.rate > 0 ? '+' : x.rate < 0 ? '−' : ''}%${fmt(Math.abs(x.rate))}`}</b>${x.ratio ? '' : '<i class="km-rate-arrow"></i>'}
         <small>${x.cap}</small>
       </span></span>
     </div>`).join('');
