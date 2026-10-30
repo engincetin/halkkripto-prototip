@@ -463,14 +463,16 @@ function openTrade(k = 'btc', cur = state.cur, side = 'buy') {
   if (!stack.includes('k-trade')) pushScreen('k-trade');
 }
 
+// Kartlar Halkbank döviz alış/satış ekranındaki hesap kartlarıyla aynı düzende: ad, hesap no, iki sütun bakiye
+const ACCT_NO = { TL: 'HK 48215903 - 01', USD: 'HK 48215903 - 02' };
+function balCol(label, html) { return `<div><span>${label}</span><b class="amt">${html}</b></div>`; }
+function bigQty(q, dec, unit) { const [i, f] = fmt(q, dec).split(','); return `${i}<small>${f ? `,${f}` : ''} ${unit}</small>`; }
 function acctCard(cur, attrs) {
-  const bal = cashOf(cur);
   return `
     <button class="card kt-acct press" ${attrs}>
-      ${coinIcon(cur === 'USD' ? 'usd' : 'try')}
-      <span class="kt-acct-txt"><b>Halk Kripto ${cur} Hesabı</b><small>Nakit Varlık</small></span>
-      <span class="kt-acct-bal"><small>Kullanılabilir Bakiye</small><b class="amt">${money(bal, cur)}</b></span>
-      <svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg>
+      <div class="kt-acct-head"><span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span><b>Halk Kripto ${cur} Hesabı</b><svg class="kt-acct-chev" width="14" height="8"><use href="#i-chev-down"/></svg></div>
+      <div class="kt-acct-no">${ACCT_NO[cur]} · Nakit Varlık</div>
+      <div class="kt-cols">${balCol('Kullanılabilir Bakiye', money(cashOf(cur), cur))}${balCol('Emirdeki Tutar', money(0, cur))}</div>
     </button>`;
 }
 function assetCard(k, sell) {
@@ -480,19 +482,18 @@ function assetCard(k, sell) {
   }
   return `
     <div class="card kt-acct">
-      ${coinIcon(k)}
-      <span class="kt-acct-txt"><b>${c.c} Varlığım</b><small>${nameOf(c)}</small></span>
-      <span class="kt-acct-bal"><small>${sell ? 'Satılabilir Miktar' : 'Mevcut Miktar'}</small><b class="amt">${fmt(q, qtyDec(c))} ${c.c}</b><em class="amt">≈ ${fmt(inCur(q * c.tl, tr.cur))} ${tr.cur}</em></span>
+      <div class="kt-acct-head">${coinIcon(k)}<b>${c.c} Varlığım</b></div>
+      <div class="kt-acct-no">${nameOf(c)}</div>
+      <div class="kt-cols">${balCol(sell ? 'Satılabilir Miktar' : 'Mevcut Miktar', bigQty(q, qtyDec(c), c.c))}${balCol(`${tr.cur} Karşılığı`, money(inCur(q * c.tl, tr.cur), tr.cur))}</div>
     </div>`;
 }
 
 function renderTrade() {
   const c = coinOf(tr.k), buy = tr.side === 'buy', p = tradePrice();
   $$('#kt-seg [data-kside]').forEach((b) => b.classList.toggle('on', b.dataset.kside === tr.side));
-  $('#kt-pick').innerHTML = `${coinIcon(tr.k)}<span><small>Kripto Tipi</small><b>${nameOf(c)} <em>${c.c}</em></b></span><svg width="14" height="8"><use href="#i-chev-down"/></svg>`;
-  $('#kt-price').innerHTML = `
-    <div><b>${c.c}/${tr.cur} ${buy ? 'Alış' : 'Satış'} Fiyatı</b><small>Son güncelleme: ${timeStr(tr.upd)}</small></div>
-    <div class="kt-pr"><b>${fmt(p, priceDec(p))} ${tr.cur}</b><small class="${chClass(c.ch)}">%${fmt(Math.abs(c.ch))}${c.ch ? '<i class="k-arrow"></i>' : ''}</small></div>`;
+  $('#kt-pick').innerHTML = `${coinIcon(tr.k)}<span><small>Kripto Tipi</small><b>${nameOf(c)}</b></span><svg width="14" height="8"><use href="#i-chev-down"/></svg>`;
+  $('#kt-price').innerHTML = `<b>${nameOf(c)}</b><b>${fmt(p, priceDec(p))} ${tr.cur}</b>`;
+  $('#kt-price').title = `Son güncelleme: ${timeStr(tr.upd)}`;
   $('#kt-t1').textContent = buy ? 'PARANIN ÇEKİLECEĞİ HESAP' : 'KRİPTONUN ÇEKİLECEĞİ VARLIK';
   $('#kt-t2').textContent = buy ? 'KRİPTONUN AKTARILACAĞI VARLIK' : 'PARANIN AKTARILACAĞI HESAP';
   $('#kt-t3').textContent = buy ? 'ALIŞ BİLGİLERİ' : 'SATIŞ BİLGİLERİ';
@@ -519,10 +520,9 @@ function tradeError() {
 }
 function renderCalc() {
   const { fee, total } = tradeTotals(), err = tradeError(), cur = tr.cur;
-  $('#kt-calc').innerHTML = tr.amt ? `
-    <div class="info-row"><span>Komisyon <small>%0,20</small></span><b>${fmt(fee)} ${cur}</b></div>
-    <div class="info-row"><span>${tr.side === 'buy' ? 'Toplam Ödenecek' : 'Hesaba Geçecek'}</span><b>${fmt(total)} ${cur}</b></div>
-    ${err ? `<div class="kt-err">${err}</div>` : ''}` : '<div class="kt-hint">Almak ya da satmak istediğiniz miktarı kripto veya para cinsinden girebilirsiniz.</div>';
+  // Döviz ekranındaki gibi sade: yalnızca tutar girilince tek satır özet ya da hata
+  $('#kt-calc').innerHTML = !tr.amt ? `<button class="see-all kt-all press" data-kpct="100">${tr.side === 'buy' ? 'Tüm bakiyeyi kullan' : 'Tümünü sat'} <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>` : err ? `<div class="kt-err">${err}</div>`
+    : `<div class="kt-sumline">Komisyon (%0,20) <b>${fmt(fee)} ${cur}</b><span>·</span>${tr.side === 'buy' ? 'Toplam' : 'Hesaba Geçecek'} <b>${fmt(total)} ${cur}</b></div>`;
   $('#kt-go').disabled = !tr.amt || !!err;
 }
 function onQty() {

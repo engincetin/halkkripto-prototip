@@ -384,3 +384,46 @@
 .kd-qr-img .coin-ic { width: 40px; height: 40px; }
 .kd-qr > b { display: block; margin-top: 14px; font-size: 16px; font-weight: 800; color: var(--ink); }
 .kd-qr code { display: block; margin: 8px 10px 0; font: 700 14px/1.4 'Nunito Sans', sans-serif; color: var(--ink-3); word-break: break-all; }
+
+/* ---------- Kripto Al/Sat: Halkbank döviz alış/satış ekranının sadeliği ---------- */
+#k-trade .kt-seg { background: #fff; padding: 4px; border-radius: 9px; box-shadow: 0 0 13px 2px rgba(0,0,0,.05); }
+#k-trade .kt-seg button { height: 40px; border-radius: 7px; font-size: 17px; font-weight: 700; color: var(--gray-2); }
+#k-trade .kt-seg button.on { color: #fff; font-weight: 800; }
+.kt-pick { margin-top: 16px; padding: 12px 20px 12px 14px; border: 1.5px solid #d3d8de; gap: 14px; }
+.kt-pick .coin-ic { width: 48px; height: 48px; border-radius: 50%; }
+.kt-pick small { font-size: 15px; color: var(--gray-2); }
+.kt-pick b { font-size: 19px; margin-top: 0; }
+.kt-pick > svg { color: var(--ink-3); }
+.kt-price { margin-top: 14px; padding: 20px 20px; }
+.kt-price b { font-size: 18px; font-weight: 800; color: var(--ink); }
+.kt-price b + b { white-space: nowrap; }
+#k-trade .section-title { margin: 26px 0 14px; }
+.kt-acct { display: block; padding: 20px 20px 18px; text-align: left; }
+.kt-acct-head { display: flex; align-items: center; gap: 9px; }
+.kt-acct-head b { flex: 1; font-size: 19px; font-weight: 800; color: var(--ink); }
+.kt-acct-head .star { width: 20px; height: 20px; flex: none; }
+.kt-acct-head .coin-ic { width: 26px; height: 26px; border-radius: 50%; }
+.kt-acct-head .coin-ic svg { width: 16px; height: 16px; }
+.kt-acct-chev { color: var(--orange); }
+.kt-acct-no { font-size: 15px; color: var(--ink-3); margin-top: 6px; font-weight: 600; }
+.kt-cols { display: flex; gap: 14px; margin-top: 20px; }
+.kt-cols > div { flex: 1; min-width: 0; }
+.kt-cols span { display: block; font-size: 13px; color: var(--gray); font-weight: 600; }
+.kt-cols b { display: block; font-size: 26px; font-weight: 800; color: var(--ink); margin-top: 6px; letter-spacing: .3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kt-cols b small { font-size: 15px; font-weight: 800; letter-spacing: .2px; }
+.kt-note { padding: 20px 18px; }
+.kt-note b { font-size: 18px; }
+.kt-note small { font-size: 15px; }
+.kt-inputs { gap: 14px; }
+.kt-in { height: 64px; padding: 0 18px; border: 1.5px solid #d3d8de; }
+.kt-in input { font-size: 19px; }
+.kt-in input::placeholder { font-size: 18px; color: #8a929b; }
+.kt-in span { font-size: 18px; font-weight: 600; color: var(--gray-2); }
+.kt-calc { margin-top: 12px; }
+.kt-all { font-size: 14px; font-weight: 800; }
+.kt-sumline { font-size: 14px; color: var(--gray-2); font-weight: 600; text-align: center; }
+.kt-sumline b { color: var(--ink); font-weight: 800; }
+.kt-sumline span { margin: 0 6px; }
+#k-trade .bottom-btns .btn-primary { height: 53px; border-radius: 10px; font-size: 19px; }
+.kt-go-wrap { margin: 22px 19px 0; }
+.kt-go-wrap .btn-primary { height: 53px; border-radius: 10px; font-size: 19px; }
