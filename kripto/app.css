@@ -571,7 +571,7 @@
 .ka-chartbtn { display: flex; align-items: center; gap: 8px; }
 .ka-chart.open ~ .ka-chartbtn svg { transform: rotate(180deg); }
 /* Piyasalar: "Günün Özeti" kaydırıcısı (Halkbank ana sayfa bilgi kartları gibi) */
-.km-slider { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 14px 19px 2px; scroll-padding: 0 19px; }
+.km-slider { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 16px 19px 2px; scroll-padding: 0 19px; }
 .km-slider:empty { display: none; }
 .km-slider::-webkit-scrollbar { display: none; }
 .km-slider::after { content: ''; flex: 0 0 9px; }

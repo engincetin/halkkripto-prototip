@@ -63,6 +63,7 @@ function renderTotal() {
       <button class="see-all press" data-ktabgo="k-assets">Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
   }
   $('#device').classList.toggle('hidden-amt', state.hidden);
+  renderSlides();
 }
 // "Tümü": Halkbank Tüm Hesaplar menüsünün aynısı
 function openAllAcc() {
@@ -151,7 +152,14 @@ function renderMarketCard() {
     <hr>
     <button class="see-all press" data-ktabgo="k-assets">Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
 
-  // "Günün Özeti": Halkbank ana sayfasındaki kaydırmalı bilgi kartları gibi; kısa, kişisel durum anlatımı
+}
+// Ana sayfa "Günün Özeti": Halkbank ana sayfasındaki kaydırmalı bilgi kartları gibi; kişisel durum + kampanya
+function renderSlides() {
+  const cur = state.cur;
+  const held = ASSETS.filter((a) => a.v > 0.005).map((a) => ({ a, c: coinOf(a.k) })).sort((x, y) => y.a.v - x.a.v);
+  const val = held.reduce((t, h) => t + h.a.v, 0);
+  const chg = held.reduce((t, h) => t + h.a.v - h.a.v / (1 + h.c.ch / 100), 0);
+  const pct = val ? (chg / (val - chg)) * 100 : 0;
   const up = held.filter((h) => h.c.ch > 0), down = held.filter((h) => h.c.ch < 0);
   const top = held[0], gainer = [...COINS].sort((x, y) => y.ch - x.ch)[0];
   const favUp = COINS.filter((c) => favs.has(c.k) && c.ch > 0).length;
@@ -159,11 +167,12 @@ function renderMarketCard() {
     held.length && { id: 'day', tone: 'gold', title: 'Varlıklarınız Bugün', text: `Kripto varlıklarınız bugün <b>%${fmt(Math.abs(pct))}</b> ${pct >= 0 ? 'değer kazandı' : 'değer kaybetti'}. ${up.length} varlığınız yükselişte, ${down.length} varlığınız düşüşte.`, act: 'Varlıklarım', attr: 'data-ktabgo="k-assets"', ic: 'i-pie', rate: pct, cap: 'Bugün' },
     top && { id: 'top', tone: 'blue', title: `En Büyük Payınız: ${nameOf(top.c)}`, text: `Kripto varlıklarınızın <b>%${fmt((top.a.v / val) * 100, 0)}</b>’i ${nameOf(top.c)}. Alış maliyetinize göre <b>%${fmt(Math.abs(top.a.pct))}</b> ${top.a.pct >= 0 ? 'kârdasınız' : 'zarardasınız'}.`, act: `${top.c.c} Al/Sat`, attr: `data-ktrade="${top.a.k}/${cur}/buy"`, coin: top.a.k, rate: top.a.pct, cap: 'Kâr / Zarar' },
     { id: 'gain', tone: 'sky', title: `Günün Yükseleni: ${nameOf(gainer)}`, text: `${nameOf(gainer)} son 24 saatte <b>%${fmt(gainer.ch)}</b> yükseldi.${held.some((h) => h.a.k === gainer.k) ? ' Portföyünüzde bulunuyor.' : ' Portföyünüzde bulunmuyor.'}`, act: 'İncele', attr: `data-ktrade="${gainer.k}/${cur}/buy"`, coin: gainer.k, rate: gainer.ch, cap: '24 saat' },
-    favs.size && { id: 'fav', tone: 'navy', title: 'Favorileriniz', text: `Favori listenizdeki <b>${favs.size}</b> kriptodan ${favUp ? `<b>${favUp}</b>’i yükselişte` : 'hiçbiri bugün yükselişte değil'}.`, act: 'Favorilerim', attr: 'data-kml="fav"', ic: 'k-star', ratio: `${favUp}/${favs.size}`, cap: 'Yükselişte' },
+    { id: 'promo', tone: 'navy', tag: 'Kampanya', title: 'TL Limit Emirlerde %0 Komisyon!', text: '31 Aralık’a kadar gerçekleşen TL limit emirlerinizde komisyon ödemezsiniz.', act: 'Detaylı Bilgi', attr: 'data-soon', ic: 'k-mega', ratio: '%0', cap: 'Komisyon' },
+    favs.size && { id: 'fav', tone: 'navy', title: 'Favorileriniz', text: `Favori listenizdeki <b>${favs.size}</b> kriptodan ${favUp ? `<b>${favUp}</b>’i yükselişte` : 'hiçbiri bugün yükselişte değil'}.`, act: 'Favorilerim', attr: 'data-ktab="fav"', ic: 'k-star', ratio: `${favUp}/${favs.size}`, cap: 'Yükselişte' },
   ].filter((x) => x && !slDismissed.has(x.id));
   $('#km-slider').innerHTML = slides.map((x) => `
     <div class="km-sl ${x.tone}">
-      <span class="km-sl-tag"><svg width="13" height="13"><use href="#k-spark"/></svg>Günün Özeti</span>
+      <span class="km-sl-tag"><svg width="13" height="13"><use href="#${x.tag ? 'k-mega' : 'k-spark'}"/></svg>${x.tag || 'Günün Özeti'}</span>
       <b>${x.title}</b>
       <p>${x.text}</p>
       <div class="km-sl-btns"><button class="press" ${x.attr}>${x.act}</button></div>
@@ -1185,14 +1194,13 @@ function init() {
     if (b.hasAttribute('data-txshare')) { if (b.closest('#k-txd')) return openDekont(txOpen.id); return toast('Paylaşım menüsü demoda yer almıyor'); }
     if (b.id === 'ke-go') { popScreen(); return toast(`Hesap ekstreniz ${$('#ke-mail').value} adresine gönderildi`); }
     if (b.hasAttribute('data-kclose')) return closeSheet();
-    if (b.dataset.kslx) { slDismissed.add(b.dataset.kslx); return renderMarketCard(); }
+    if (b.dataset.kslx) { slDismissed.add(b.dataset.kslx); return renderSlides(); }
     if (b.dataset.kml) { km.list = b.dataset.kml; return renderMarkets(); }
     if (b.dataset.ksort) return setSort(b.dataset.ksort);
     if (b.dataset.kpm) { km.pm = b.dataset.kpm; renderMarkets(); return setTimeout(closeSheet, 180); }
     if (b.id === 'ks-clear') { recents = []; return renderSearch(); }
     if (b.dataset.kpick) return pickPair(b.dataset.kpick);
     if (b.dataset.kpair) { closeSheet(); const [k, q] = b.dataset.kpair.split('/'); return openTrade(k, q, 'buy'); }
-    if (b.id === 'k-promo-x') return $('#k-promo').classList.add('gone');
     if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; renderTotal(); renderHistory(); renderMarketCard(); return renderAssets(); }
     if (b.hasAttribute('data-cursheet')) return openSheet();
     if (b.dataset.dcur) {
