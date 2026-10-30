@@ -117,6 +117,9 @@
   <div class="home-indicator"></div>
 
   <!-- ===================== AÇILIŞ ===================== -->
+  <!-- Halkbank'tan açıldığında iOS'un uygulamalar arası dönüş bağlantısı gibi: sol üstte, saatin altında, her ekranda aynı yerde -->
+  <button class="k-bankpill press" id="k-bankpill" data-bank hidden aria-label="Halkbank'a dön"><svg width="7" height="10" viewBox="0 0 7 10"><path d="M6 0v10L0 5z" fill="currentColor"/></svg>Halkbank</button>
+
   <section class="screen active" id="k-splash">
     <div class="k-splash-in">
       <img src="img/logo.png" alt="" class="k-splash-logo">
@@ -129,7 +132,7 @@
   <section class="screen" id="k-home">
     <div class="home-top k-top">
       <div class="row1">
-        <button class="k-back press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
+        
         <button class="avatar press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button>
         <span class="bell"><svg width="24" height="24"><use href="#i-bell"/></svg></span>
         <span class="sp"></span>
@@ -174,8 +177,8 @@
 
   <!-- ===================== PİYASALAR ===================== -->
   <section class="screen" id="k-markets">
-    <header class="header">
-      <div class="k-hleft"><button class="k-back press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
+    <header class="header k-tabhead">
+      <div class="k-hleft"><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
       <h1>Piyasalar</h1>
       <div class="k-hright">
         <button class="press" data-ksheet="filter-sheet" aria-label="Listeyi düzenle"><svg width="24" height="24"><use href="#k-filter"/></svg></button>
@@ -183,7 +186,7 @@
       </div>
     </header>
     <div class="scroll pull-blue">
-      <div class="pad-header"></div>
+      <div class="pad-header k-pad"></div>
       <div class="pull-content">
       <div class="grad-ext"></div>
       <div class="card kcard k-total" id="km-card"></div>
@@ -203,8 +206,8 @@
 
   <!-- ===================== VARLIKLARIM ===================== -->
   <section class="screen" id="k-assets">
-    <header class="header">
-      <div class="k-hleft"><button class="k-back press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
+    <header class="header k-tabhead">
+      <div class="k-hleft"><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
       <h1>Varlıklarım</h1>
       <div class="k-hright">
         <button class="press" data-eye aria-label="Tutarları gizle / göster"><svg width="25" height="18" id="ka-eye"><use href="#k-heye"/></svg></button>
@@ -212,7 +215,7 @@
       </div>
     </header>
     <div class="scroll pull-blue">
-      <div class="pad-header"></div>
+      <div class="pad-header k-pad"></div>
       <div class="pull-content">
         <div class="grad-ext"></div>
         <div class="card kcard k-total bal" id="ka-total"></div>
@@ -238,15 +241,15 @@
 
   <!-- ===================== İŞLEM GEÇMİŞİ ===================== -->
   <section class="screen" id="k-history">
-    <header class="header">
-      <div class="k-hleft"><button class="k-back press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
+    <header class="header k-tabhead">
+      <div class="k-hleft"><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
       <h1>İşlemler</h1>
       <div class="k-hright">
         <button class="press" data-ksheet="hf-sheet" aria-label="Tarihe göre ara"><svg width="22" height="24"><use href="#i-cal"/></svg></button>
       </div>
     </header>
     <div class="scroll pull-blue">
-      <div class="pad-header"></div>
+      <div class="pad-header k-pad"></div>
       <div class="pull-content">
       <div class="grad-ext"></div>
       <div class="card kcard k-total bal" id="kh-month"></div>

@@ -452,7 +452,17 @@
 .ka-dot { width: 14px; height: 14px; border-radius: 50%; flex: none; }
 
 /* Sekme başlıkları: solda kullanıcı fotoğrafı (ana sayfadaki gibi), sağda sekmeye özgü ikonlar */
-.k-hav { width: 36px; height: 36px; border: 2px solid rgba(255,255,255,.85); }
-.k-hav i { width: 14px; height: 14px; right: -4px; bottom: -3px; }
-.k-hleft .k-back { margin-right: 10px; }
-.k-hav { width: 40px; height: 40px; }
+
+/* Sekme başlıkları: ana sayfa üst şeridiyle aynı yükseklik; fotoğraf ve sağ ikonlar aynı yerde, aynı ölçüde */
+.header.k-tabhead { height: calc(var(--sat) + 76px); align-items: flex-start; }
+.header.k-tabhead h1 { margin-top: 26px; }
+.k-tabhead .k-hleft { top: calc(var(--sat) + 16px); bottom: auto; left: 24px; height: 46px; }
+.k-tabhead .k-hright { top: calc(var(--sat) + 17px); bottom: auto; right: 12px; height: 44px; gap: 0; }
+.k-pad { height: calc(var(--sat) + 76px); }
+/* "◀ Halkbank": iOS durum çubuğundaki geri dönüş bağlantısı gibi */
+.k-bankpill { position: absolute; z-index: 95; left: 22px; top: max(3px, calc(var(--sat) - 19px)); height: 18px; display: flex; align-items: center; gap: 4px; padding: 0 4px; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: .1px; text-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.k-bankpill[hidden] { display: none; }
+.k-bankpill svg { filter: drop-shadow(0 1px 1px rgba(0,0,0,.25)); }
+/* Sekmelerde üst kart ana sayfadakiyle aynı yükseklikte başlar; mavi zemin kartın arkasında aynı ölçüde devam eder */
+.k-tabhead ~ .scroll .grad-ext { height: 55px; }
+.k-tabhead ~ .scroll .kcard { margin-top: -55px; }
