@@ -175,13 +175,12 @@
         <button class="press" data-kpush="k-search" aria-label="Ara"><svg width="23" height="23"><use href="#i-search"/></svg></button>
       </div>
     </header>
-    <div class="scroll">
+    <div class="scroll pull-blue">
       <div class="pad-header"></div>
-      <div class="k-qtabs" id="km-quotes">
-        <button data-kq="fav" aria-label="Favoriler"><svg width="20" height="20"><use href="#k-star"/></svg></button>
-        <button data-kq="TL" class="on">TL</button>
-        <button data-kq="USD">USD</button>
-      </div>
+      <div class="pull-content">
+      <div class="grad-ext"></div>
+      <div class="card kcard k-total" id="km-card"></div>
+      <div class="k-tabs" id="km-tabs"><button class="on" data-kml="all">Tüm Kriptolar</button><button data-kml="fav">Favorilerim</button></div>
       <div class="k-info"><svg width="20" height="20"><use href="#i-info"/></svg><span>TL çiftlerde limit emirler <b>%0</b> komisyon!</span></div>
       <div class="k-sorthead" id="km-sort">
         <button data-ksort="name">İsim <svg width="9" height="14"><use href="#k-sort"/></svg></button>
@@ -190,6 +189,7 @@
       </div>
       <div class="list-card" id="km-list"></div>
       <div style="height:calc(var(--sab) + 110px)"></div>
+      </div>
     </div>
     <nav class="tabbar" data-ktabbar="k-markets"></nav>
   </section>
@@ -234,10 +234,11 @@
       <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
       <h1>İşlemler</h1>
     </header>
-    <div class="scroll">
+    <div class="scroll pull-blue">
       <div class="pad-header"></div>
-      <div class="section-title" id="kh-month-title">BU AY</div>
-      <div class="card kh-month bal" id="kh-month"></div>
+      <div class="pull-content">
+      <div class="grad-ext"></div>
+      <div class="card kcard k-total bal" id="kh-month"></div>
       <div class="section-title">İŞLEMLERİNİZ</div>
       <div class="kh-filters">
         <button class="kh-sel press" data-khsel="type"><span>İşlem</span><b id="khs-type">Tümü</b><svg width="14" height="8"><use href="#i-chev-down"/></svg></button>
@@ -247,6 +248,7 @@
       <div id="kh-active" class="kh-active"></div>
       <div id="kh-list"></div>
       <div style="height:calc(var(--sab) + 110px)"></div>
+      </div>
     </div>
     <nav class="tabbar" data-ktabbar="k-history"></nav>
   </section>

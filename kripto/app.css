@@ -50,11 +50,6 @@
 .k-hleft { position: absolute; left: 16px; bottom: 0; height: 54px; }
 .k-hright { position: absolute; right: 12px; bottom: 0; height: 54px; display: flex; align-items: center; gap: 4px; }
 .k-hright button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #fff; }
-.k-qtabs { display: flex; margin: 14px 19px 0; border-bottom: 1px solid #dfe3e8; }
-.k-qtabs button { flex: 1; height: 46px; font-size: 16px; font-weight: 700; color: var(--gray); position: relative; display: flex; align-items: center; justify-content: center; }
-.k-qtabs button:first-child { flex: 0 0 64px; color: #9aa3ad; }
-.k-qtabs button.on { color: var(--blue); font-weight: 800; }
-.k-qtabs button.on::after { content: ''; position: absolute; left: 18%; right: 18%; bottom: -1px; height: 3px; border-radius: 2px; background: var(--blue); }
 .k-info { display: flex; align-items: center; gap: 10px; margin: 14px 19px 0; padding: 12px 16px; border-radius: 8px; background: #e6f1fb; border: 1px solid #d5e6f5; color: var(--blue); font-size: 15px; }
 .k-info span { color: var(--ink-3); font-weight: 600; }
 .k-info b { color: var(--blue); }
@@ -425,10 +420,6 @@
 
 /* ---------- İşlemler: Halkbank hesap hareketleri düzeni ---------- */
 #k-history { background: var(--bg-home); }
-.kh-month { margin: 0 19px; padding: 6px 20px 12px; }
-.kh-month hr { border: 0; border-top: 1px solid var(--line); margin: 6px 0 10px; }
-.kh-month-foot { font-size: 14px; color: var(--gray-2); }
-.kh-month-foot b { color: var(--ink); }
 #k-history .kh-filters { margin-top: 0; }
 .kh-moves { margin: 0 19px; padding: 2px 20px; }
 .kh-mv .mv-bot span { letter-spacing: .2px; font-size: 14px; }
@@ -436,3 +427,8 @@
 .kh-mv .mv-top .off { color: var(--gray-2); font-weight: 800; text-decoration: line-through; }
 .kh-mv.cancel .datebox { opacity: .6; }
 .kh-r b small { display: inline; }
+/* Piyasalar / İşlemler üst kartları: ana sayfa ve Varlıklarım ile aynı düzen */
+#k-markets, #k-history { background: var(--bg-home); }
+#km-card .pl-row b, #kh-month .pl-row b { font-size: 16px; }
+#kh-month .vrow b { font-size: 16px; }
+#k-markets .k-tabs { margin-top: 16px; }

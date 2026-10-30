@@ -13,7 +13,7 @@ const state = bank || { nakit: 20264, nakitUsd: 200, kripto: 70150, cur: 'TL', h
 const favs = new Set(['btc', 'eth', 'sol']);
 let kTab = 'up';
 // Piyasalar ekranı durumu
-const km = { quote: 'TL', pm: 'ask', sort: null, dir: 1 };
+const km = { list: 'all', pm: 'ask', sort: null, dir: 1 };
 // Arama geçmişi (çift: kripto + kotasyon)
 let recents = [{ k: 'btc', q: 'TL' }, { k: 'usdc', q: 'USD' }, { k: 'eth', q: 'TL' }];
 const POPULAR = ['btc', 'eth', 'sol', 'doge', 'link', 'avax'];
@@ -84,15 +84,33 @@ function pairRow(c, quote, pm, attrs = '') {
 }
 
 /* ---------- Piyasalar ---------- */
+// Piyasalar üst kartı: ana sayfa / Varlıklarım kartıyla aynı yapı (para birimi seçimi ortak)
+function renderMarketCard() {
+  const cur = state.cur, btc = coinOf('btc');
+  const up = COINS.filter((c) => c.ch > 0).length, down = COINS.filter((c) => c.ch < 0).length;
+  const [i, f] = priceText(btc, cur, 'last').replace(` ${cur}`, '').split(',');
+  $('#km-card').innerHTML = `
+    <div class="acct-head">
+      <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
+      <span class="name">Kripto Piyasası</span>
+      <button class="pill-orange press" data-cursheet>${cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
+    </div>
+    <div class="lbl" style="margin-top:13px">Bitcoin (BTC/${cur})</div>
+    <div class="amt-big">${i}<small>${f ? `,${f}` : ''} ${cur}</small></div>
+    <div class="pl-row"><span class="lbl">24s Değişim</span><b class="${chClass(btc.ch)}">%${fmt(Math.abs(btc.ch))}</b><span class="lbl" style="margin-left:auto">Yükselen</span><b class="up">${up}</b><span class="lbl">Düşen</span><b class="down">${down}</b></div>
+    <hr>
+    <button class="see-all press" data-ktrade="btc/${cur}/buy">Bitcoin Al/Sat <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
+}
 function renderMarkets() {
-  const quote = km.quote === 'fav' ? state.cur : km.quote;
-  let list = km.quote === 'fav' ? COINS.filter((c) => favs.has(c.k)) : [...COINS];
+  renderMarketCard();
+  const quote = state.cur;
+  let list = km.list === 'fav' ? COINS.filter((c) => favs.has(c.k)) : [...COINS];
   if (km.sort) {
     const key = { name: (c) => nameOf(c).toLocaleLowerCase('tr-TR'), price: (c) => c.tl, ch: (c) => c.ch }[km.sort];
     list.sort((a, b) => (key(a) > key(b) ? 1 : key(a) < key(b) ? -1 : 0) * km.dir);
   }
   $('#km-list').innerHTML = list.length ? list.map((c) => pairRow(c, quote, km.pm, `data-kpair="${c.k}/${quote}"`)).join('') : '<div class="k-empty">Favori listeniz boş</div>';
-  $$('#km-quotes [data-kq]').forEach((b) => b.classList.toggle('on', b.dataset.kq === km.quote));
+  $$('#km-tabs [data-kml]').forEach((b) => b.classList.toggle('on', b.dataset.kml === km.list));
   $('#km-price-lbl').textContent = PM_LABEL[km.pm];
   $$('#km-sort [data-ksort]').forEach((b) => {
     b.classList.toggle('on', b.dataset.ksort === km.sort);
@@ -343,11 +361,19 @@ function renderHistory() {
   const now = new Date(), m0 = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
   const month = buildTx().filter((x) => x.ts >= m0 && x.st === 'done');
   const sumTL = (t) => month.filter((x) => x.t === t).reduce((a, x) => a + (x.k === 'usd' ? x.total * USD_RATE : x.total + (x.t === 'buy' ? x.fee : x.t === 'sell' ? -x.fee : 0)), 0);
-  $('#kh-month-title').textContent = `${TR_MONTHS[now.getMonth()].toLocaleUpperCase('tr-TR')} ${now.getFullYear()}`;
-  const row = (n, v) => `<div class="info-row"><span>${n}</span><b class="amt">${fmt(v)} TL</b></div>`;
-  $('#kh-month').innerHTML = row('Kripto Alışlarınız', sumTL('buy')) + row('Kripto Satışlarınız', sumTL('sell'))
-    + row('Yatırdığınız Para', sumTL('dep')) + row('Çektiğiniz Para', sumTL('wd'))
-    + `<hr><div class="kh-month-foot"><span>Bu ay <b>${month.length}</b> işlem yaptınız.</span></div>`;
+  const vol = sumTL('buy') + sumTL('sell');
+  const [vi, vf] = fmt(vol).split(',');
+  const vrow = (n, v) => `<div class="vrow"><span class="lbl">${n}</span><b class="amt">${money(v)}</b></div>`;
+  $('#kh-month').innerHTML = `
+    <div class="acct-head">
+      <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
+      <span class="name">${TR_MONTHS[now.getMonth()]} ${now.getFullYear()} İşlemlerim</span>
+    </div>
+    <div class="lbl" style="margin-top:13px">Kripto Alış / Satış Tutarı</div>
+    <div class="amt-big amt">${vi}<small>,${vf} TL</small></div>
+    <div class="pl-row"><span class="lbl">Bu ay yapılan işlem</span><b>${month.length}</b></div>
+    <hr>
+    ${vrow('Kripto Alışlarınız', sumTL('buy'))}${vrow('Kripto Satışlarınız', sumTL('sell'))}${vrow('Yatırdığınız Para', sumTL('dep'))}${vrow('Çektiğiniz Para', sumTL('wd'))}`;
 
   $('#khs-type').textContent = TYPES.find((t) => t[0] === kh.type)[1];
   $('#khs-status').textContent = STATUSES.find((t) => t[0] === kh.status)[1];
@@ -995,14 +1021,14 @@ function init() {
     if (b.dataset.khsel) return openSel(b.dataset.khsel);
     if (b.dataset.ksel) { const [key, v] = b.dataset.ksel.split(':'); kh[key] = v; renderHistory(); $$('#sel-list .kh-opt').forEach((o) => o.classList.toggle('on', o === b)); return setTimeout(closeSheet, 160); }
     if (b.hasAttribute('data-ktxmore')) return renderTxDetail(!$('#txd-body').dataset.more);
-    if (b.dataset.kcopytx) { try { navigator.clipboard.writeText(b.dataset.kcopytx); } catch (err) { /* izin yoksa da bildir */ } return toast('İşlem numarası kopyalandı'); }
+    if (b.dataset.kcopytx) { try { navigator.clipboard.writeText(b.dataset.kcopytx).catch(() => {}); } catch (err) { /* izin yoksa da bildir */ } return toast('İşlem numarası kopyalandı'); }
     if (b.dataset.hf) { const [key, v] = b.dataset.hf.split(':'); hfDraft[key] = v; return renderHfSheet(); }
     if (b.id === 'hf-clear') { hfDraft = { ...hfDraft, period: '90', asset: 'all' }; return renderHfSheet(); }
     if (b.id === 'hf-apply') { Object.assign(kh, hfDraft); renderHistory(); return closeSheet(); }
     if (b.dataset.tx) return openTx(b.dataset.tx);
     if (b.hasAttribute('data-txshare')) return toast('Dekont paylaşım menüsü demoda yer almıyor');
     if (b.hasAttribute('data-kclose')) return closeSheet();
-    if (b.dataset.kq) { km.quote = b.dataset.kq; return renderMarkets(); }
+    if (b.dataset.kml) { km.list = b.dataset.kml; return renderMarkets(); }
     if (b.dataset.ksort) return setSort(b.dataset.ksort);
     if (b.dataset.kpm) { km.pm = b.dataset.kpm; renderMarkets(); return setTimeout(closeSheet, 180); }
     if (b.id === 'ks-clear') { recents = []; return renderSearch(); }
