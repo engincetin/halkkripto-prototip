@@ -431,7 +431,7 @@
 .k-movescard { margin: 16px 19px 0; }
 .k-movescard .mv { padding: 13px 0; }
 /* Varlıklarım üst kartı: Halkbank "Varlıklar Dağılım" kartı */
-#ka-total { padding: 18px 20px 0; }
+#ka-total { padding: 19px 17px 0; }
 .ka-dhead { display: flex; align-items: center; gap: 16px; }
 .ka-dhead b { flex: 1; font-size: 18px; font-weight: 800; color: var(--ink); }
 .ka-radio { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; color: var(--ink); }
@@ -445,7 +445,7 @@
 .ka-donut b { font-size: 21px; font-weight: 800; color: var(--ink); margin-top: 4px; letter-spacing: .3px; }
 .ka-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 .ka-chips span { padding: 7px 13px; border: 1.3px solid #d3d8de; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--ink-3); }
-.ka-net { display: flex; justify-content: space-between; align-items: center; margin: 16px -20px 0; padding: 16px 20px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-3); }
+.ka-net { display: flex; justify-content: space-between; align-items: center; margin: 16px -17px 0; padding: 16px 17px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-3); }
 .ka-net b { font-size: 17px; font-weight: 800; white-space: nowrap; }
 .ka-net b small { font-size: 13px; }
 .ka-net b.up { color: var(--green); } .ka-net b.down { color: var(--red); }
@@ -489,3 +489,17 @@
 .kn-txt small { display: block; font-size: 12px; color: var(--gray); margin-top: 5px; font-weight: 600; }
 .kn-row:not(.unread) .kn-txt b { font-weight: 700; color: var(--ink-3); }
 .kn-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--orange); flex: none; margin-top: 6px; }
+
+/* Üst kartların başlık satırı her sekmede aynı yükseklikte (göz olmasa da) */
+.k-total .acct-head, #ka-total .acct-head { min-height: 28px; }
+/* Piyasalar kartı: varlıkların bugünkü durumu */
+.km-story { margin-top: 12px; padding: 11px 13px; border-radius: 8px; background: var(--tile); font-size: 14px; line-height: 1.45; color: var(--ink-3); font-weight: 600; }
+.km-story b { color: var(--ink); font-weight: 800; }
+.km-held { display: flex; gap: 8px; overflow-x: auto; margin: 12px -17px 0; padding: 0 17px 2px; }
+.km-held::-webkit-scrollbar { display: none; }
+.km-held button { flex: none; display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 11px 0 5px; border-radius: 19px; border: 1.3px solid #d3d8de; background: #fff; }
+.km-held .coin-ic { width: 28px; height: 28px; border-radius: 50%; }
+.km-held .coin-ic svg { width: 16px; height: 16px; }
+.km-held b { font-size: 14px; font-weight: 800; color: var(--ink); }
+.km-held span { font-size: 13px; font-weight: 800; }
+.km-held span.up { color: var(--green); } .km-held span.down { color: var(--red); } .km-held span.flat { color: var(--gray-2); }

@@ -88,22 +88,35 @@ function pairRow(c, quote, pm, attrs = '') {
 }
 
 /* ---------- Piyasalar ---------- */
-// Piyasalar üst kartı: ana sayfa / Varlıklarım kartıyla aynı yapı (para birimi seçimi ortak)
+// Piyasalar üst kartı: kullanıcının sahip olduğu kriptoların bugünkü durumu (ana sayfa kartıyla aynı yapı)
 function renderMarketCard() {
-  const cur = state.cur, btc = coinOf('btc');
-  const up = COINS.filter((c) => c.ch > 0).length, down = COINS.filter((c) => c.ch < 0).length;
-  const [i, f] = priceText(btc, cur, 'last').replace(` ${cur}`, '').split(',');
+  const cur = state.cur;
+  const held = ASSETS.filter((a) => a.v > 0.005).map((a) => ({ a, c: coinOf(a.k) }));
+  const val = held.reduce((t, h) => t + h.a.v, 0);
+  const chg = held.reduce((t, h) => t + h.a.v - h.a.v / (1 + h.c.ch / 100), 0);
+  const pct = val ? (chg / (val - chg)) * 100 : 0;
+  const up = held.filter((h) => h.c.ch > 0), down = held.filter((h) => h.c.ch < 0);
+  const top = [...held].sort((x, y) => y.a.v - x.a.v)[0];
+  const best = [...held].sort((x, y) => y.c.ch - x.c.ch)[0];
+  const cv = inCur(chg);
+  // Kısa durum anlatımı: en büyük pay, yükselen/düşen sayısı, en çok yükselen
+  const story = held.length
+    ? `Portföyünüzün en büyük payı <b>${nameOf(top.c)}</b>’de (%${fmt((top.a.v / val) * 100, 0)}). Bugün <b>${up.length}</b> varlığınız yükselişte, <b>${down.length}</b> varlığınız düşüşte${best && best.c.ch > 0 ? `; en çok yükselen <b>${nameOf(best.c)}</b> (%${fmt(best.c.ch)}).` : '.'}`
+    : 'Henüz kripto varlığınız yok. Piyasaları inceleyip ilk alımınızı yapabilirsiniz.';
   $('#km-card').innerHTML = `
     <div class="acct-head">
       <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
-      <span class="name">Kripto Piyasası</span>
+      <span class="name">Bugün Varlıklarım</span>
+      <button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#${state.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></button>
       <button class="pill-orange press" data-cursheet>${cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
     </div>
-    <div class="lbl" style="margin-top:13px">Bitcoin (BTC/${cur})</div>
-    <div class="amt-big">${i}<small>${f ? `,${f}` : ''} ${cur}</small></div>
-    <div class="pl-row"><span class="lbl">24s Değişim</span><b class="${chClass(btc.ch)}">%${fmt(Math.abs(btc.ch))}</b><span class="lbl" style="margin-left:auto">Yükselen</span><b class="up">${up}</b><span class="lbl">Düşen</span><b class="down">${down}</b></div>
+    <div class="lbl" style="margin-top:13px">Kripto Varlıklarım</div>
+    <div class="amt-big amt">${money(inCur(val), cur)}</div>
+    <div class="pl-row"><span class="lbl">24s Değişim</span><b class="${chClass(pct)} amt">%${fmt(Math.abs(pct))}</b><b class="${chClass(chg)} money-sm amt">${signed(cv).split(',')[0]}<small>,${fmt(cv).split(',')[1]} ${cur}</small></b></div>
+    <div class="km-story">${story}</div>
+    <div class="km-held">${[...held].sort((x, y) => y.a.v - x.a.v).map((h) => `<button class="press" data-kpair="${h.a.k}/${cur}">${coinIcon(h.a.k)}<b>${h.c.c}</b><span class="${chClass(h.c.ch)}">%${fmt(Math.abs(h.c.ch))}${h.c.ch ? '<i class="k-arrow"></i>' : ''}</span></button>`).join('')}</div>
     <hr>
-    <button class="see-all press" data-ktrade="btc/${cur}/buy">Bitcoin Al/Sat <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
+    <button class="see-all press" data-ktabgo="k-assets">Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
 }
 function renderMarkets() {
   renderMarketCard();
@@ -357,16 +370,16 @@ function renderHistory() {
   const month = buildTx().filter((x) => x.ts >= m0 && x.st === 'done');
   const sumTL = (t) => month.filter((x) => x.t === t).reduce((a, x) => a + (x.k === 'usd' ? x.total * USD_RATE : x.total + (x.t === 'buy' ? x.fee : x.t === 'sell' ? -x.fee : 0)), 0);
   const vol = sumTL('buy') + sumTL('sell');
-  const [vi, vf] = fmt(vol).split(',');
-  const vrow = (n, v) => `<div class="vrow"><span class="lbl">${n}</span><b class="amt">${money(v)}</b></div>`;
+  const vrow = (n, v) => `<div class="vrow"><span class="lbl">${n}</span><b class="amt">${money(inCur(v), state.cur)}</b></div>`;
   $('#kh-month').innerHTML = `
     <div class="acct-head">
       <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
       <span class="name">${TR_MONTHS[now.getMonth()]} ${now.getFullYear()} İşlemlerim</span>
       <button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#${state.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></button>
+      <button class="pill-orange press" data-cursheet>${state.cur} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
     </div>
     <div class="lbl" style="margin-top:13px">Kripto Alış / Satış Tutarı</div>
-    <div class="amt-big amt">${vi}<small>,${vf} TL</small></div>
+    <div class="amt-big amt">${money(inCur(vol), state.cur)}</div>
     <div class="pl-row"><span class="lbl">Bu ay yapılan işlem</span><b>${month.length}</b></div>
     <hr>
     ${vrow('Kripto Alışlarınız', sumTL('buy'))}${vrow('Kripto Satışlarınız', sumTL('sell'))}${vrow('Yatırdığınız Para', sumTL('dep'))}${vrow('Çektiğiniz Para', sumTL('wd'))}`;
@@ -892,7 +905,7 @@ function addNotif(n) { notifs.unshift({ id: `n${Date.now()}`, ts: Date.now(), re
 let current = 'k-home';
 function tabbarHTML(active) {
   const t = (id, icon, label, w = 24) => `<button class="tab${active === id ? ' on' : ''}" ${id ? `data-ktabgo="${id}"` : 'data-soon'}><svg width="${w}" height="24"><use href="#${icon}"/></svg>${label}</button>`;
-  return t('k-home', 't-home', 'Ana Sayfa', 23) + t('k-markets', 't-chart', 'Piyasalar')
+  return t('k-home', 't-home', 'Ana Sayfa') + t('k-markets', 't-chart', 'Piyasalar')
     + '<div class="tab fab-slot"><button class="fab k-fab press" data-ktrade="">Al/Sat<svg width="26" height="22"><use href="#i-transfer"/></svg></button></div>'
     + t('k-assets', 't-pie', 'Varlıklarım') + t('k-history', 't-tx', 'İşlemler');
 }
@@ -1076,7 +1089,7 @@ function init() {
     if (b.dataset.kpick) return pickPair(b.dataset.kpick);
     if (b.dataset.kpair) { closeSheet(); const [k, q] = b.dataset.kpair.split('/'); return openTrade(k, q, 'buy'); }
     if (b.id === 'k-promo-x') return $('#k-promo').classList.add('gone');
-    if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; renderTotal(); renderHistory(); return renderAssets(); }
+    if (b.hasAttribute('data-eye')) { state.hidden = !state.hidden; renderTotal(); renderHistory(); renderMarketCard(); return renderAssets(); }
     if (b.hasAttribute('data-cursheet')) return openSheet();
     if (b.dataset.dcur) {
       state.cur = b.dataset.dcur;
