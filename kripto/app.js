@@ -318,6 +318,7 @@ function filteredTx() {
     && (kh.asset === 'all' || x.k === kh.asset));
 }
 // Liste kaydı: referanstaki emir kartı düzeni (emir tipi yok)
+let txAll = [];
 function txItem(x) {
   const r = (a, b) => `<div class="kh-r"><span>${a}</span>${b}</div>`;
   const dash = '<b>—</b>', cancel = x.st === 'cancel';
@@ -329,6 +330,7 @@ function txItem(x) {
     rows += r('İşlem Fiyatı', cancel ? dash : `<b>${txPrice(x)}</b>`)
       + r(x.t === 'buy' ? 'Hesaptan Çıkan Tutar' : 'Hesaba Geçen Tutar', cancel ? dash : `<b>${x.t === 'buy' ? outAmt(x) : inAmt(x)}</b>`);
   }
+  if (isTrade(x)) { const pn = txPnl(x, txAll); rows += r(x.t === 'buy' ? 'Güncel K/Z' : 'Gerçekleşen K/Z', `<b class="${chClass(pn.v)}">${pctTxt(pn.pct)} <small>(${pnlTxt(pn.v)})</small></b>`); }
   rows += r('İşlem Durumu', stDot(x));
   return `
     <div class="kh-item tap${cancel ? ' cancel' : ''}" data-tx="${x.id}">
@@ -341,19 +343,103 @@ function txItem(x) {
       <svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg>
     </div>`;
 }
-function recentCard(x) {
-  const d = new Date(x.ts);
+/* İşlem performansı: alışlarda işlemden bu yana fiyat değişimi (güncel K/Z),
+   satışlarda aynı kriptonun ortalama alış fiyatına göre gerçekleşen K/Z */
+const shortDay = (ts) => { const l = dayLabel(ts); if (l === 'Bugün' || l === 'Dün') return l; const d = new Date(ts); return `${d.getDate()} ${TR_MONTHS[d.getMonth()].slice(0, 3)}`; };
+const isTrade = (x) => (x.t === 'buy' || x.t === 'sell') && x.st === 'done';
+function avgBuy(k, all) {
+  const b = all.filter((x) => x.k === k && x.t === 'buy' && x.st === 'done');
+  const q = b.reduce((t, x) => t + x.q, 0);
+  return q ? b.reduce((t, x) => t + x.q * x.p, 0) / q : null;
+}
+function txPnl(x, all) {
+  const now = coinOf(x.k).tl;
+  if (x.t === 'buy') { const v = x.q * (now - x.p) - x.fee; return { v, pct: (v / (x.total + x.fee)) * 100, now, kind: 'open' }; }
+  const ab = avgBuy(x.k, all) || x.p / 1.04;
+  const v = x.q * (x.p - ab) - x.fee;
+  return { v, pct: (v / (x.q * ab)) * 100, now, ab, kind: 'real' };
+}
+const pnlTxt = (v, cur = 'TL') => `${v > 0 ? '+' : v < 0 ? '−' : ''}${fmt(Math.abs(v))} ${cur}`;
+const pctTxt = (p) => `${p > 0 ? '+' : p < 0 ? '−' : ''}%${fmt(Math.abs(p))}`;
+// İşlemden bugüne fiyat çizgisi (demo, işlem başına hep aynı)
+function sparkline(x, w = 180, h = 44) {
+  const r = seeded(x.id), n = 26, now = coinOf(x.k).tl, pts = [];
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1), base = x.p + (now - x.p) * t;
+    pts.push(i === 0 || i === n - 1 ? base : base * (1 + (r() - 0.5) * 0.02 * Math.sin(Math.PI * t)));
+  }
+  const lo = Math.min(...pts), hi = Math.max(...pts), sp = hi - lo || 1;
+  const xy = pts.map((v, i) => [(i / (n - 1)) * w, h - 4 - ((v - lo) / sp) * (h - 8)]);
+  const d = xy.map(([a, b], i) => `${i ? 'L' : 'M'}${a.toFixed(1)} ${b.toFixed(1)}`).join('');
+  const up = x.t === 'buy' ? now >= x.p : now <= x.p;
+  const col = up ? 'var(--green)' : 'var(--red)';
+  return `<svg class="kx-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><path d="${d}L${w} ${h}L0 ${h}Z" fill="${col}" opacity=".1"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="${xy[0][0] + 3}" cy="${xy[0][1]}" r="3" fill="${col}"/></svg>`;
+}
+function recentCard(x, all) {
+  const pn = txPnl(x, all), buy = x.t === 'buy';
   return `
-    <button class="kh-rc press" data-tx="${x.id}">
-      <div class="kh-rc-top">${coinIcon(x.k)}<span><b>${txTitle(x)}</b>${typeTxt(x)}</span></div>
-      <strong class="amt ${x.t}">${signedQty(x)}</strong>
-      <span class="kh-rc-amt amt">${isCash(x) ? (x.t === 'dep' ? 'Halkbank’tan' : 'Halkbank’a') : `${x.t === 'buy' ? 'Ödenen' : 'Geçen'} ${x.t === 'buy' ? outAmt(x) : inAmt(x)}`}</span>
-      <small>${dayLabel(x.ts)} · ${d.toTimeString().slice(0, 5)}</small>
+    <button class="kh-rc kx-rc press" data-tx="${x.id}">
+      <div class="kh-rc-top">${coinIcon(x.k)}<span><b>${txTitle(x)}</b>${typeTxt(x)}</span><small>${shortDay(x.ts)}</small></div>
+      <div class="kx-rc-pnl ${chClass(pn.v)}"><strong>${pctTxt(pn.pct)}</strong><span class="amt">${pnlTxt(pn.v)}</span></div>
+      <em>${buy ? 'Alıştan bu yana' : 'Gerçekleşen kâr / zarar'}</em>
+      ${sparkline(x)}
+      <div class="kx-rc-foot"><span>${buy ? 'Alış' : 'Satış'} <b>${fmt(x.p, priceDec(x.p))}</b></span><span>${buy ? 'Şimdi' : 'Ort. alış'} <b>${fmt(buy ? pn.now : pn.ab, priceDec(x.p))}</b></span></div>
+      <small class="kx-qty">${signedQty(x)}</small>
     </button>`;
 }
+// Dönem grafiği: alış (yukarı, yeşil) ve satış (aşağı, kırmızı) hacmi
+function volumeChart(list) {
+  const P = kh.period, days = P === 'all' ? 126 : +P, nb = P === '7' ? 7 : P === '30' ? 10 : 13, span = (days / nb) * 864e5;
+  const start = Date.now() - days * 864e5;
+  const bins = Array.from({ length: nb }, () => ({ b: 0, s: 0 }));
+  list.filter(isTrade).forEach((x) => { const i = Math.min(nb - 1, Math.floor((x.ts - start) / span)); if (i >= 0) bins[i][x.t === 'buy' ? 'b' : 's'] += x.total; });
+  const mx = Math.max(1, ...bins.map((v) => Math.max(v.b, v.s))), W = 360, H = 86, mid = 52, bw = W / nb;
+  const bars = bins.map((v, i) => {
+    const x = i * bw + bw * 0.22, w = bw * 0.56, hb = (v.b / mx) * (mid - 6), hs = (v.s / mx) * (H - mid - 4);
+    return `${v.b ? `<rect x="${x}" y="${mid - hb}" width="${w}" height="${hb}" rx="2.5" fill="var(--green)"/>` : `<rect x="${x}" y="${mid - 2}" width="${w}" height="2" rx="1" fill="#dfe4ea"/>`}${v.s ? `<rect x="${x}" y="${mid + 1}" width="${w}" height="${hs}" rx="2.5" fill="var(--red)" opacity=".85"/>` : ''}`;
+  }).join('');
+  return `<svg class="kx-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><line x1="0" x2="${W}" y1="${mid}" y2="${mid}" stroke="#e3e5e8"/>${bars}</svg>`;
+}
+function renderHero() {
+  const all = buildTx(), from = kh.period === 'all' ? 0 : Date.now() - +kh.period * 864e5;
+  const inP = all.filter((x) => x.ts >= from), trades = inP.filter(isTrade);
+  const pn = trades.map((x) => txPnl(x, all));
+  const real = pn.filter((v) => v.kind === 'real').reduce((t, v) => t + v.v, 0);
+  const open = pn.filter((v) => v.kind === 'open').reduce((t, v) => t + v.v, 0);
+  const tot = real + open, base = trades.reduce((t, x) => t + x.total, 0) || 1;
+  const vol = trades.reduce((t, x) => t + x.total, 0), win = pn.filter((v) => v.v > 0).length;
+  const per = PERIODS.find((p) => p[0] === kh.period)[1];
+  $('#kx-hero').innerHTML = `
+    <div class="acct-head">
+      <svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg>
+      <span class="name">İşlem Performansım</span>
+      <button class="pill-orange press" data-khsel="period">${per} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
+    </div>
+    <div class="lbl" style="margin-top:13px">Toplam Kâr / Zarar</div>
+    <div class="kx-big amt ${chClass(tot)}"><span>${pnlTxt(tot).replace(/,(\d\d) TL$/, '<small>,$1 TL</small>')}</span><em>${pctTxt((tot / base) * 100)}</em></div>
+    <div class="kx-split">
+      <div><span>Gerçekleşen</span><b class="amt ${chClass(real)}">${pnlTxt(real)}</b></div>
+      <div><span>Açık İşlemler</span><b class="amt ${chClass(open)}">${pnlTxt(open)}</b></div>
+    </div>
+    ${volumeChart(inP)}
+    <div class="kx-legend"><span><i class="g"></i>Alış</span><span><i class="r"></i>Satış</span><span class="sp"></span><span>İşlem hacmi</span></div>
+    <hr>
+    <div class="kx-stats">
+      <div><b class="amt">${fmt(vol, 0)} <small>TL</small></b><span>İşlem Hacmi</span></div>
+      <div><b>${trades.length}</b><span>Alış / Satış</span></div>
+      <div><b>%${fmt(trades.length ? (win / trades.length) * 100 : 0, 0)}</b><span>Kârlı İşlem</span></div>
+    </div>`;
+  // Öne çıkanlar: en kârlı işlem ve en çok işlem yapılan kripto
+  const best = trades.map((x, i) => [x, pn[i]]).sort((a, b) => b[1].pct - a[1].pct)[0];
+  const cnt = {}; trades.forEach((x) => (cnt[x.k] = (cnt[x.k] || 0) + 1));
+  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0];
+  $('#kx-insights').innerHTML = best ? `
+    <button class="card kx-ins press" data-tx="${best[0].id}"><span class="kx-ins-ic up"><svg width="16" height="16"><use href="#i-plus"/></svg></span><small>En Kârlı İşlem</small><b>${txTitle(best[0])} ${TX_TYPE[best[0].t].n}</b><em class="up">${pctTxt(best[1].pct)}</em></button>
+    <button class="card kx-ins press" data-kpair="${top[0]}/TL">${coinIcon(top[0])}<small>En Çok İşlem</small><b>${nameOf(coinOf(top[0]))}</b><em>${top[1]} işlem</em></button>` : '';
+  $('#kh-recent').innerHTML = all.filter(isTrade).slice(0, 6).map((x) => recentCard(x, all)).join('') || '<div class="k-empty">Henüz işleminiz yok</div>';
+}
 function renderHistory() {
-  const recent = buildTx().filter((x) => x.st === 'done').slice(0, 5);
-  $('#kh-recent').innerHTML = recent.map(recentCard).join('');
+  renderHero();
   $('#khs-type').textContent = TYPES.find((t) => t[0] === kh.type)[1];
   $('#khs-status').textContent = STATUSES.find((t) => t[0] === kh.status)[1];
   $$('.kh-sel').forEach((b) => b.classList.toggle('on', kh[b.dataset.khsel] !== 'all'));
@@ -366,6 +452,7 @@ function renderHistory() {
   $('#kh-badge').hidden = !tags.length;
   $('#kh-badge').textContent = tags.length;
 
+  txAll = buildTx();
   const list = filteredTx();
   if (!list.length) {
     $('#kh-list').innerHTML = `<div class="kh-empty"><span><svg width="34" height="34"><use href="#k-hist"/></svg></span><b>İşlem bulunamadı</b><p>Seçtiğiniz filtrelere uygun işlem yok.</p><button class="see-all press" data-khreset>Filtreleri Temizle</button></div>`;
@@ -376,8 +463,8 @@ function renderHistory() {
   $('#kh-list').innerHTML = groups.map((g) => `<div class="kh-day">${g.l}</div><div class="list-card kh-card">${g.items.map(txItem).join('')}</div>`).join('');
 }
 function openSel(key) {
-  $('#sel-title').textContent = key === 'type' ? 'İşlem' : 'İşlem Durumu';
-  $('#sel-list').innerHTML = (key === 'type' ? TYPES : STATUSES).map(([k, n]) => `<button class="kh-opt press${kh[key] === k ? ' on' : ''}" data-ksel="${key}:${k}"><span>${n}</span><svg width="18" height="14" viewBox="0 0 18 14"><path d="m2 7 5 5L16 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
+  $('#sel-title').textContent = { type: 'İşlem', status: 'İşlem Durumu', period: 'Dönem' }[key];
+  $('#sel-list').innerHTML = ({ type: TYPES, status: STATUSES, period: PERIODS })[key].map(([k, n]) => `<button class="kh-opt press${kh[key] === k ? ' on' : ''}" data-ksel="${key}:${k}"><span>${n}</span><svg width="18" height="14" viewBox="0 0 18 14"><path d="m2 7 5 5L16 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
   openSheet('sel-sheet');
 }
 function renderHfSheet() {
