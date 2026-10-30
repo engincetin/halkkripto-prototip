@@ -97,6 +97,8 @@
     <symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 8.5A8 8 0 0 0 5 7.2M4.5 15.5A8 8 0 0 0 19 16.8"/><path d="M5 2.8v4.6h4.6M19 21.2v-4.6h-4.6"/></g></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="13" rx="2.5"/><path d="M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-7A2.5 2.5 0 0 0 4 5.5v9A2.5 2.5 0 0 0 6.5 17H8"/></g></symbol>
     <symbol id="i-qr" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3M21 14v.01M17 21h4v-4M14 18v3"/></g></symbol>
+    <symbol id="k-heye" viewBox="0 0 18 13"><path d="M9 .5C5 .5 1.8 3 .5 6.5 1.8 10 5 12.5 9 12.5s7.2-2.5 8.5-6C16.2 3 13 .5 9 .5z" fill="#fff"/><circle cx="9" cy="6.5" r="3.4" fill="#0a74bd"/><circle cx="9" cy="6.5" r="1.6" fill="#fff"/></symbol>
+    <symbol id="k-heye-off" viewBox="0 0 18 13"><path d="M9 .5C5 .5 1.8 3 .5 6.5 1.8 10 5 12.5 9 12.5s7.2-2.5 8.5-6C16.2 3 13 .5 9 .5z" fill="#fff"/><circle cx="9" cy="6.5" r="3.4" fill="#0a74bd"/><path d="M2 12 16 1" stroke="#0a74bd" stroke-width="3.4"/><path d="M2 12 16 1" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></symbol>
     <symbol id="k-deposit" viewBox="0 0 16 16"><path d="M14 2 2.5 13.5M11 14H2V5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-withdraw" viewBox="0 0 16 16"><path d="M2 14 13.5 2.5M5 2h9v9" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-orders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5l1.6 1.6L8 4.8"/><path d="M11 6.5h10M3 12h18M3 17.5h18"/></g></symbol>
@@ -173,7 +175,7 @@
   <!-- ===================== PİYASALAR ===================== -->
   <section class="screen" id="k-markets">
     <header class="header">
-      <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
+      <div class="k-hleft"><button class="k-back press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
       <h1>Piyasalar</h1>
       <div class="k-hright">
         <button class="press" data-ksheet="filter-sheet" aria-label="Listeyi düzenle"><svg width="24" height="24"><use href="#k-filter"/></svg></button>
@@ -202,8 +204,12 @@
   <!-- ===================== VARLIKLARIM ===================== -->
   <section class="screen" id="k-assets">
     <header class="header">
-      <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
+      <div class="k-hleft"><button class="k-back press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
       <h1>Varlıklarım</h1>
+      <div class="k-hright">
+        <button class="press" data-eye aria-label="Tutarları gizle / göster"><svg width="25" height="18" id="ka-eye"><use href="#k-heye"/></svg></button>
+        <button class="press" data-kpush="k-search" aria-label="Kripto ara"><svg width="23" height="23"><use href="#i-search"/></svg></button>
+      </div>
     </header>
     <div class="scroll pull-blue">
       <div class="pad-header"></div>
@@ -233,8 +239,11 @@
   <!-- ===================== İŞLEM GEÇMİŞİ ===================== -->
   <section class="screen" id="k-history">
     <header class="header">
-      <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
+      <div class="k-hleft"><button class="k-back press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button><button class="avatar k-hav press" data-kpush="k-profile" aria-label="Profil ve Ayarlar"><i><svg width="9" height="9" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button></div>
       <h1>İşlemler</h1>
+      <div class="k-hright">
+        <button class="press" data-ksheet="hf-sheet" aria-label="Tarihe göre ara"><svg width="22" height="24"><use href="#i-cal"/></svg></button>
+      </div>
     </header>
     <div class="scroll pull-blue">
       <div class="pad-header"></div>

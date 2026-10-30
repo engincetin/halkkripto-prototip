@@ -40,6 +40,7 @@ function renderTotal() {
     <hr>
     <button class="see-all press" data-ktabgo="k-assets">Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
   $('#device').classList.toggle('hidden-amt', state.hidden);
+  const ke = $('#ka-eye use'); if (ke) ke.setAttribute('href', `#${state.hidden ? 'k-heye-off' : 'k-heye'}`);
 }
 
 // Ana sayfa "Son İşlemlerim": Halkbank ana sayfasındaki Hesap Hareketleri kartının aynısı (son 2 işlem)
