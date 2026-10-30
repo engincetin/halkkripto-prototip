@@ -478,11 +478,11 @@ function acctCard(cur, attrs) {
 function assetCard(k, sell) {
   const c = coinOf(k), q = holdQty(k);
   if (!q) {
-    return `<div class="card kt-note"><span class="kt-note-ic"><svg width="22" height="22"><use href="#i-info"/></svg></span><span><b>${c.c} Varlığı</b><small>${c.c} varlığınız işlem sonunda oluşturulacaktır.</small></span></div>`;
+    return `<div class="card kt-note"><span class="kt-note-ic"><svg width="22" height="22"><use href="#i-info"/></svg></span><span><b>Halk Kripto ${c.c} Hesabı</b><small>${c.c} hesabınız işlem sonunda açılacaktır.</small></span></div>`;
   }
   return `
     <div class="card kt-acct">
-      <div class="kt-acct-head">${coinIcon(k)}<b>${c.c} Varlığım</b></div>
+      <div class="kt-acct-head">${coinIcon(k)}<b>Halk Kripto ${c.c} Hesabı</b></div>
       <div class="kt-acct-no">${nameOf(c)}</div>
       <div class="kt-cols">${balCol(sell ? 'Satılabilir Miktar' : 'Mevcut Miktar', bigQty(q, qtyDec(c), c.c))}${balCol(`${tr.cur} Karşılığı`, money(inCur(q * c.tl, tr.cur), tr.cur))}</div>
     </div>`;
@@ -494,8 +494,8 @@ function renderTrade() {
   $('#kt-pick').innerHTML = `${coinIcon(tr.k)}<span><small>Kripto Tipi</small><b>${nameOf(c)}</b></span><svg width="14" height="8"><use href="#i-chev-down"/></svg>`;
   $('#kt-price').innerHTML = `<b>${nameOf(c)}</b><b>${fmt(p, priceDec(p))} ${tr.cur}</b>`;
   $('#kt-price').title = `Son güncelleme: ${timeStr(tr.upd)}`;
-  $('#kt-t1').textContent = buy ? 'PARANIN ÇEKİLECEĞİ HESAP' : 'KRİPTONUN ÇEKİLECEĞİ VARLIK';
-  $('#kt-t2').textContent = buy ? 'KRİPTONUN AKTARILACAĞI VARLIK' : 'PARANIN AKTARILACAĞI HESAP';
+  $('#kt-t1').textContent = buy ? 'PARANIN ÇEKİLECEĞİ HESAP' : 'KRİPTONUN ÇEKİLECEĞİ HESAP';
+  $('#kt-t2').textContent = buy ? 'KRİPTONUN AKTARILACAĞI HESAP' : 'PARANIN AKTARILACAĞI HESAP';
   $('#kt-t3').textContent = buy ? 'ALIŞ BİLGİLERİ' : 'SATIŞ BİLGİLERİ';
   $('#kt-from').innerHTML = buy ? acctCard(tr.cur, 'data-ksheet="acct-sheet"') : assetCard(tr.k, true);
   $('#kt-to').innerHTML = buy ? assetCard(tr.k, false) : acctCard(tr.cur, 'data-ksheet="acct-sheet"');
@@ -606,8 +606,8 @@ function renderSummary() {
   const row = (a, b) => `<div class="sum-row"><span>${a}</span><b>${b}</b></div>`;
   $('#kts-title').textContent = buy ? 'ALIŞ BİLGİLERİ' : 'SATIŞ BİLGİLERİ';
   $('#kts-card').innerHTML = row('İşlem Türü', `Kripto ${buy ? 'Alış' : 'Satış'} (Piyasa Emri)`)
-    + (buy ? row('Paranın Çekileceği Hesap', `Halk Kripto ${cur} Hesabı`) + row('Kriptonun Aktarılacağı Varlık', has ? `${c.c} Varlığım` : 'İşlem sonunda oluşturulacaktır.')
-      : row('Kriptonun Çekileceği Varlık', `${c.c} Varlığım`) + row('Paranın Aktarılacağı Hesap', `Halk Kripto ${cur} Hesabı`))
+    + (buy ? row('Paranın Çekileceği Hesap', `Halk Kripto ${cur} Hesabı`) + row('Kriptonun Aktarılacağı Hesap', has ? `Halk Kripto ${c.c} Hesabı` : 'İşlem sonunda açılacaktır.')
+      : row('Kriptonun Çekileceği Hesap', `Halk Kripto ${c.c} Hesabı`) + row('Paranın Aktarılacağı Hesap', `Halk Kripto ${cur} Hesabı`))
     + row(`${c.c} ${buy ? 'Alış' : 'Satış'} Fiyatı`, `${fmt(p, priceDec(p))} ${cur}`)
     + row(buy ? 'Alınacak Kripto Miktarı' : 'Satılacak Kripto Miktarı', `${fmt(tr.qty, qtyDec(c))} ${c.c}`)
     + row(`${cur} Karşılığı`, `${fmt(tr.amt)} ${cur}`)
