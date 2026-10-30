@@ -144,7 +144,7 @@ function renderMarketCard() {
   const pct = val ? (chg / (val - chg)) * 100 : 0, cv = inCur(chg);
   $('#km-card').innerHTML = `
     <div class="acct-head"><svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg><span class="name">Bugün Varlıklarım</span>${eyeHtml()}</div>
-    <div class="lbl" style="margin-top:13px">Kripto Varlıklarım</div>
+    <div class="lbl" style="margin-top:13px">Kripto Bakiye</div>
     <div class="amt-big amt">${money(inCur(val), cur)}</div>
     <div class="pl-row"><span class="lbl">24s Değişim</span><b class="${chClass(pct)} amt">%${fmt(Math.abs(pct))}</b><b class="${chClass(chg)} money-sm amt">${signed(cv).split(',')[0]}<small>,${fmt(cv).split(',')[1]} ${cur}</small></b></div>
     <div class="km-held">${held.map((h) => `<button class="press" data-kpair="${h.a.k}/${cur}">${coinIcon(h.a.k)}<b>${h.c.c}</b><span class="${chClass(h.c.ch)}">%${fmt(Math.abs(h.c.ch))}${h.c.ch ? '<i class="k-arrow"></i>' : ''}</span></button>`).join('')}</div>
@@ -166,7 +166,8 @@ function renderMarketCard() {
       <span class="km-sl-tag"><svg width="13" height="13"><use href="#k-spark"/></svg>Günün Özeti</span>
       <b>${x.title}</b>
       <p>${x.text}</p>
-      <div class="km-sl-btns"><button class="press" data-kslx="${x.id}">Kapat</button><button class="press" ${x.attr}>${x.act}</button></div>
+      <div class="km-sl-btns"><button class="press" ${x.attr}>${x.act}</button></div>
+      <button class="km-sl-x press" data-kslx="${x.id}" aria-label="Kapat"><svg width="14" height="14" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
       <span class="km-sl-art">${x.coin ? coinIcon(x.coin) : `<span class="coin-ic"><svg width="24" height="24"><use href="#${x.ic}"/></svg></span>`}</span>
     </div>`).join('');
   $('#km-dots').innerHTML = slides.length > 1 ? slides.map((_, i) => `<i${i ? '' : ' class="on"'}></i>`).join('') : '';
@@ -267,7 +268,7 @@ function renderAssets() {
     <div class="lbl" style="margin-top:13px">Kripto ve Nakit Bakiye</div>
     <div class="amt-big amt">${money(inCur(total), cur)}</div>
     <div class="pl-row"><span class="lbl">Olası Kar / Zarar</span><b class="${chClass(tp.pct)} amt">%${fmt(Math.abs(tp.pct))}</b><b class="${chClass(tp.pl)} money-sm amt">${signed(plv).split(',')[0]}<small>,${fmt(plv).split(',')[1]} ${cur}</small></b></div>
-    <div class="kt-cols ka-cols"><div><span>Nakit Varlıklarım</span><b class="amt">${money(inCur(cashTL()), cur)}</b></div><div><span>Kripto Varlıklarım</span><b class="amt">${money(inCur(state.kripto), cur)}</b></div></div>
+    <div class="kt-cols ka-cols"><div><span>Nakit Bakiye</span><b class="amt">${money(inCur(cashTL()), cur)}</b></div><div><span>Kripto Bakiye</span><b class="amt">${money(inCur(state.kripto), cur)}</b></div></div>
     <div class="ka-chart${ka.chart ? ' open' : ''}">
       <div class="ka-donut">${donut(parts, ka.sel)}<div><span>${sp ? sp.n : 'Toplam Varlık'}</span><b class="amt">${fmt(inCur(sp ? sp.v : total))} ${cur}</b>${sp ? `<em>%${fmt(sp.pct)}</em>` : ''}</div></div>
       <div class="ka-chips">${parts.map((p, i) => `<button class="press${ka.sel === i ? ' on' : ''}" data-kaseg="${i}" style="--c:${p.color}"><i></i>${p.n} %${fmt(p.pct)}</button>`).join('')}</div>
@@ -446,7 +447,7 @@ function renderHistory() {
       <span class="name">Halk Kripto Hesabım</span>${eyeHtml()}
     </div>
     <div class="acct-no k-no">HK 48215903 - Halk Kripto</div>
-    <div class="kt-cols kh-cols"><div><span>Nakit Bakiye</span><b class="amt">${money(inCur(cashTL()), cur)}</b></div><div><span>Kripto Varlıklarım</span><b class="amt">${money(inCur(state.kripto), cur)}</b></div></div>
+    <div class="kt-cols kh-cols"><div><span>Nakit Bakiye</span><b class="amt">${money(inCur(cashTL()), cur)}</b></div><div><span>Kripto Bakiye</span><b class="amt">${money(inCur(state.kripto), cur)}</b></div></div>
     <hr>
     <div class="vrow"><span class="lbl">${TR_MONTHS[now.getMonth()]} ayında alış</span><b class="amt">${money(inCur(sumTL('buy')), cur)}</b></div>
     <div class="vrow"><span class="lbl">${TR_MONTHS[now.getMonth()]} ayında satış</span><b class="amt">${money(inCur(sumTL('sell')), cur)}</b></div>`;
@@ -559,8 +560,8 @@ function openDekont(id) {
 /* ---------- Profil ---------- */
 // Limitler: kullanılan tutar demo; günlük alım kullanımı geçmişteki bugünkü/dünkü alımlarla uyumlu
 const LIMITS = {
-  d: [['Kripto Alım', 1774.54, 250000], ['Kripto Satım', 0, 250000], ['TL Yatırma', 0, 500000], ['TL Çekme', 0, 100000], ['Kripto Transfer (Gönderme)', 0, 50000]],
-  m: [['Kripto Alım', 23128.04, 2500000], ['Kripto Satım', 35770, 2500000], ['TL Yatırma', 15000, 5000000], ['TL Çekme', 5000, 1000000], ['Kripto Transfer (Gönderme)', 0, 500000]],
+  d: [['Kripto Alış', 1774.54, 250000], ['Kripto Satış', 0, 250000], ['TL Yatırma', 0, 500000], ['TL Çekme', 0, 100000], ['Kripto Transfer (Gönderme)', 0, 50000]],
+  m: [['Kripto Alış', 23128.04, 2500000], ['Kripto Satış', 35770, 2500000], ['TL Yatırma', 15000, 5000000], ['TL Çekme', 5000, 1000000], ['Kripto Transfer (Gönderme)', 0, 500000]],
 };
 let limTab = 'd';
 function renderLimits() {

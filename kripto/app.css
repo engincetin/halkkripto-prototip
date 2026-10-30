@@ -186,7 +186,10 @@
 .kp-edit { width: 36px; height: 36px; margin: -8px -8px -8px 0; display: flex; align-items: center; justify-content: center; color: var(--orange); }
 
 /* Limitler */
-.kp-ltabs { padding-top: 20px; }
+/* Günlük / Aylık: Al/Sat'taki Alış / Satış sekmesiyle aynı */
+.kp-ltabs { background: #fff; padding: 4px; border-radius: 9px; box-shadow: 0 0 13px 2px rgba(0,0,0,.05); }
+.kp-ltabs button { height: 40px; border-radius: 7px; font-size: 17px; font-weight: 700; color: var(--gray-2); }
+.kp-ltabs button.on { background: var(--blue); color: #fff; font-weight: 800; }
 .kp-lim { margin: 12px 19px 0; padding: 16px 18px; }
 .kp-lim-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .kp-lim-head b { font-size: 16px; font-weight: 800; color: var(--ink); }
@@ -583,10 +586,10 @@
 .km-sl p b { font-size: 14px; margin: 0; }
 .km-sl-btns { display: flex; gap: 10px; margin-top: auto; padding-top: 14px; }
 .km-sl-btns button { height: 36px; padding: 0 18px; border-radius: 18px; font-size: 15px; font-weight: 700; border: 1.5px solid #fff; color: #fff; }
-.km-sl-btns button + button { background: #fff; }
-.km-sl.gold .km-sl-btns button + button { color: #b8862c; }
-.km-sl.blue .km-sl-btns button + button, .km-sl.navy .km-sl-btns button + button { color: var(--blue-dark, #025193); }
-.km-sl.sky .km-sl-btns button + button { color: #0576b8; }
+.km-sl-btns button { background: #fff; }
+.km-sl.gold .km-sl-btns button { color: #b8862c; }
+.km-sl.blue .km-sl-btns button, .km-sl.navy .km-sl-btns button { color: var(--blue-dark, #025193); }
+.km-sl.sky .km-sl-btns button { color: #0576b8; }
 .km-sl-art { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 92px; height: 92px; border-radius: 50%; background: rgba(255,255,255,.18); box-shadow: 0 0 0 10px rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; }
 .km-sl-art .coin-ic { width: 60px; height: 60px; border-radius: 50%; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,.18); }
 .km-sl-art .coin-ic svg { width: 30px; height: 30px; }
@@ -594,3 +597,5 @@
 .km-dots:empty { display: none; }
 .km-dots i { width: 7px; height: 7px; border-radius: 4px; background: #c3cbd4; transition: width .2s, background .2s; }
 .km-dots i.on { width: 18px; background: var(--blue); }
+.km-sl { padding-top: 16px; }
+.km-sl-x { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: #fff; opacity: .9; z-index: 1; }

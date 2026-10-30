@@ -103,7 +103,7 @@ function openAllAcc() {
     ${card('TL', `<span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span><b>${tl.name}</b>`, `${tl.no} - Nişantaşı Şb.`, [['Kullanılabilir Bakiye', money(tl.bal)], ['Kullanılabilir Kredili Bakiye', money(tl.kredili)]], '<em>★ Favori Hesabım</em>')}
     ${card('USD', `<b>${usd.name}</b>`, `${usd.no} - Nişantaşı Şb.`, [['Kullanılabilir Bakiye', money(usd.bal, 'USD')], ['Kullanılabilir Kredili Bakiye', money(usd.bal, 'USD')]])}
     <div class="acs-sec">KRİPTO HESAPLARI</div>
-    ${card('KRIPTO', '<svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg><b>Halk Kripto Hesabım</b>', 'HK 48215903 - Halk Kripto', [['Nakit Bakiye', money(cashTL())], ['Kripto Varlıklarım', money(state.kripto)]])}`;
+    ${card('KRIPTO', '<svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg><b>Halk Kripto Hesabım</b>', 'HK 48215903 - Halk Kripto', [['Nakit Bakiye', money(cashTL())], ['Kripto Bakiye', money(state.kripto)]])}`;
   openSheet('allacc-sheet');
 }
 
@@ -124,8 +124,8 @@ function renderBalances() {
   $('[data-kcard]').innerHTML = head;
   $('[data-vcard]').innerHTML = head + `
     <hr>
-    <div class="vrow"><span class="lbl">Nakit Varlıklarım</span><b class="amt">${moneyC(cashTL())}</b></div>
-    <div class="vrow"><span class="lbl">Kripto Varlıklarım</span><b class="amt">${moneyC(state.kripto)}</b></div>`;
+    <div class="vrow"><span class="lbl">Nakit Bakiye</span><b class="amt">${moneyC(cashTL())}</b></div>
+    <div class="vrow"><span class="lbl">Kripto Bakiye</span><b class="amt">${moneyC(state.kripto)}</b></div>`;
   $$('[data-eye] use').forEach((u) => u.setAttribute('href', state.hidden ? '#i-eye-off' : '#i-eye'));
   $('#device').classList.toggle('hidden-amt', state.hidden);
   renderCash();
