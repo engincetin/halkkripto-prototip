@@ -99,6 +99,7 @@
     <symbol id="i-qr" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3M21 14v.01M17 21h4v-4M14 18v3"/></g></symbol>
     <symbol id="k-heye" viewBox="0 0 18 13"><path d="M9 .5C5 .5 1.8 3 .5 6.5 1.8 10 5 12.5 9 12.5s7.2-2.5 8.5-6C16.2 3 13 .5 9 .5z" fill="#fff"/><circle cx="9" cy="6.5" r="3.4" fill="#0a74bd"/><circle cx="9" cy="6.5" r="1.6" fill="#fff"/></symbol>
     <symbol id="k-heye-off" viewBox="0 0 18 13"><path d="M9 .5C5 .5 1.8 3 .5 6.5 1.8 10 5 12.5 9 12.5s7.2-2.5 8.5-6C16.2 3 13 .5 9 .5z" fill="#fff"/><circle cx="9" cy="6.5" r="3.4" fill="#0a74bd"/><path d="M2 12 16 1" stroke="#0a74bd" stroke-width="3.4"/><path d="M2 12 16 1" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="k-spark" viewBox="0 0 24 24"><path d="M12 2.5c.5 4.4 2.8 6.9 7.5 7.5-4.7.6-7 3.1-7.5 7.5-.5-4.4-2.8-6.9-7.5-7.5 4.7-.6 7-3.1 7.5-7.5z" fill="currentColor"/><path d="M19 15.5c.2 1.8 1.1 2.8 3 3-1.9.2-2.8 1.2-3 3-.2-1.8-1.1-2.8-3-3 1.9-.2 2.8-1.2 3-3z" fill="currentColor"/></symbol>
     <symbol id="k-deposit" viewBox="0 0 16 16"><path d="M14 2 2.5 13.5M11 14H2V5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-withdraw" viewBox="0 0 16 16"><path d="M2 14 13.5 2.5M5 2h9v9" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-orders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5l1.6 1.6L8 4.8"/><path d="M11 6.5h10M3 12h18M3 17.5h18"/></g></symbol>
@@ -188,6 +189,8 @@
       <div class="pull-content">
       <div class="grad-ext"></div>
       <div class="card kcard k-total" id="km-card"></div>
+      <div class="km-slider" id="km-slider"></div>
+      <div class="km-dots" id="km-dots"></div>
       <div class="k-tabs" id="km-tabs"><button class="on" data-kml="all">Tüm Kriptolar</button><button data-kml="fav">Favorilerim</button></div>
       <div class="k-info"><svg width="20" height="20"><use href="#i-info"/></svg><span>TL çiftlerde limit emirler <b>%0</b> komisyon!</span></div>
       <div class="k-sorthead" id="km-sort">
@@ -250,13 +253,15 @@
       <div class="pull-content">
       <div class="grad-ext"></div>
       <div class="card kcard k-total bal" id="kh-month"></div>
-      <div class="section-title">İŞLEMLERİNİZ</div>
-      <div class="kh-filters">
-        <button class="kh-sel press" data-khsel="type"><span>İşlem</span><b id="khs-type">Tümü</b><svg width="14" height="8"><use href="#i-chev-down"/></svg></button>
-        <button class="kh-sel press" data-khsel="status"><span>İşlem Durumu</span><b id="khs-status">Tümü</b><svg width="14" height="8"><use href="#i-chev-down"/></svg></button>
+      <div class="section-title">HESAP İŞLEMLERİ</div>
+      <div class="kops k-kops kh-ops">
+        <button class="kop press" data-kpush="k-ekstre"><span class="ki"><svg width="15" height="17"><use href="#i-receipt"/></svg></span>Hesap<br>Ekstresi</button>
+        <button class="kop press" data-kpush="k-dep"><span class="ki"><svg width="13" height="13"><use href="#k-deposit"/></svg></span>Yatırma<br>Bilgileri</button>
+        <button class="kop press" data-kpush="k-limits"><span class="ki" style="color:#f0700d"><svg width="20" height="20"><use href="#i-grid"/></svg></span>İşlem<br>Limitleri</button>
       </div>
+      <div class="row-title"><span class="section-title">SON İŞLEMLERİNİZ</span><button class="see-all press" data-ksheet="hf-sheet">Detaylı Arama <svg width="6" height="10"><use href="#i-chev-right"/></svg></button></div>
       <div id="kh-active" class="kh-active"></div>
-      <div id="kh-list"></div>
+      <div class="card kh-moves kh-full" id="kh-list"></div>
       <div style="height:calc(var(--sab) + 110px)"></div>
       </div>
     </div>
@@ -493,6 +498,41 @@
     </div>
   </section>
 
+  <!-- ===================== DEKONT (Halkbank Dekont Görüntüleme) ===================== -->
+  <section class="screen k-push" id="k-dekont">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>Dekont Görüntüleme</h1></header>
+    <div class="scroll kdk-scroll">
+      <div class="pad-header"></div>
+      <div class="kdk-paper" id="kdk-paper"></div>
+      <div style="height:calc(var(--sab) + 110px)"></div>
+    </div>
+    <div class="kdk-bar"><button class="btn-outline press" data-txshare>Paylaş</button></div>
+  </section>
+
+  <!-- ===================== HESAP EKSTRESİ ===================== -->
+  <section class="screen k-push" id="k-ekstre">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>Hesap Ekstresi Gönderme</h1></header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div class="section-title first">EKSTRE BİLGİLERİ</div>
+      <div class="card kd-card ke-info">
+        <div class="kp-field"><span>Hesap Bilgisi</span><b>HK 48215903 - Halk Kripto</b></div>
+        <div class="kp-field"><span>Hesap Adı</span><b>Halk Kripto Hesabım</b></div>
+      </div>
+      <label class="ke-field"><span>Başlangıç Tarihi</span><input type="date" id="ke-from"><svg width="22" height="24"><use href="#i-cal"/></svg></label>
+      <label class="ke-field"><span>Bitiş Tarihi</span><input type="date" id="ke-to"><svg width="22" height="24"><use href="#i-cal"/></svg></label>
+      <label class="ke-field"><span>E-Posta</span><input type="email" id="ke-mail" value="deniz.yilmaz@ornek.com"></label>
+      <label class="ke-field"><span>Hesap Ekstre Formatı</span><select id="ke-fmt"><option>PDF</option><option>Excel</option></select><svg width="14" height="8"><use href="#i-chev-down"/></svg></label>
+      <div class="card ke-checks">
+        <label><input type="checkbox" checked><i></i><span>İşlem dekontlarını ekstreye ekle.</span></label>
+        <label><input type="checkbox"><i></i><span>E-imzalı hesap ekstresi oluşturmak istiyorum.</span></label>
+      </div>
+      <div class="ke-note"><svg width="18" height="18"><use href="#i-info-fill"/></svg><span>Hesap ekstrenizi, geçmişe yönelik en fazla 1 yıllık süre için talep edebilirsiniz.</span></div>
+      <div class="kt-go-wrap"><button class="btn-primary press" id="ke-go">Devam</button></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
   <!-- ===================== ARAMA ===================== -->
   <section class="screen k-push" id="k-search">
     <header class="header">
@@ -541,14 +581,13 @@
     <div class="k-sheet-head"><h3>Detaylı Arama</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
     <div class="hf-title">Tarih Aralığı</div>
     <div class="hf-chips" id="hf-period"></div>
+    <div class="hf-title">İşlem</div>
+    <div class="hf-chips" id="hf-type"></div>
+    <div class="hf-title">İşlem Durumu</div>
+    <div class="hf-chips" id="hf-status"></div>
     <div class="hf-title">Varlık</div>
     <div class="hf-chips" id="hf-asset"></div>
-    <div class="hf-btns"><button class="btn-secondary press" id="hf-clear">Temizle</button><button class="btn-primary press" id="hf-apply">Uygula</button></div>
-  </div>
-  <div class="sheet" id="sel-sheet" role="dialog" aria-label="Seçim">
-    <div class="grab"></div>
-    <div class="k-sheet-head"><h3 id="sel-title"></h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
-    <div class="kh-opts" id="sel-list"></div>
+    <div class="hf-btns"><button class="btn-secondary press" id="hf-clear">Temizle</button><button class="btn-primary press" id="hf-apply">Görüntüle</button></div>
   </div>
   <div class="sheet" id="lang-sheet" role="dialog" aria-label="Dil">
     <div class="grab"></div>
@@ -602,6 +641,10 @@
     <div class="k-sheet-head"><h3 id="qr-title">Adres QR Kodu</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
     <div class="kd-qr" id="qr-box"></div>
     <div class="hf-btns"><button class="btn-secondary press" data-kcopy="addr">Adresi Kopyala</button><button class="btn-primary press" data-kshare>Paylaş</button></div>
+  </div>
+  <div class="sheet acs-sheet" id="allacc-sheet" role="dialog" aria-label="Tüm Hesaplarım">
+    <div class="acs-head"><h3>Tüm Hesaplarım</h3><button class="press" data-kclose aria-label="Kapat"><svg width="22" height="22" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <div id="allacc-list"></div>
   </div>
 </div>
 <script src="../common.js"></script>

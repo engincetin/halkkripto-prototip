@@ -554,3 +554,29 @@ body.framed .home-indicator {
 .row-trade:last-child { border-bottom: 0; }
 .row-trade button { flex: 1; height: 36px; border-radius: 8px; font-size: 15px; font-weight: 800; border: 1.5px solid var(--blue); color: var(--blue); background: #fff; }
 .row-trade button + button { border-color: var(--orange); color: var(--orange); }
+
+/* ---------- Tüm Hesaplar (Halkbank "Tümü" menüsü; iki uygulamada ortak) ---------- */
+.sheet.acs-sheet { background: var(--bg-home); max-height: 90%; overflow-y: auto; padding-top: 12px; }
+.acs-head { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 2px; }
+.acs-head h3 { font-size: 19px; font-weight: 800; color: var(--ink); }
+.acs-head button { width: 40px; height: 40px; margin-right: -8px; display: flex; align-items: center; justify-content: center; color: var(--ink); }
+.acs-sec { color: var(--blue); font-size: 15px; font-weight: 700; letter-spacing: .3px; margin: 20px 0 12px; }
+.acs-card { display: grid; grid-template-columns: 34px 1fr; width: 100%; text-align: left; background: var(--card); border-radius: 8px; box-shadow: 0 0 13px 2px rgba(0,0,0,.05); padding: 18px 18px 16px 16px; margin-top: 12px; }
+.acs-sec + .acs-card { margin-top: 0; }
+.acs-card > .radio { grid-row: 1 / 3; align-self: start; margin-top: 12px; }
+.acs-card.on > .radio { border-color: var(--blue); background: var(--blue); }
+.acs-card.on > .radio::after { content: ''; position: absolute; left: 6px; top: 2.5px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg); background: none; border-radius: 0; inset: auto; }
+.acs-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.acs-title b { font-size: 17px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.acs-title .star { width: 18px; height: 18px; flex: none; }
+.acs-title .coin-ic { width: 24px; height: 24px; border-radius: 50%; flex: none; }
+.acs-title .coin-ic svg { width: 14px; height: 14px; }
+.acs-title .coin-badge { flex: none; }
+.acs-title em { margin-left: auto; font-style: normal; font-size: 13px; color: var(--gray); font-weight: 700; white-space: nowrap; }
+.acs-no { font-size: 14px; color: var(--ink-3); margin-top: 4px; }
+.acs-cols { grid-column: 1 / 3; display: flex; gap: 14px; margin-top: 16px; }
+.acs-cols > div { flex: 1; min-width: 0; }
+.acs-cols span { display: block; font-size: 13px; color: var(--gray); }
+.acs-cols b { display: block; font-size: 22px; font-weight: 800; color: var(--ink); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .3px; }
+.acs-cols b small { font-size: 14px; }
+.acs-cols b.up { color: var(--green); } .acs-cols b.down { color: var(--red); }

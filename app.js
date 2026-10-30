@@ -21,6 +21,7 @@ const state = {
   usd: 12450.75, // Vadesiz USD hesabı bakiyesi
   from: 'TL', // Para Gönder ekranında seçili gönderen hesap (TL / USD)
   hidden: false,
+  homeAcc: 'TL', // ana sayfa kartında gösterilen hesap (Tümü menüsünden seçilir)
   amt: '',          // klavyeden girilen ham tutar, ör. "50000,5"
   last: null,       // son başarılı işlem
   moves: [
@@ -54,11 +55,62 @@ function today(withTime) {
 // Halk Kripto toplam nakit (TL karşılığı)
 const cashTL = () => state.nakit + state.nakitUsd * USD_RATE;
 
+/* Ana sayfa hesap kartı: "Tümü" ile seçilen hesap (Vadesiz TL / Vadesiz USD / Halk Kripto Hesabım) */
+const eyeBtn = () => `<button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#${state.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></button>`;
+const qBtn = (attr, color, icon, w, h, label) => `<button class="press" ${attr}><span class="qi" style="color:${color}"><svg width="${w}" height="${h}"><use href="#${icon}"/></svg></span>${label}</button>`;
+function renderHomeAcct() {
+  const pill = '<button class="pill-orange press" data-allacc>Tümü</button>';
+  if (state.homeAcc === 'KRIPTO') {
+    const total = cashTL() + state.kripto, tp = portfolioPL();
+    $('#home-acct').innerHTML = `
+      <div class="acct-head"><svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg><span class="name">Halk Kripto Hesabım</span>${eyeBtn()}${pill}</div>
+      <div class="acct-no">HK 48215903 - Halk Kripto</div>
+      <div class="lbl" style="margin-top:20px">Kripto ve Nakit Bakiye</div>
+      <div class="amt-big amt">${money(total)}</div>
+      <div class="kredili"><span class="lbl">Olası Kar / Zarar</span><b class="money-sm amt ${chClass(tp.pl)}">${signed(tp.pl).split(',')[0]}<small>,${fmt(tp.pl).split(',')[1]} TL</small></b></div>
+      <div class="quick">
+        ${qBtn('data-redirect', '#0576b8', 'i-transfer', 21, 19, 'Kripto<br>Al/Sat')}
+        ${qBtn('data-go="gonder"', '#0576b8', 'i-send', 15, 15, 'Kripto’ya<br>Para Gönder')}
+        ${qBtn('data-go="varliklar"', '#0576b8', 'i-pie', 19, 19, 'Kripto<br>Varlıklarım')}
+        ${qBtn('data-go="kripto"', '#f0700d', 'i-grid', 24, 24, 'Kripto<br>İşlemleri')}
+      </div>`;
+    return;
+  }
+  const a = accounts().find((x) => x.id === state.homeAcc);
+  $('#home-acct').innerHTML = `
+    <div class="acct-head">${a.id === 'TL' ? '<span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span>' : ''}<span class="name">${a.name}</span>${eyeBtn()}${pill}</div>
+    <div class="acct-no">${a.no}</div>
+    <div class="lbl" style="margin-top:20px">Kullanılabilir Bakiye</div>
+    <div class="amt-big amt">${money(a.bal, a.id)}</div>
+    <div class="kredili"><span class="lbl">Kullanılabilir Kredili Bakiye</span><b class="money-sm amt">${money(a.kredili ?? a.bal, a.id)}</b></div>
+    <div class="quick">
+      ${qBtn('data-soon', '#0576b8', 'i-transfer', 21, 19, 'Para<br>Transferi')}
+      ${qBtn('data-soon', '#0079b6', 'i-atm', 17, 20, 'ATM’den<br>Para Çek')}
+      ${qBtn('data-soon', '#0576b8', 'i-share', 19, 19, 'IBAN<br>Paylaş')}
+      ${qBtn('data-soon', '#f0700d', 'i-grid', 24, 24, 'Tüm<br>İşlemler')}
+    </div>`;
+}
+// "Tümü": Halkbank Tüm Hesaplar menüsü; Halk Kripto hesabı da burada listelenir
+function openAllAcc() {
+  const card = (id, head, no, cols, extra = '') => `
+    <button class="acs-card press${state.homeAcc === id ? ' on' : ''}" data-homeacc="${id}"><i class="radio"></i>
+      <div class="acs-title">${head}${extra}</div><div class="acs-no">${no}</div>
+      <div class="acs-cols">${cols.map(([l, v]) => `<div><span>${l}</span><b class="amt">${v}</b></div>`).join('')}</div>
+    </button>`;
+  const [tl, usd] = accounts();
+  $('#allacc-list').innerHTML = `
+    <div class="acs-sec">VADESİZ HESAPLAR</div>
+    ${card('TL', `<span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span><b>${tl.name}</b>`, `${tl.no} - Nişantaşı Şb.`, [['Kullanılabilir Bakiye', money(tl.bal)], ['Kullanılabilir Kredili Bakiye', money(tl.kredili)]], '<em>★ Favori Hesabım</em>')}
+    ${card('USD', `<b>${usd.name}</b>`, `${usd.no} - Nişantaşı Şb.`, [['Kullanılabilir Bakiye', money(usd.bal, 'USD')], ['Kullanılabilir Kredili Bakiye', money(usd.bal, 'USD')]])}
+    <div class="acs-sec">KRİPTO HESAPLARI</div>
+    ${card('KRIPTO', '<svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg><b>Halk Kripto Hesabım</b>', 'HK 48215903 - Halk Kripto', [['Nakit Bakiye', money(cashTL())], ['Kripto Varlıklarım', money(state.kripto)]])}`;
+  openSheet('allacc-sheet');
+}
+
 function renderBalances() {
   const total = cashTL() + state.kripto;
   const tp = portfolioPL();
-  $$('[data-k="vadesiz-big"]').forEach((e) => (e.innerHTML = money(state.vadesiz)));
-  $$('[data-k="kredili"]').forEach((e) => (e.innerHTML = money(state.kredili)));
+  renderHomeAcct();
   const eye = `<button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#${state.hidden ? 'i-eye-off' : 'i-eye'}"/></svg></button>`;
   const head = `
     <div class="acct-head">
@@ -725,6 +777,9 @@ function setupEvents() {
     if (b.hasAttribute('data-cursheet')) return openCurSheet();
     if (b.dataset.dcur) return setDisplayCur(b.dataset.dcur);
     if (b.hasAttribute('data-accsheet')) return openAccSheet();
+    if (b.hasAttribute('data-allacc')) return openAllAcc();
+    if (b.hasAttribute('data-sheetclose')) return closeSheet();
+    if (b.dataset.homeacc) { state.homeAcc = b.dataset.homeacc; $$('#allacc-list .acs-card').forEach((x) => x.classList.toggle('on', x === b)); renderHomeAcct(); return setTimeout(closeSheet, 200); }
     if (b.dataset.acc) return setFromAcc(b.dataset.acc);
     if (b.hasAttribute('data-soon')) {
       // Ana sayfada demo dışı bir öğeye dokunulunca kullanıcıyı Kripto İşlemleri'ne yönlendir

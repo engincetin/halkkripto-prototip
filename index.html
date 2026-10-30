@@ -111,24 +111,7 @@
     <div class="scroll home-scroll" id="home-scroll">
       <div class="home-content" id="home-content">
 
-      <div class="card acct-card bal">
-        <div class="acct-head">
-          <span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span>
-          <span class="name">Vadesiz TL Hesabı</span>
-          <button class="eye-btn press" data-eye><svg width="17" height="13"><use href="#i-eye"/></svg></button>
-          <span class="pill-orange">Tümü</span>
-        </div>
-        <div class="acct-no">1658 - 01106845</div>
-        <div class="lbl" style="margin-top:20px">Kullanılabilir Bakiye</div>
-        <div class="amt-big amt" data-k="vadesiz-big"></div>
-        <div class="kredili"><span class="lbl">Kullanılabilir Kredili Bakiye</span><b class="money-sm amt" data-k="kredili"></b></div>
-        <div class="quick">
-          <button class="press" data-soon><span class="qi" style="color:#0576b8"><svg width="21" height="19"><use href="#i-transfer"/></svg></span>Para<br>Transferi</button>
-          <button class="press" data-soon><span class="qi" style="color:#0079b6"><svg width="17" height="20"><use href="#i-atm"/></svg></span>ATM’den<br>Para Çek</button>
-          <button class="press" data-soon><span class="qi" style="color:#0576b8"><svg width="19" height="19"><use href="#i-share"/></svg></span>IBAN<br>Paylaş</button>
-          <button class="press" data-soon><span class="qi" style="color:#f0700d"><svg width="24" height="24"><use href="#i-grid"/></svg></span>Tüm<br>İşlemler</button>
-        </div>
-      </div>
+      <div class="card acct-card bal" id="home-acct"></div>
 
       <div class="card moves">
         <div class="moves-head"><b>HESAP HAREKETLERİ</b><button class="see-all press" data-soon>Tümünü Gör <svg width="6" height="10"><use href="#i-chev-right"/></svg></button></div>
@@ -354,6 +337,11 @@
     <h3>Gönderen Hesap Seçin</h3>
     <p>Halk Kripto hesabınıza hangi hesabınızdan para göndermek istediğinizi seçin.</p>
     <div id="acc-opts"></div>
+  </div>
+
+  <div class="sheet acs-sheet" id="allacc-sheet" role="dialog" aria-label="Tüm Hesaplar">
+    <div class="acs-head"><h3>Tüm Hesaplar</h3><button class="press" data-sheetclose aria-label="Kapat"><svg width="22" height="22" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+    <div id="allacc-list"></div>
   </div>
 
   <!-- Halk Kripto'ya yönlendirme (Al/Sat) -->

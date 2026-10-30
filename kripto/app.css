@@ -432,23 +432,11 @@
 .k-movescard .mv { padding: 13px 0; }
 /* Varlıklarım üst kartı: Halkbank "Varlıklar Dağılım" kartı */
 #ka-total { padding: 19px 17px 0; }
-.ka-dhead { display: flex; align-items: center; gap: 16px; }
-.ka-dhead b { flex: 1; font-size: 18px; font-weight: 800; color: var(--ink); }
-.ka-radio { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; color: var(--ink); }
-.ka-radio i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #c3c9d0; position: relative; }
-.ka-radio.on i { border-color: var(--blue); background: var(--blue); }
-.ka-radio.on i::after { content: ''; position: absolute; left: 6px; top: 2.5px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg); }
 .ka-donut { position: relative; width: 220px; height: 220px; margin: 16px auto 0; }
 .ka-donut-svg { width: 100%; height: 100%; display: block; }
 .ka-donut > div { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .ka-donut span { font-size: 15px; color: var(--ink-3); }
 .ka-donut b { font-size: 21px; font-weight: 800; color: var(--ink); margin-top: 4px; letter-spacing: .3px; }
-.ka-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-.ka-chips span { padding: 7px 13px; border: 1.3px solid #d3d8de; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--ink-3); }
-.ka-net { display: flex; justify-content: space-between; align-items: center; margin: 16px -17px 0; padding: 16px 17px; border-top: 1px solid var(--line); font-size: 15px; color: var(--ink-3); }
-.ka-net b { font-size: 17px; font-weight: 800; white-space: nowrap; }
-.ka-net b small { font-size: 13px; }
-.ka-net b.up { color: var(--green); } .ka-net b.down { color: var(--red); }
 .ka-dot { width: 14px; height: 14px; border-radius: 50%; flex: none; }
 
 /* Sekme başlıkları: solda kullanıcı fotoğrafı (ana sayfadaki gibi), sağda sekmeye özgü ikonlar */
@@ -493,8 +481,6 @@
 /* Üst kartların başlık satırı her sekmede aynı yükseklikte (göz olmasa da) */
 .k-total .acct-head, #ka-total .acct-head { min-height: 28px; }
 /* Piyasalar kartı: varlıkların bugünkü durumu */
-.km-story { margin-top: 12px; padding: 11px 13px; border-radius: 8px; background: var(--tile); font-size: 14px; line-height: 1.45; color: var(--ink-3); font-weight: 600; }
-.km-story b { color: var(--ink); font-weight: 800; }
 .km-held { display: flex; gap: 8px; overflow-x: auto; margin: 12px -17px 0; padding: 0 17px 2px; }
 .km-held::-webkit-scrollbar { display: none; }
 .km-held button { flex: none; display: flex; align-items: center; gap: 7px; height: 38px; padding: 0 11px 0 5px; border-radius: 19px; border: 1.3px solid #d3d8de; background: #fff; }
@@ -503,3 +489,108 @@
 .km-held b { font-size: 14px; font-weight: 800; color: var(--ink); }
 .km-held span { font-size: 13px; font-weight: 800; }
 .km-held span.up { color: var(--green); } .km-held span.down { color: var(--red); } .km-held span.flat { color: var(--gray-2); }
+
+/* ---------- Ana kart: seçilen hesap ---------- */
+.k-total .acct-head > .coin-ic { width: 20px; height: 20px; border-radius: 50%; flex: none; }
+.k-total .acct-head > .coin-ic svg { width: 13px; height: 13px; }
+.k-total .acct-head .star { width: 18px; height: 18px; flex: none; }
+.k-no { font-size: 14px; color: var(--ink-3); margin-top: 3px; }
+.k-total .pl-row .money-sm { font-size: 18px; }
+
+/* ---------- İşlemler: Halkbank Hesap Detayı + Hesap Hareketleri ---------- */
+.kh-cols { margin-top: 18px; }
+.kh-cols b { font-size: 24px; }
+.kh-ops .kop { font-size: 13px; line-height: 15px; font-weight: 600; }
+#k-history .row-title { margin-bottom: 12px; }
+#k-history .kh-active:not(:empty) { margin: 0 0 12px; }
+.kh-full { padding: 0 18px; }
+.kh-full.empty { background: none; box-shadow: none; }
+.kh-mv .mv-top span small { font-size: 12px; font-weight: 700; }
+.kh-mv .mv-bot { align-items: flex-start; }
+.kh-mv .mv-bot span { white-space: normal; font-size: 13px; letter-spacing: .1px; line-height: 1.35; text-transform: none; }
+.kh-mv .mv-bot em { font-style: normal; font-size: 13px; color: var(--gray-2); font-weight: 600; white-space: nowrap; margin-left: 10px; }
+.kh-mv.full { align-items: flex-start; padding: 15px 0 12px; }
+.mv-act { display: flex; justify-content: flex-end; align-items: center; gap: 14px; margin-top: 6px; }
+.mv-again { color: var(--blue); font-size: 15px; font-weight: 800; }
+.mv-rc { color: var(--blue); display: flex; flex: none; margin-left: 10px; }
+.mv-act .mv-rc { margin-left: 0; }
+.kh-mv.cancel .mv-top b { color: var(--gray-2); }
+
+/* Dekont Görüntüleme */
+#k-dekont { background: #fff; }
+.kdk-scroll { background: #f2f3f5; }
+.kdk-paper { margin: 12px 10px 0; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.12); padding: 20px 14px 26px; }
+.kdk-page { font-size: 20px; font-weight: 800; color: #000; margin: 0 0 18px 10px; }
+.kdk-doc { font: 9.5px/1.45 'SF Mono', Menlo, Consolas, monospace; color: #222; }
+.kdk-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.kdk-top img { width: 26px; height: auto; }
+.kdk-top b { font: 900 14px 'Nunito Sans', sans-serif; color: #025193; letter-spacing: .4px; }
+.kdk-top span { margin-left: 60px; font: 700 11px 'Nunito Sans', sans-serif; letter-spacing: .5px; }
+.kdk-box { border: 1px solid #b9c2cc; border-radius: 3px; padding: 5px 7px; margin-top: 4px; }
+.kdk-box > div > span, .kdk-box > div span { display: inline-block; min-width: 108px; }
+.kdk-2 { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; }
+.kdk-2 > div > div span { min-width: 70px; }
+.kdk-qr { align-self: center; }
+.kdk-foot { font-size: 7.5px; color: #555; margin-top: 8px; text-align: center; }
+.kdk-bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5; background: #f2f3f5; padding: 18px 19px calc(var(--sab) + 18px); }
+.btn-outline { width: 100%; height: 56px; border-radius: 10px; border: 2.5px solid var(--blue); background: #fff; color: var(--blue); font-size: 19px; font-weight: 800; }
+
+/* Hesap Ekstresi */
+#k-ekstre { background: var(--bg-home); }
+.ke-info { padding: 2px 20px; }
+.ke-field { position: relative; display: block; margin: 12px 19px 0; padding: 12px 52px 10px 16px; border-radius: 8px; background: #fff; border: 1.5px solid #d3d8de; }
+.ke-field span { display: block; font-size: 14px; color: var(--gray-2); }
+.ke-field input, .ke-field select { display: block; width: 100%; border: 0; outline: 0; background: none; font: 800 17px 'Nunito Sans', sans-serif; color: var(--ink); margin-top: 3px; padding: 0; -webkit-appearance: none; appearance: none; -webkit-user-select: text; user-select: text; }
+.ke-field input::-webkit-calendar-picker-indicator { opacity: 0; position: absolute; inset: 0; width: 100%; height: 100%; }
+.ke-field > svg { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--blue); pointer-events: none; }
+.ke-checks { margin: 12px 19px 0; padding: 6px 18px; }
+.ke-checks label { display: flex; align-items: center; gap: 14px; padding: 12px 0; font-size: 15px; font-weight: 700; color: var(--ink); }
+.ke-checks input { display: none; }
+.ke-checks i { width: 24px; height: 24px; border-radius: 5px; border: 2px solid #c3c9d0; flex: none; position: relative; }
+.ke-checks input:checked + i { background: var(--blue); border-color: var(--blue); }
+.ke-checks input:checked + i::after { content: ''; position: absolute; left: 6.5px; top: 2px; width: 5px; height: 11px; border: solid #fff; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg); }
+.ke-note { display: flex; gap: 8px; margin: 14px 19px 0; font-size: 14px; color: var(--gray-2); line-height: 1.4; }
+.ke-note svg { flex: none; color: #9aa3ad; margin-top: 1px; }
+
+/* Varlıklarım: sayısal cüzdan + açılır dağılım grafiği */
+#ka-total { padding: 19px 17px 12px; }
+.ka-cols { margin-top: 16px; }
+.ka-cols b { font-size: 22px; }
+.ka-chart { display: none; }
+.ka-chart.open { display: block; }
+.ka-donut { margin-top: 18px; }
+.ka-donut em { font-style: normal; font-size: 14px; font-weight: 800; color: var(--blue); margin-top: 2px; }
+.ka-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.ka-chips button { display: flex; align-items: center; gap: 6px; padding: 7px 11px; border: 1.3px solid #d3d8de; border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--ink-3); background: #fff; transition: background .2s, color .2s; }
+.ka-chips button i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.ka-chips button.on { background: var(--c); border-color: var(--c); color: #fff; }
+.ka-chips button.on i { background: #fff; }
+.ka-chartbtn { display: flex; align-items: center; gap: 8px; }
+.ka-chart.open ~ .ka-chartbtn svg { transform: rotate(180deg); }
+/* Piyasalar: "Günün Özeti" kaydırıcısı (Halkbank ana sayfa bilgi kartları gibi) */
+.km-slider { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 14px 19px 2px; scroll-padding: 0 19px; }
+.km-slider:empty { display: none; }
+.km-slider::-webkit-scrollbar { display: none; }
+.km-slider::after { content: ''; flex: 0 0 9px; }
+.km-sl { position: relative; flex: 0 0 100%; scroll-snap-align: start; border-radius: 10px; padding: 18px 120px 18px 18px; color: #fff; overflow: hidden; min-height: 176px; display: flex; flex-direction: column; }
+.km-sl.gold { background: linear-gradient(120deg, #d5a043 0%, #e4b863 100%); }
+.km-sl.blue { background: linear-gradient(90deg, #025193 0%, #0576b8 100%); }
+.km-sl.sky { background: linear-gradient(90deg, #0576b8 0%, #02a6e6 100%); }
+.km-sl.navy { background: linear-gradient(90deg, #0b2f5c 0%, #025193 100%); }
+.km-sl-tag { display: inline-flex; align-items: center; gap: 5px; align-self: flex-start; font-size: 12px; font-weight: 800; letter-spacing: .3px; padding: 3px 9px; border-radius: 11px; background: rgba(255,255,255,.2); }
+.km-sl b { font-size: 18px; font-weight: 800; margin-top: 10px; line-height: 1.25; }
+.km-sl p { font-size: 14px; line-height: 1.45; margin-top: 6px; opacity: .95; font-weight: 600; }
+.km-sl p b { font-size: 14px; margin: 0; }
+.km-sl-btns { display: flex; gap: 10px; margin-top: auto; padding-top: 14px; }
+.km-sl-btns button { height: 36px; padding: 0 18px; border-radius: 18px; font-size: 15px; font-weight: 700; border: 1.5px solid #fff; color: #fff; }
+.km-sl-btns button + button { background: #fff; }
+.km-sl.gold .km-sl-btns button + button { color: #b8862c; }
+.km-sl.blue .km-sl-btns button + button, .km-sl.navy .km-sl-btns button + button { color: var(--blue-dark, #025193); }
+.km-sl.sky .km-sl-btns button + button { color: #0576b8; }
+.km-sl-art { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 92px; height: 92px; border-radius: 50%; background: rgba(255,255,255,.18); box-shadow: 0 0 0 10px rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; }
+.km-sl-art .coin-ic { width: 60px; height: 60px; border-radius: 50%; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,.18); }
+.km-sl-art .coin-ic svg { width: 30px; height: 30px; }
+.km-dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.km-dots:empty { display: none; }
+.km-dots i { width: 7px; height: 7px; border-radius: 4px; background: #c3cbd4; transition: width .2s, background .2s; }
+.km-dots i.on { width: 18px; background: var(--blue); }
