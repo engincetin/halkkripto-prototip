@@ -332,13 +332,17 @@ function renderHistory() {
   const base = filteredTx(true).filter((x) => x.st === 'done');
   const sum = (t) => base.filter((x) => x.t === t).reduce((a, x) => a + (x.k === 'usd' ? x.total * USD_RATE : x.total), 0);
   const per = PERIODS.find((p) => p[0] === kh.period)[1];
+  const buy = sum('buy'), sell = sum('sell'), net = sum('dep') - sum('wd');
+  const bp = buy + sell ? (buy / (buy + sell)) * 100 : 50;
+  const stat = (t, icon, label, v) => `<div class="kh-stat"><i class="kh-badge ${t}"><svg width="10" height="10"><use href="#${icon}"/></svg></i><span>${label}</span><b class="amt">${fmt(v, 0)} <small>TL</small></b></div>`;
   $('#kh-sum').innerHTML = `
-    <div class="kh-sum-head"><span>${per}</span><b>${base.length} gerçekleşen işlem</b></div>
-    <div class="kh-sum-grid">
-      <div><span>Alım</span><b class="amt">${fmt(sum('buy'), 0)} <small>TL</small></b></div>
-      <div><span>Satım</span><b class="amt">${fmt(sum('sell'), 0)} <small>TL</small></b></div>
-      <div><span>Net Yatırma</span><b class="amt">${fmt(sum('dep') - sum('wd'), 0)} <small>TL</small></b></div>
-    </div>`;
+    <div class="kh-sum-head">
+      <div><b>İşlem Özeti</b><small>${base.length} gerçekleşen işlem</small></div>
+      <button class="pill-orange press" data-ksheet="hf-sheet">${per} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
+    </div>
+    <div class="kh-stats">${stat('buy', 'i-plus', 'Alım', buy)}${stat('sell', 'i-minus', 'Satım', sell)}${stat('dep', 'k-deposit', 'Net Yatırma', net)}</div>
+    <div class="kh-split"><i style="width:${bp}%"></i></div>
+    <div class="kh-split-lbl"><span>Alım %${fmt(bp, 0)}</span><span>Satım %${fmt(100 - bp, 0)}</span></div>`;
   const counts = { all: filteredTx(true).length };
   Object.keys(TX_TYPE).forEach((t) => (counts[t] = filteredTx(true).filter((x) => x.t === t).length));
   $('#kh-types').innerHTML = [['all', 'Tümü'], ...Object.entries(TX_TYPE).map(([k, v]) => [k, v.n])]
@@ -822,7 +826,7 @@ function tabbarHTML(active) {
   const t = (id, icon, label, w = 24) => `<button class="tab${active === id ? ' on' : ''}" ${id ? `data-ktabgo="${id}"` : 'data-soon'}><svg width="${w}" height="24"><use href="#${icon}"/></svg>${label}</button>`;
   return t('k-home', 't-home', 'Ana Sayfa', 23) + t('k-markets', 't-chart', 'Piyasalar')
     + '<div class="tab fab-slot"><button class="fab k-fab press" data-ktrade="">Al/Sat<svg width="26" height="22"><use href="#i-transfer"/></svg></button></div>'
-    + t('k-assets', 't-pie', 'Varlıklarım') + t('k-profile', 't-user', 'Profil');
+    + t('k-assets', 't-pie', 'Varlıklarım') + t('k-history', 't-tx', 'İşlemler');
 }
 function showTab(id) {
   if (id === current) return;
@@ -831,12 +835,12 @@ function showTab(id) {
   current = id;
   if (id === 'k-markets') renderMarkets();
   if (id === 'k-assets') renderAssets();
-  if (id === 'k-profile') renderProfile();
+  if (id === 'k-history') renderHistory();
 }
 const stack = []; // üst üste açılan ekranlar (Al/Sat → Özet → Sonuç)
 function pushScreen(id) {
   if (id === 'k-search') { $('#ks-q').value = ''; renderSearch(); }
-  if (id === 'k-history') { $('#kh-q').value = ''; renderHistory(); }
+  if (id === 'k-profile') renderProfile();
   if (id === 'k-limits') renderLimits();
   if (id === 'k-dep') { $('#kd-q').value = ''; renderDepList(); }
   const s = $(`#${id}`);
