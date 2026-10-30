@@ -383,18 +383,6 @@
 .ktr-fill em.up { color: var(--green); } .ktr-fill em.down { color: var(--gray-2); }
 
 /* ---------- İşlemler (referanstaki emir listesi düzeni) ---------- */
-.kh-lead { margin: -6px 19px 0; font-size: 14px; color: var(--gray-2); font-weight: 600; line-height: 1.4; }
-.kh-recent { display: flex; gap: 10px; overflow-x: auto; padding: 12px 19px 6px; scroll-padding: 0 19px; scroll-snap-type: x mandatory; }
-.kh-recent::-webkit-scrollbar { display: none; }
-.kh-recent::after { content: ''; flex: 0 0 9px; }
-.kh-rc { flex: 0 0 214px; scroll-snap-align: start; text-align: left; background: var(--card); border-radius: 10px; box-shadow: 0 0 13px 2px rgba(0,0,0,.05); padding: 14px 15px 13px; display: flex; flex-direction: column; }
-.kh-rc-top { display: flex; align-items: center; gap: 10px; }
-.kh-rc-top .coin-ic { width: 38px; height: 38px; }
-.kh-rc-top b { display: block; font-size: 15px; font-weight: 800; color: var(--ink); }
-.kh-rc-top .kh-type { font-size: 13px; }
-.kh-rc strong { font-size: 18px; font-weight: 800; margin-top: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .2px; }
-.kh-rc-amt { font-size: 13px; color: var(--ink-3); font-weight: 700; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kh-rc small { font-size: 12px; color: var(--gray); margin-top: 8px; font-weight: 600; }
 .kh-type.buy, strong.buy, b.buy { color: var(--green); }
 .kh-type.sell, strong.sell, b.sell { color: var(--red); }
 .kh-type.dep, strong.dep, b.dep { color: var(--blue); }
@@ -407,19 +395,8 @@
 .kh-sel.on { border-color: var(--blue); }
 .kh-fsq { flex: 0 0 60px; height: 60px; border-radius: 8px; background: #fff; border: 1.5px solid #d3d8de; display: flex; align-items: center; justify-content: center; color: var(--blue); }
 .kh-day { margin: 20px 19px 10px; font-size: 15px; font-weight: 700; color: var(--ink-3); }
-.kh-card { padding: 0 16px; }
-.kh-item { display: flex; align-items: flex-start; gap: 12px; padding: 16px 0 14px; border-bottom: 1px solid var(--line); }
-.kh-item:last-child { border-bottom: 0; }
-.kh-item > .coin-ic { width: 40px; height: 40px; flex: none; }
-.kh-item > .kp-chev { align-self: center; }
-.kh-body { flex: 1; min-width: 0; }
-.kh-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
-.kh-top b { font-size: 17px; font-weight: 800; color: var(--ink); }
-.kh-top b.amt { font-size: 16px; white-space: nowrap; }
 .kh-r { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 3px 0; font-size: 14px; color: var(--ink-3); }
 .kh-r > b { font-weight: 800; color: var(--ink); text-align: right; white-space: nowrap; }
-.kh-body small { display: block; font-size: 12px; color: var(--gray); margin-top: 6px; font-weight: 600; }
-.kh-item.cancel .kh-top b { color: var(--gray-2); }
 .kh-dot { font-style: normal; font-weight: 800; display: inline-flex; align-items: center; gap: 7px; color: var(--ink); }
 .kh-dot::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--green); }
 .kh-dot.cancel::before { background: var(--red); }
@@ -446,61 +423,16 @@
 .kh-more.open + .kh-morebtn svg { transform: rotate(180deg); }
 .kh-dbtns { margin: 22px 19px 0; }
 
-/* ---------- İşlemler: performans panosu ---------- */
+/* ---------- İşlemler: Halkbank hesap hareketleri düzeni ---------- */
 #k-history { background: var(--bg-home); }
-.kx-hero { padding: 19px 17px 14px; }
-.kx-hero .acct-head .name { font-weight: 700; }
-.kx-big { display: flex; align-items: baseline; gap: 10px; font-size: 32px; font-weight: 800; letter-spacing: .8px; margin-top: 2px; color: var(--ink); }
-.kx-big small { font-size: 19px; }
-.kx-big.up { color: var(--green); } .kx-big.down { color: var(--red); }
-.kx-big em { font-style: normal; font-size: 15px; font-weight: 800; padding: 3px 9px; border-radius: 12px; background: #e4f4e8; letter-spacing: .2px; }
-.kx-big.down em { background: #fdecee; }
-.kx-split { display: flex; gap: 12px; margin-top: 12px; }
-.kx-split > div { flex: 1; padding: 10px 12px; border-radius: 8px; background: var(--bg-home); }
-.kx-split span { display: block; font-size: 12px; color: var(--gray); font-weight: 700; }
-.kx-split b { display: block; font-size: 16px; font-weight: 800; margin-top: 2px; white-space: nowrap; }
-.kx-chart { display: block; width: 100%; height: 86px; margin-top: 14px; }
-.kx-legend { display: flex; gap: 14px; font-size: 12px; color: var(--gray); font-weight: 700; margin-top: 4px; }
-.kx-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; }
-.kx-legend i.g { background: var(--green); } .kx-legend i.r { background: var(--red); }
-.kx-legend .sp { flex: 1; }
-.kx-hero hr { border: 0; border-top: 1px solid var(--line); margin: 12px 0 10px; }
-.kx-stats { display: flex; }
-.kx-stats > div { flex: 1; text-align: center; }
-.kx-stats > div + div { border-left: 1px solid var(--line); }
-.kx-stats b { display: block; font-size: 17px; font-weight: 800; color: var(--ink); white-space: nowrap; }
-.kx-stats b small { font-size: 12px; }
-.kx-stats span { display: block; font-size: 12px; color: var(--gray); margin-top: 2px; font-weight: 600; }
-.kx-insights { display: flex; gap: 10px; margin: 12px 19px 0; }
-.kx-insights:empty { display: none; }
-.kx-ins { flex: 1; min-width: 0; text-align: left; padding: 13px 14px; display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; }
-.kx-ins > .coin-ic, .kx-ins-ic { grid-row: 1 / 4; width: 36px; height: 36px; border-radius: 50%; }
-.kx-ins-ic { display: flex; align-items: center; justify-content: center; color: #fff; background: var(--green); }
-.kx-ins small { font-size: 12px; color: var(--gray); font-weight: 700; }
-.kx-ins b { font-size: 14px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kx-ins em { font-style: normal; font-size: 13px; font-weight: 800; color: var(--blue); }
-.kx-ins em.up { color: var(--green); }
-#k-history .row-title { margin-bottom: 10px; }
-.kx-rc { flex-basis: 236px; padding-bottom: 12px; }
-.kx-rc .kh-rc-top > span { flex: 1; min-width: 0; }
-.kx-rc .kh-rc-top > small { align-self: flex-start; margin: 2px 0 0; font-size: 12px; color: var(--gray); }
-.kx-rc-pnl { display: flex; align-items: baseline; gap: 8px; margin-top: 12px; }
-.kx-rc-pnl strong { font-size: 22px; font-weight: 800; letter-spacing: .3px; }
-.kx-rc-pnl span { font-size: 14px; font-weight: 800; white-space: nowrap; }
-.kx-rc-pnl.up { color: var(--green); } .kx-rc-pnl.down { color: var(--red); } .kx-rc-pnl.flat { color: var(--gray-2); }
-.kx-rc em { font-style: normal; font-size: 12px; color: var(--gray); font-weight: 700; margin-top: 1px; }
-.kx-spark { display: block; width: 100%; height: 44px; margin-top: 8px; }
-.kx-rc-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--gray); font-weight: 600; }
-.kx-rc-foot b { color: var(--ink); font-weight: 800; }
-.kx-rc .kx-qty { margin-top: 4px; font-size: 12px; color: var(--ink-3); font-weight: 700; }
-.kh-r b small { font-size: 12px; font-weight: 700; }
-.kh-r b.up { color: var(--green); } .kh-r b.down { color: var(--red); }
-.kx-rc .kh-rc-top > span:not(.coin-ic) { flex: 1; min-width: 0; }
-.kx-rc .kh-rc-top > span.coin-ic { flex: none; }
-.kx-rc .kh-rc-top b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kx-rc-pnl { flex-wrap: wrap; row-gap: 0; }
-.kh-r > span { min-width: 0; }
+.kh-month { margin: 0 19px; padding: 6px 20px 12px; }
+.kh-month hr { border: 0; border-top: 1px solid var(--line); margin: 6px 0 10px; }
+.kh-month-foot { font-size: 14px; color: var(--gray-2); }
+.kh-month-foot b { color: var(--ink); }
+#k-history .kh-filters { margin-top: 0; }
+.kh-moves { margin: 0 19px; padding: 2px 20px; }
+.kh-mv .mv-bot span { letter-spacing: .2px; font-size: 14px; }
+.kh-mv .mv-top b { font-size: 15px; }
+.kh-mv .mv-top .off { color: var(--gray-2); font-weight: 800; text-decoration: line-through; }
+.kh-mv.cancel .datebox { opacity: .6; }
 .kh-r b small { display: inline; }
-.kx-rc-pnl { display: block; }
-.kx-rc-pnl strong { display: block; }
-.kx-rc-pnl span { display: block; margin-top: 1px; }

@@ -234,16 +234,11 @@
       <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
       <h1>İşlemler</h1>
     </header>
-    <div class="scroll pull-blue">
+    <div class="scroll">
       <div class="pad-header"></div>
-      <div class="pull-content">
-      <div class="grad-ext"></div>
-      <div class="card kcard kx-hero bal" id="kx-hero"></div>
-      <div class="kx-insights" id="kx-insights"></div>
-      <div class="row-title"><span class="section-title">SON İŞLEMLERİN PERFORMANSI</span></div>
-      <p class="kh-lead">İşlem yaptığınız andan bu yana fiyat değişimine göre kâr / zarar.</p>
-      <div class="kh-recent" id="kh-recent"></div>
-      <div class="section-title">TÜM İŞLEMLER</div>
+      <div class="section-title" id="kh-month-title">BU AY</div>
+      <div class="card kh-month bal" id="kh-month"></div>
+      <div class="section-title">İŞLEMLERİNİZ</div>
       <div class="kh-filters">
         <button class="kh-sel press" data-khsel="type"><span>İşlem</span><b id="khs-type">Tümü</b><svg width="14" height="8"><use href="#i-chev-down"/></svg></button>
         <button class="kh-sel press" data-khsel="status"><span>İşlem Durumu</span><b id="khs-status">Tümü</b><svg width="14" height="8"><use href="#i-chev-down"/></svg></button>
@@ -252,7 +247,6 @@
       <div id="kh-active" class="kh-active"></div>
       <div id="kh-list"></div>
       <div style="height:calc(var(--sab) + 110px)"></div>
-      </div>
     </div>
     <nav class="tabbar" data-ktabbar="k-history"></nav>
   </section>
