@@ -230,39 +230,40 @@ function renderAssets() {
   if (q && !cash.length && !rows.length) $('#ka-crypto').insertAdjacentHTML('afterend', '<div class="k-empty" id="ka-empty">Sonuç bulunamadı</div>');
 }
 
-/* ---------- İşlem Geçmişi ---------- */
+/* ---------- İşlemler ---------- */
 // Demo işlemleri: g = kaç gün önce, h = saat. Sıfır bakiyeli USDT / AVAX / DOGE alınıp tamamen satılmış görünür.
-// Fiyatlar TL; TL limit emirlerde komisyon %0 (kampanya), piyasa emirlerinde %0,20.
+// Tutarlar TL; alış/satışta komisyon %0,20. İptal edilenlerde why = iptal nedeni.
 const TX_SEED = [
-  { g: 1, h: '16:42', t: 'buy', k: 'sol', o: 'Piyasa', q: 0.35, p: 5060 },
-  { g: 2, h: '10:15', t: 'sell', k: 'doge', o: 'Piyasa', q: 1500, p: 10.32 },
-  { g: 3, h: '21:08', t: 'buy', k: 'xrp', o: 'Limit', q: 40, p: 61.5, st: 'cancel' },
+  { g: 1, h: '16:42', t: 'buy', k: 'sol', q: 0.35, p: 5060 },
+  { g: 2, h: '10:15', t: 'sell', k: 'doge', q: 1500, p: 10.32 },
+  { g: 3, h: '21:08', t: 'buy', k: 'xrp', q: 40, p: 61.5, st: 'cancel', why: 'Müşteri Talebi' },
   { g: 4, h: '09:30', t: 'dep', k: 'try', q: 15000 },
-  { g: 6, h: '14:22', t: 'buy', k: 'btc', o: 'Limit', q: 0.0015, p: 3985000 },
-  { g: 8, h: '11:47', t: 'sell', k: 'avax', o: 'Limit', q: 12, p: 452.1 },
-  { g: 10, h: '19:05', t: 'buy', k: 'eth', o: 'Piyasa', q: 0.03, p: 115200 },
+  { g: 6, h: '14:22', t: 'buy', k: 'btc', q: 0.0015, p: 3985000 },
+  { g: 8, h: '11:47', t: 'sell', k: 'avax', q: 12, p: 452.1 },
+  { g: 10, h: '19:05', t: 'buy', k: 'eth', q: 0.03, p: 115200 },
   { g: 12, h: '13:12', t: 'dep', k: 'usd', q: 200 },
-  { g: 15, h: '16:40', t: 'sell', k: 'usdt', o: 'Piyasa', q: 300, p: 49.55 },
-  { g: 18, h: '10:02', t: 'buy', k: 'usdc', o: 'Limit', q: 197.69, p: 49.66 },
+  { g: 15, h: '16:40', t: 'sell', k: 'usdt', q: 300, p: 49.55 },
+  { g: 18, h: '10:02', t: 'buy', k: 'usdc', q: 197.69, p: 49.66 },
   { g: 21, h: '15:33', t: 'wd', k: 'try', q: 5000 },
-  { g: 25, h: '12:20', t: 'buy', k: 'doge', o: 'Piyasa', q: 1500, p: 9.6 },
-  { g: 29, h: '20:11', t: 'buy', k: 'sol', o: 'Limit', q: 1.2, p: 5250 },
-  { g: 34, h: '09:58', t: 'buy', k: 'avax', o: 'Piyasa', q: 12, p: 470 },
-  { g: 40, h: '17:25', t: 'buy', k: 'btc', o: 'Limit', q: 0.002, p: 3850000, st: 'cancel' },
-  { g: 45, h: '11:11', t: 'buy', k: 'xrp', o: 'Limit', q: 108.65, p: 54 },
-  { g: 52, h: '14:45', t: 'buy', k: 'usdt', o: 'Piyasa', q: 300, p: 48.9 },
+  { g: 25, h: '12:20', t: 'buy', k: 'doge', q: 1500, p: 9.6 },
+  { g: 29, h: '20:11', t: 'buy', k: 'sol', q: 1.2, p: 5250 },
+  { g: 34, h: '09:58', t: 'buy', k: 'avax', q: 12, p: 470 },
+  { g: 40, h: '17:25', t: 'buy', k: 'btc', q: 0.002, p: 3850000, st: 'cancel', why: 'Fiyat Değişimi' },
+  { g: 45, h: '11:11', t: 'buy', k: 'xrp', q: 108.65, p: 54 },
+  { g: 52, h: '14:45', t: 'buy', k: 'usdt', q: 300, p: 48.9 },
   { g: 60, h: '10:30', t: 'dep', k: 'try', q: 50000 },
-  { g: 66, h: '16:00', t: 'buy', k: 'eth', o: 'Limit', q: 0.1, p: 108000 },
-  { g: 75, h: '13:37', t: 'buy', k: 'btc', o: 'Piyasa', q: 0.0046, p: 3520000 },
+  { g: 66, h: '16:00', t: 'buy', k: 'eth', q: 0.1, p: 108000 },
+  { g: 75, h: '13:37', t: 'buy', k: 'btc', q: 0.0046, p: 3520000 },
   { g: 88, h: '09:12', t: 'dep', k: 'try', q: 40000 },
   { g: 124, h: '15:50', t: 'dep', k: 'try', q: 25000 },
 ];
 const TX_TYPE = {
-  buy: { n: 'Alım', icon: 'i-plus' }, sell: { n: 'Satım', icon: 'i-minus' },
+  buy: { n: 'Alış', icon: 'i-plus' }, sell: { n: 'Satış', icon: 'i-minus' },
   dep: { n: 'Yatırma', icon: 'k-deposit' }, wd: { n: 'Çekme', icon: 'k-withdraw' },
 };
 const PERIODS = [['7', 'Son 7 Gün'], ['30', 'Son 30 Gün'], ['90', 'Son 3 Ay'], ['all', 'Tümü']];
-const STATUSES = [['all', 'Tümü'], ['done', 'Gerçekleşen'], ['cancel', 'İptal Edilen']];
+const STATUSES = [['all', 'Tümü'], ['done', 'Gerçekleşti'], ['cancel', 'İptal']];
+const TYPES = [['all', 'Tümü'], ...Object.entries(TX_TYPE).map(([k, v]) => [k, v.n])];
 const kh = { type: 'all', period: '90', status: 'all', asset: 'all' };
 let hfDraft = null;
 
@@ -270,10 +271,10 @@ function buildTx() {
   const now = new Date();
   const list = TX_SEED.map((x, i) => {
     const d = new Date(now); d.setDate(d.getDate() - x.g);
-    const [hh, mm] = x.h.split(':'); d.setHours(+hh, +mm, 0, 0);
+    const [hh, mm] = x.h.split(':'); d.setHours(+hh, +mm, (i * 17) % 60, 0);
     const cash = x.k === 'try' || x.k === 'usd';
     const total = cash ? x.q : x.q * x.p;
-    const fee = cash || x.st === 'cancel' ? 0 : x.o === 'Limit' ? 0 : total * 0.002;
+    const fee = cash || x.st === 'cancel' ? 0 : total * 0.002;
     return { ...x, id: `HK${String(48213907 - i * 3711)}`, ts: d.getTime(), total, fee, st: x.st || 'done' };
   });
   // Halkbank'tan gönderilen paralar Halk Kripto'da "Yatırma" olarak görünür
@@ -283,19 +284,21 @@ function buildTx() {
   (state.ktx || []).forEach((x) => list.push({ ...x }));
   return list.sort((a, b) => b.ts - a.ts);
 }
+const isCash = (x) => x.k === 'try' || x.k === 'usd';
 const assetCode = (k) => (k === 'try' ? 'TL' : k === 'usd' ? 'USD' : COINS.find((c) => c.k === k).c);
 const assetName = (k) => (k === 'try' ? 'Türk Lirası' : k === 'usd' ? 'Amerikan Doları' : nameOf(COINS.find((c) => c.k === k)));
-const qtyText = (x) => (x.k === 'try' || x.k === 'usd' ? fmt(x.q) : fmt(x.q, x.q < 1 ? 6 : x.q < 10000 ? 2 : 0)) + ' ' + assetCode(x.k);
-function txTitle(x) {
-  if (x.t === 'dep' || x.t === 'wd') return `${assetCode(x.k)} ${TX_TYPE[x.t].n}`;
-  return `${assetCode(x.k)} ${TX_TYPE[x.t].n}`;
-}
-function txSub(x) {
-  const time = new Date(x.ts).toTimeString().slice(0, 5);
-  if (x.t === 'dep') return `Halkbank'tan · ${time}`;
-  if (x.t === 'wd') return `Halkbank'a · ${time}`;
-  return `${x.o} Emir · ${time}`;
-}
+const qtyText = (x) => (isCash(x) ? fmt(x.q) : fmt(x.q, x.q < 1 ? 6 : x.q < 10000 ? 2 : 0)) + ' ' + assetCode(x.k);
+// Al/Sat ekranından USD hesabıyla yapılan işlemler kendi para biriminde gösterilir
+const txCur = (x) => (x.cur === 'USD' ? 'USD' : 'TL');
+const inTx = (x, vTL) => (txCur(x) === 'USD' ? vTL / USD_RATE : vTL);
+const txMoney = (x, vTL) => `${fmt(inTx(x, vTL))} ${txCur(x)}`;
+const txPrice = (x) => { const v = inTx(x, x.p); return `${fmt(v, v < 1 ? 4 : v < 20 ? 3 : 2)} ${txCur(x)}`; };
+function txTitle(x) { return isCash(x) ? `${assetCode(x.k)} ${TX_TYPE[x.t].n}` : `${assetCode(x.k)}/${txCur(x)}`; }
+const signedQty = (x) => `${x.t === 'buy' || x.t === 'dep' ? '+' : '-'}${qtyText(x)}`;
+const outAmt = (x) => (x.t === 'buy' ? txMoney(x, x.total + x.fee) : qtyText(x)); // hesaptan çıkan
+const inAmt = (x) => (x.t === 'buy' ? qtyText(x) : txMoney(x, x.total - x.fee)); // hesaba geçen
+const p2 = (n) => String(n).padStart(2, '0');
+const dt = (ts) => { const d = new Date(ts); return `${p2(d.getDate())}.${p2(d.getMonth() + 1)}.${d.getFullYear()} - ${d.toTimeString().slice(0, 8)}`; };
 function dayLabel(ts) {
   const d = new Date(ts), t = new Date(); t.setHours(0, 0, 0, 0);
   const diff = Math.round((t - new Date(d).setHours(0, 0, 0, 0)) / 864e5);
@@ -304,54 +307,60 @@ function dayLabel(ts) {
   return `${d.getDate()} ${TR_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 const TR_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+const stDot = (x) => `<em class="kh-dot ${x.st}">${x.st === 'cancel' ? 'İptal' : 'Gerçekleşti'}</em>`;
+const typeTxt = (x) => `<b class="kh-type ${x.t}">${TX_TYPE[x.t].n}</b>`;
 
-function filteredTx(ignoreType) {
-  const q = $('#kh-q').value.trim().toLocaleLowerCase('tr-TR');
+function filteredTx() {
   const from = kh.period === 'all' ? 0 : Date.now() - +kh.period * 864e5;
   return buildTx().filter((x) => x.ts >= from
-    && (ignoreType || kh.type === 'all' || x.t === kh.type)
+    && (kh.type === 'all' || x.t === kh.type)
     && (kh.status === 'all' || x.st === kh.status)
-    && (kh.asset === 'all' || x.k === kh.asset)
-    && (!q || `${assetCode(x.k)} ${assetName(x.k)} ${x.id} ${TX_TYPE[x.t].n}`.toLocaleLowerCase('tr-TR').includes(q)));
+    && (kh.asset === 'all' || x.k === kh.asset));
 }
-function txRow(x) {
-  const cash = x.k === 'try' || x.k === 'usd';
-  const sign = x.t === 'buy' || x.t === 'dep' ? '+' : '-';
-  const main = `${sign}${qtyText(x)}`;
-  const sub = cash ? '' : `${x.t === 'buy' ? '-' : '+'}${fmt(x.total + (x.t === 'buy' ? x.fee : -x.fee))} TL`;
-  const ic = cash ? coinIcon(x.k) : coinIcon(x.k);
+// Liste kaydı: referanstaki emir kartı düzeni (emir tipi yok)
+function txItem(x) {
+  const r = (a, b) => `<div class="kh-r"><span>${a}</span>${b}</div>`;
+  const dash = '<b>—</b>', cancel = x.st === 'cancel';
+  let rows = r('İşlem', typeTxt(x));
+  if (isCash(x)) {
+    rows += r(x.t === 'dep' ? 'Gönderen Hesap' : 'Alıcı Hesap', `<b>Halkbank Vadesiz ${assetCode(x.k)}</b>`)
+      + r(x.t === 'dep' ? 'Hesaba Geçen Tutar' : 'Hesaptan Çıkan Tutar', `<b>${qtyText(x)}</b>`);
+  } else {
+    rows += r('İşlem Fiyatı', cancel ? dash : `<b>${txPrice(x)}</b>`)
+      + r(x.t === 'buy' ? 'Hesaptan Çıkan Tutar' : 'Hesaba Geçen Tutar', cancel ? dash : `<b>${x.t === 'buy' ? outAmt(x) : inAmt(x)}</b>`);
+  }
+  rows += r('İşlem Durumu', stDot(x));
   return `
-    <div class="kh-row tap${x.st === 'cancel' ? ' cancel' : ''}" data-tx="${x.id}">
-      <span class="kh-ic">${ic}<i class="kh-badge ${x.t}"><svg width="10" height="10"><use href="#${TX_TYPE[x.t].icon}"/></svg></i></span>
-      <div class="coin-name"><b>${txTitle(x)}</b><span>${txSub(x)}</span></div>
-      <div class="coin-val">${x.st === 'cancel' ? '<em class="kh-st">İptal Edildi</em>' : ''}<b class="amt ${x.st === 'cancel' ? '' : x.t}">${main}</b>${sub && x.st !== 'cancel' ? `<span class="amt">${sub}</span>` : ''}</div>
+    <div class="kh-item tap${cancel ? ' cancel' : ''}" data-tx="${x.id}">
+      ${coinIcon(x.k)}
+      <div class="kh-body">
+        <div class="kh-top"><b>${txTitle(x)}</b>${cancel ? '' : `<b class="amt ${x.t}">${signedQty(x)}</b>`}</div>
+        ${rows}
+        <small>İşlem Saati ${new Date(x.ts).toTimeString().slice(0, 8)}</small>
+      </div>
+      <svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg>
     </div>`;
 }
+function recentCard(x) {
+  const d = new Date(x.ts);
+  return `
+    <button class="kh-rc press" data-tx="${x.id}">
+      <div class="kh-rc-top">${coinIcon(x.k)}<span><b>${txTitle(x)}</b>${typeTxt(x)}</span></div>
+      <strong class="amt ${x.t}">${signedQty(x)}</strong>
+      <span class="kh-rc-amt amt">${isCash(x) ? (x.t === 'dep' ? 'Halkbank’tan' : 'Halkbank’a') : `${x.t === 'buy' ? 'Ödenen' : 'Geçen'} ${x.t === 'buy' ? outAmt(x) : inAmt(x)}`}</span>
+      <small>${dayLabel(x.ts)} · ${d.toTimeString().slice(0, 5)}</small>
+    </button>`;
+}
 function renderHistory() {
-  // Özet: seçili tarih aralığındaki gerçekleşen işlemler (tür filtresi hariç)
-  const base = filteredTx(true).filter((x) => x.st === 'done');
-  const sum = (t) => base.filter((x) => x.t === t).reduce((a, x) => a + (x.k === 'usd' ? x.total * USD_RATE : x.total), 0);
-  const per = PERIODS.find((p) => p[0] === kh.period)[1];
-  const buy = sum('buy'), sell = sum('sell'), net = sum('dep') - sum('wd');
-  const bp = buy + sell ? (buy / (buy + sell)) * 100 : 50;
-  const stat = (t, icon, label, v) => `<div class="kh-stat"><i class="kh-badge ${t}"><svg width="10" height="10"><use href="#${icon}"/></svg></i><span>${label}</span><b class="amt">${fmt(v, 0)} <small>TL</small></b></div>`;
-  $('#kh-sum').innerHTML = `
-    <div class="kh-sum-head">
-      <div><b>İşlem Özeti</b><small>${base.length} gerçekleşen işlem</small></div>
-      <button class="pill-orange press" data-ksheet="hf-sheet">${per} <svg width="13" height="8"><use href="#i-chev-down"/></svg></button>
-    </div>
-    <div class="kh-stats">${stat('buy', 'i-plus', 'Alım', buy)}${stat('sell', 'i-minus', 'Satım', sell)}${stat('dep', 'k-deposit', 'Net Yatırma', net)}</div>
-    <div class="kh-split"><i style="width:${bp}%"></i></div>
-    <div class="kh-split-lbl"><span>Alım %${fmt(bp, 0)}</span><span>Satım %${fmt(100 - bp, 0)}</span></div>`;
-  const counts = { all: filteredTx(true).length };
-  Object.keys(TX_TYPE).forEach((t) => (counts[t] = filteredTx(true).filter((x) => x.t === t).length));
-  $('#kh-types').innerHTML = [['all', 'Tümü'], ...Object.entries(TX_TYPE).map(([k, v]) => [k, v.n])]
-    .map(([k, n]) => `<button class="kh-chip press${kh.type === k ? ' on' : ''}" data-khtype="${k}">${n}<small>${counts[k]}</small></button>`).join('');
+  const recent = buildTx().filter((x) => x.st === 'done').slice(0, 5);
+  $('#kh-recent').innerHTML = recent.map(recentCard).join('');
+  $('#khs-type').textContent = TYPES.find((t) => t[0] === kh.type)[1];
+  $('#khs-status').textContent = STATUSES.find((t) => t[0] === kh.status)[1];
+  $$('.kh-sel').forEach((b) => b.classList.toggle('on', kh[b.dataset.khsel] !== 'all'));
 
-  // Etkin filtre etiketleri
+  // Detaylı arama etiketleri (tarih, varlık)
   const tags = [];
   if (kh.period !== '90') tags.push(['period', PERIODS.find((p) => p[0] === kh.period)[1]]);
-  if (kh.status !== 'all') tags.push(['status', STATUSES.find((p) => p[0] === kh.status)[1]]);
   if (kh.asset !== 'all') tags.push(['asset', assetCode(kh.asset)]);
   $('#kh-active').innerHTML = tags.map(([k, n]) => `<button class="kh-tag press" data-khclear="${k}">${n}<svg width="10" height="10" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>`).join('');
   $('#kh-badge').hidden = !tags.length;
@@ -364,47 +373,64 @@ function renderHistory() {
   }
   const groups = [];
   list.forEach((x) => { const l = dayLabel(x.ts); (groups.at(-1)?.l === l ? groups.at(-1).items : (groups.push({ l, items: [] }), groups.at(-1).items)).push(x); });
-  $('#kh-list').innerHTML = groups.map((g) => `<div class="section-title kh-day">${g.l}</div><div class="list-card">${g.items.map(txRow).join('')}</div>`).join('');
+  $('#kh-list').innerHTML = groups.map((g) => `<div class="kh-day">${g.l}</div><div class="list-card kh-card">${g.items.map(txItem).join('')}</div>`).join('');
+}
+function openSel(key) {
+  $('#sel-title').textContent = key === 'type' ? 'İşlem' : 'İşlem Durumu';
+  $('#sel-list').innerHTML = (key === 'type' ? TYPES : STATUSES).map(([k, n]) => `<button class="kh-opt press${kh[key] === k ? ' on' : ''}" data-ksel="${key}:${k}"><span>${n}</span><svg width="18" height="14" viewBox="0 0 18 14"><path d="m2 7 5 5L16 2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
+  openSheet('sel-sheet');
 }
 function renderHfSheet() {
   const d = hfDraft;
   const chips = (arr, key) => arr.map(([k, n]) => `<button class="kh-chip press${d[key] === k ? ' on' : ''}" data-hf="${key}:${k}">${n}</button>`).join('');
   $('#hf-period').innerHTML = chips(PERIODS, 'period');
-  $('#hf-status').innerHTML = chips(STATUSES, 'status');
   const assets = [...new Set(buildTx().map((x) => x.k))];
   $('#hf-asset').innerHTML = chips([['all', 'Tümü'], ...assets.map((k) => [k, assetCode(k)])], 'asset');
 }
+// İşlem detayı: referanstaki gibi özet + "Daha Fazla Göster" + gerçekleşme / iptal bilgisi
+let txOpen = null;
 function openTx(id) {
-  const x = buildTx().find((t) => t.id === id);
-  const cash = x.k === 'try' || x.k === 'usd';
-  const d = new Date(x.ts);
-  const row = (a, b) => `<div class="info-row"><span>${a}</span><b>${b}</b></div>`;
-  const stTxt = x.st === 'cancel' ? 'İptal Edildi' : 'Gerçekleşti';
-  let rows = row('İşlem No', x.id) + row('Tarih', `${d.getDate()} ${TR_MONTHS[d.getMonth()]} ${d.getFullYear()}, ${d.toTimeString().slice(0, 5)}`);
+  txOpen = buildTx().find((t) => t.id === id);
+  renderTxDetail(false);
+  if (!stack.includes('k-txd')) pushScreen('k-txd');
+  $('#k-txd .scroll').scrollTop = 0;
+}
+function renderTxDetail(more) {
+  const x = txOpen, cash = isCash(x), cancel = x.st === 'cancel';
+  const r = (a, b) => `<div class="kh-r"><span>${a}</span><b>${b}</b></div>`;
+  $('#txd-title').textContent = txTitle(x);
+  let main = r('İşlem Tarihi', dt(x.ts))
+    + `<div class="kh-r"><span>İşlem Numarası</span><button class="kd-copy press" data-kcopytx="${x.id}"><b>${x.id}</b><svg width="18" height="18"><use href="#i-copy"/></svg></button></div>`
+    + `<div class="kh-r"><span>İşlem Türü</span>${typeTxt(x)}</div>`;
+  let extra = '', second = '';
   if (cash) {
-    rows += row(x.t === 'dep' ? 'Gönderen Hesap' : 'Alıcı Hesap', `Halkbank Vadesiz ${x.k === 'usd' ? 'USD' : 'TL'} Hesabı`)
-      + row('Tutar', qtyText(x)) + row('İşlem Ücreti', `0,00 ${assetCode(x.k)}`);
+    main += r('Varlık', `${assetCode(x.k)} ${assetName(x.k)}`) + r('Tutar', qtyText(x));
+    extra = r(x.t === 'dep' ? 'Gönderen Hesap' : 'Alıcı Hesap', `Halkbank Vadesiz ${assetCode(x.k)} Hesabı`) + r('İşlem Ücreti', `0,00 ${assetCode(x.k)}`)
+      + r(x.t === 'dep' ? 'Hesaba Geçen Tutar' : 'Hesaptan Çıkan Tutar', qtyText(x));
+    second = `<div class="section-title">GERÇEKLEŞME BİLGİSİ</div><div class="card kh-dcard">${r(x.t === 'dep' ? 'Hesaba Geçiş Tarihi' : 'Gönderim Tarihi', dt(x.ts + 2000))}${r(x.t === 'dep' ? 'Hesaba Geçen Tutar' : 'Gönderilen Tutar', qtyText(x))}</div>`;
   } else {
-    const net = x.t === 'buy' ? x.total + x.fee : x.total - x.fee;
-    rows += row('İşlem Çifti', `${assetCode(x.k)}/TL`) + row('Emir Tipi', `${x.o} ${TX_TYPE[x.t].n}`)
-      + row('Fiyat', `${fmt(x.p, x.p < 20 ? 3 : 2)} TL`) + row('Miktar', qtyText(x)) + row('Tutar', `${fmt(x.total)} TL`)
-      + row('Komisyon', x.st === 'cancel' ? '-' : x.fee ? `${fmt(x.fee)} TL <small>%0,20</small>` : `0,00 TL <small>%0 kampanya</small>`)
-      + (x.st === 'cancel' ? '' : `<hr>${row(x.t === 'buy' ? 'Ödenen Toplam' : 'Hesaba Geçen', `${fmt(net)} TL`)}`);
+    main += r('İşlem Değeri', x.t === 'buy' ? txMoney(x, x.total) : qtyText(x));
+    if (!cancel) main += r('Gerçekleşme Oranı', '%100');
+    extra = r('İşlem Fiyatı', cancel ? '—' : txPrice(x)) + r('Gerçekleşen Tutar', cancel ? '—' : txMoney(x, x.total))
+      + r('Komisyon Tutarı (%0,20)', cancel ? '—' : txMoney(x, x.fee)) + r('Hesaptan Çıkan Tutar', cancel ? '—' : outAmt(x)) + r('Hesaba Geçen Tutar', cancel ? '—' : inAmt(x));
+    second = cancel
+      ? `<div class="section-title">İPTAL BİLGİSİ</div><div class="card kh-dcard">${r('İptal Tarihi', dt(x.ts + 12000))}${r('İptal Edilen Tutar', x.t === 'buy' ? txMoney(x, x.total) : qtyText(x))}${r('İptal Nedeni', x.why || 'Müşteri Talebi')}</div>`
+      : `<div class="section-title">GERÇEKLEŞME BİLGİSİ</div><div class="card kh-dcard">${r('Gerçekleşme Tarihi', dt(x.ts + 1000))}${r('Gerçekleşme Fiyatı', txPrice(x))}${r('Hesaptan Çıkan Tutar', outAmt(x))}${r('Hesaba Geçen Tutar', inAmt(x))}${r('Komisyon Tutarı', txMoney(x, x.fee))}</div>`;
   }
-  $('#tx-body').innerHTML = `
-    <div class="k-sheet-head"><h3>İşlem Detayı</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
-    <div class="tx-hero">
-      <span class="kh-ic">${coinIcon(x.k)}<i class="kh-badge ${x.t}"><svg width="10" height="10"><use href="#${TX_TYPE[x.t].icon}"/></svg></i></span>
-      <div><b>${txTitle(x)}</b><span>${assetName(x.k)}</span></div>
-      <em class="tx-st ${x.st}">${stTxt}</em>
+  main += `<div class="kh-r"><span>İşlem Durumu</span>${stDot(x)}</div>`;
+  $('#txd-body').innerHTML = `
+    <div class="card kh-dcard kh-dmain">
+      <div class="kh-dhead">${coinIcon(x.k)}<div><b>${txTitle(x)}</b><span>${assetName(x.k)}</span></div>${cancel ? '' : `<strong class="amt ${x.t}">${signedQty(x)}</strong>`}</div>
+      ${main}
+      <div class="kh-more${more ? ' open' : ''}">${extra}</div>
+      <button class="kh-morebtn press" data-ktxmore>${more ? 'Daha Az Göster' : 'Daha Fazla Göster'} <svg width="14" height="8"><use href="#i-chev-down"/></svg></button>
     </div>
-    <div class="tx-amt ${x.st === 'cancel' ? '' : x.t}">${x.t === 'buy' || x.t === 'dep' ? '+' : '-'}${qtyText(x)}</div>
-    <div class="tx-rows">${rows}</div>
-    <div class="hf-btns">
+    ${second}
+    <div class="hf-btns kh-dbtns">
       <button class="btn-secondary press" data-txshare>Dekont Paylaş</button>
-      <button class="btn-primary press" ${cash ? 'data-kclose' : `data-kpair="${x.k}/TL"`}>${cash ? 'Tamam' : 'Tekrar İşlem Yap'}</button>
+      ${cash ? '' : `<button class="btn-primary press" data-kpair="${x.k}/${txCur(x)}">Tekrar İşlem Yap</button>`}
     </div>`;
-  openSheet('tx-sheet');
+  $('#txd-body').dataset.more = more ? '1' : '';
 }
 
 /* ---------- Profil ---------- */
@@ -920,13 +946,11 @@ function init() {
   $$('[data-ktabbar]').forEach((n) => (n.innerHTML = tabbarHTML(n.dataset.ktabbar)));
   $('#ks-q').addEventListener('input', renderSearch);
   $('#ka-q').addEventListener('input', renderAssets);
-  $('#kh-q').addEventListener('input', renderHistory);
   $('#kt-qty').addEventListener('input', onQty);
   $('#kt-amt').addEventListener('input', onAmt);
   $('#cs-q').addEventListener('input', renderCoinSheet);
   $('#kd-q').addEventListener('input', renderDepList);
   ['#kt-qty', '#kt-amt', '#cs-q', '#kd-q'].forEach((q) => $(q).addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); }));
-  $('#kh-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
   $('#ka-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
   $('#ks-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
 
@@ -971,11 +995,14 @@ function init() {
     if (b.hasAttribute('data-kedit')) return toast('Bilgilerinizi Halkbank uygulamasından güncelleyebilirsiniz');
     if (b.hasAttribute('data-kclosego')) { closeSheet(); return toast('Hesap kapatma demoda yer almıyor'); }
     if (b.hasAttribute('data-klogout')) { closeSheet(); return logout(); }
-    if (b.dataset.khtype) { kh.type = b.dataset.khtype; return renderHistory(); }
     if (b.dataset.khclear) { kh[b.dataset.khclear] = b.dataset.khclear === 'period' ? '90' : 'all'; return renderHistory(); }
-    if (b.hasAttribute('data-khreset')) { Object.assign(kh, { type: 'all', period: '90', status: 'all', asset: 'all' }); $('#kh-q').value = ''; return renderHistory(); }
+    if (b.hasAttribute('data-khreset')) { Object.assign(kh, { type: 'all', period: '90', status: 'all', asset: 'all' }); return renderHistory(); }
+    if (b.dataset.khsel) return openSel(b.dataset.khsel);
+    if (b.dataset.ksel) { const [key, v] = b.dataset.ksel.split(':'); kh[key] = v; renderHistory(); $$('#sel-list .kh-opt').forEach((o) => o.classList.toggle('on', o === b)); return setTimeout(closeSheet, 160); }
+    if (b.hasAttribute('data-ktxmore')) return renderTxDetail(!$('#txd-body').dataset.more);
+    if (b.dataset.kcopytx) { try { navigator.clipboard.writeText(b.dataset.kcopytx); } catch (err) { /* izin yoksa da bildir */ } return toast('İşlem numarası kopyalandı'); }
     if (b.dataset.hf) { const [key, v] = b.dataset.hf.split(':'); hfDraft[key] = v; return renderHfSheet(); }
-    if (b.id === 'hf-clear') { hfDraft = { ...hfDraft, period: '90', status: 'all', asset: 'all' }; return renderHfSheet(); }
+    if (b.id === 'hf-clear') { hfDraft = { ...hfDraft, period: '90', asset: 'all' }; return renderHfSheet(); }
     if (b.id === 'hf-apply') { Object.assign(kh, hfDraft); renderHistory(); return closeSheet(); }
     if (b.dataset.tx) return openTx(b.dataset.tx);
     if (b.hasAttribute('data-txshare')) return toast('Dekont paylaşım menüsü demoda yer almıyor');

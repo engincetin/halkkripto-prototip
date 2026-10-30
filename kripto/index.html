@@ -233,15 +233,18 @@
     <header class="header">
       <button class="k-back k-hleft press" data-bank hidden><svg width="9" height="14" viewBox="0 0 9 14"><path d="M7.5 1.5 2 7l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Halkbank</button>
       <h1>İşlemler</h1>
-      <div class="k-hright">
-        <button class="press kh-fbtn" data-ksheet="hf-sheet" aria-label="Filtrele"><svg width="24" height="24"><use href="#k-filter"/></svg><i id="kh-badge" hidden></i></button>
-      </div>
     </header>
     <div class="scroll">
       <div class="pad-header"></div>
-      <div class="card kh-sum" id="kh-sum"></div>
-      <div class="kh-types" id="kh-types"></div>
-      <label class="search"><svg width="22" height="22" style="color:#0576b8"><use href="#i-search"/></svg><input id="kh-q" type="search" placeholder="Varlık veya işlem no arayın" autocomplete="off" autocorrect="off" spellcheck="false"></label>
+      <div class="section-title">SON GERÇEKLEŞENLER</div>
+      <p class="kh-lead">En son gerçekleşen işlemleriniz. Tüm işlemlerinizi aşağıda görebilirsiniz.</p>
+      <div class="kh-recent" id="kh-recent"></div>
+      <div class="section-title">TÜM İŞLEMLER</div>
+      <div class="kh-filters">
+        <button class="kh-sel press" data-khsel="type"><span>İşlem</span><b id="khs-type">Tümü</b><svg width="14" height="8"><use href="#i-chev-down"/></svg></button>
+        <button class="kh-sel press" data-khsel="status"><span>İşlem Durumu</span><b id="khs-status">Tümü</b><svg width="14" height="8"><use href="#i-chev-down"/></svg></button>
+        <button class="kh-fsq kh-fbtn press" data-ksheet="hf-sheet" aria-label="Detaylı arama"><svg width="24" height="24"><use href="#k-filter"/></svg><i id="kh-badge" hidden></i></button>
+      </div>
       <div id="kh-active" class="kh-active"></div>
       <div id="kh-list"></div>
       <div style="height:calc(var(--sab) + 110px)"></div>
@@ -457,6 +460,16 @@
     </div>
   </section>
 
+  <!-- ===================== İŞLEM DETAYI ===================== -->
+  <section class="screen k-push" id="k-txd">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1 id="txd-title">İşlem Detayı</h1></header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <div id="txd-body"></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
   <!-- ===================== ARAMA ===================== -->
   <section class="screen k-push" id="k-search">
     <header class="header">
@@ -502,18 +515,17 @@
   </div>
   <div class="sheet" id="hf-sheet" role="dialog" aria-label="Filtrele">
     <div class="grab"></div>
-    <div class="k-sheet-head"><h3>Filtrele</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <div class="k-sheet-head"><h3>Detaylı Arama</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
     <div class="hf-title">Tarih Aralığı</div>
     <div class="hf-chips" id="hf-period"></div>
-    <div class="hf-title">İşlem Durumu</div>
-    <div class="hf-chips" id="hf-status"></div>
     <div class="hf-title">Varlık</div>
     <div class="hf-chips" id="hf-asset"></div>
     <div class="hf-btns"><button class="btn-secondary press" id="hf-clear">Temizle</button><button class="btn-primary press" id="hf-apply">Uygula</button></div>
   </div>
-  <div class="sheet" id="tx-sheet" role="dialog" aria-label="İşlem detayı">
+  <div class="sheet" id="sel-sheet" role="dialog" aria-label="Seçim">
     <div class="grab"></div>
-    <div id="tx-body"></div>
+    <div class="k-sheet-head"><h3 id="sel-title"></h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <div class="kh-opts" id="sel-list"></div>
   </div>
   <div class="sheet" id="lang-sheet" role="dialog" aria-label="Dil">
     <div class="grab"></div>
