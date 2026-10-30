@@ -466,3 +466,26 @@
 /* Sekmelerde üst kart ana sayfadakiyle aynı yükseklikte başlar; mavi zemin kartın arkasında aynı ölçüde devam eder */
 .k-tabhead ~ .scroll .grad-ext { height: 55px; }
 .k-tabhead ~ .scroll .kcard { margin-top: -55px; }
+
+/* Fotoğraf rozeti: ayar dişlisi yerine okunmamış bildirim sayısı */
+.avatar i.k-nbadge, .k-nbadge { min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--orange); color: #fff; font: normal 800 11px/18px 'Nunito Sans', sans-serif; text-align: center; display: block; }
+.avatar i.k-nbadge { width: auto; right: -5px; bottom: -3px; border: 2px solid #fff; height: 20px; line-height: 16px; }
+.k-nbadge[hidden] { display: none !important; }
+/* Profil: Bildirimlerim */
+.kp-notif { display: flex; align-items: center; gap: 14px; width: calc(100% - 38px); margin: 12px 19px 0; padding: 14px 18px; text-align: left; }
+.kp-notif-ic { width: 40px; height: 40px; border-radius: 10px; background: var(--tile); color: var(--blue); display: flex; align-items: center; justify-content: center; flex: none; }
+.kp-notif .kp-me-txt b { font-size: 17px; }
+.kp-notif em.k-nbadge { font-style: normal; flex: none; }
+/* Bildirimler ekranı */
+#k-notifs { background: var(--bg-home); }
+.kn-all { color: #fff; }
+.kn-card { margin: 20px 19px 0; padding: 0 18px; }
+.kn-row { display: flex; align-items: flex-start; gap: 13px; width: 100%; padding: 15px 0; border-bottom: 1px solid var(--line); text-align: left; position: relative; }
+.kn-row:last-child { border-bottom: 0; }
+.kn-ic { width: 36px; height: 36px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; flex: none; }
+.kn-txt { flex: 1; min-width: 0; }
+.kn-txt b { display: block; font-size: 15px; font-weight: 800; color: var(--ink); }
+.kn-txt span { display: block; font-size: 14px; color: var(--ink-3); margin-top: 3px; line-height: 1.4; font-weight: 600; }
+.kn-txt small { display: block; font-size: 12px; color: var(--gray); margin-top: 5px; font-weight: 600; }
+.kn-row:not(.unread) .kn-txt b { font-weight: 700; color: var(--ink-3); }
+.kn-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--orange); flex: none; margin-top: 6px; }
