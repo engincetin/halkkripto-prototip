@@ -599,3 +599,16 @@
 .km-dots i.on { width: 18px; background: var(--blue); }
 .km-sl { padding-top: 16px; }
 .km-sl-x { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; color: #fff; opacity: .9; z-index: 1; }
+/* Günün Özeti: sağda oran rozeti */
+.km-sl-art { width: 104px; height: 104px; }
+.km-rate { width: 92px; height: 92px; border-radius: 50%; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,.18); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+.km-rate .coin-ic { width: 26px; height: 26px; border-radius: 50%; background: var(--tile); box-shadow: none; }
+.km-rate .coin-ic svg { width: 15px; height: 15px; }
+.km-rate b { font-size: 16px; font-weight: 900; margin-top: 3px; letter-spacing: .2px; margin-left: 0; }
+.km-rate small { font-size: 10px; font-weight: 800; color: var(--gray); letter-spacing: .2px; }
+.km-rate.up b { color: var(--green); } .km-rate.down b { color: var(--red); } .km-rate.flat b { color: var(--blue); }
+.km-rate.up { box-shadow: 0 0 0 4px rgba(0,128,0,.18), 0 6px 16px rgba(0,0,0,.18); }
+.km-rate.down { box-shadow: 0 0 0 4px rgba(223,14,33,.18), 0 6px 16px rgba(0,0,0,.18); }
+.km-rate-arrow { position: absolute; top: 17px; right: 19px; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; }
+.km-rate.up .km-rate-arrow { border-bottom: 7px solid var(--green); }
+.km-rate.down .km-rate-arrow { border-top: 7px solid var(--red); }
