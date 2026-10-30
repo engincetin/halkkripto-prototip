@@ -118,7 +118,7 @@
 .ka-group .asset-row .coin-name { align-self: flex-start; }
 .ka-group .coin-name b { font-size: 16px; }
 .ka-group .asset-row .coin-val b + b.ka-eq { font-weight: 700; color: var(--gray-2); }
-.ka-go { color: #b9c2cc; flex: none; margin-left: -2px; }
+.ka-go { color: var(--orange); flex: none; margin-left: -2px; }
 .ka-note { margin-top: 18px; align-items: flex-start; }
 .ka-note svg { flex: none; margin-top: 1px; }
 
