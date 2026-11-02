@@ -96,10 +96,27 @@
   <section class="screen" id="splash"></section>
 
   <!-- ===================== ANA SAYFA ===================== -->
+  <!-- ===================== GİRİŞ (Halkbank giriş ekranı; çıkış yapınca gelir) ===================== -->
+  <section class="screen lg-screen" id="login">
+    <img class="lg-bg" src="img/giris.jpg" alt="">
+    <button class="lg-hot press" data-soon style="left:337.1px;top:68.6px;width:32.8px;height:32.8px" aria-label="Bildirimler"></button>
+    <button class="lg-hot press" data-soon style="left:381.8px;top:70.1px;width:43.3px;height:29.8px" aria-label="English"></button>
+    <button class="lg-hot press" data-soon style="left:246.1px;top:268.5px;width:104.4px;height:29.8px" aria-label="Kurumsal"></button>
+    <span class="lg-av" style="left:27.6px;top:348.3px;width:79.8px;height:79.8px"></span>
+    <b class="lg-name" style="left:121.6px;top:377.4px">Deniz Yılmaz</b>
+    <label class="lg-field" style="left:27.6px;top:446.7px;width:384.8px;height:61.2px"><input id="lg-pass" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="Dijital Parola"><span class="lg-load" id="lg-load">Giriş yapılıyor…</span></label>
+    <button class="lg-hot press" data-soon style="left:286.4px;top:535.5px;width:128.3px;height:31.3px" aria-label="Dijital Parola Al"></button>
+    <button class="lg-hot lg-round press" data-soon style="left:180.5px;top:754.7px;width:80.5px;height:80.5px" aria-label="Karekod İşlemleri"></button>
+    <button class="lg-hot press" data-soon style="left:13.4px;top:827.8px;width:74.6px;height:67.1px" aria-label="FAST İşlemleri"></button>
+    <button class="lg-hot press" data-soon style="left:101.4px;top:827.8px;width:68.6px;height:67.1px" aria-label="Mobil Onay"></button>
+    <button class="lg-hot press" data-soon style="left:268.5px;top:827.8px;width:68.6px;height:67.1px" aria-label="POS ile Öde"></button>
+    <button class="lg-hot press" data-soon style="left:350.5px;top:827.8px;width:74.6px;height:67.1px" aria-label="Diğer İşlemler"></button>
+  </section>
+
   <section class="screen" id="home">
     <div class="home-top">
       <div class="row1">
-        <div class="avatar"><i><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></div>
+        <button class="avatar press" data-hlogout aria-label="Profil"><i><svg width="11" height="11" viewBox="0 0 12 12"><circle cx="6" cy="6" r="2" fill="none" stroke="#0576b8" stroke-width="1.6"/><path d="M6 .8v1.6M6 9.6v1.6M.8 6h1.6M9.6 6h1.6M2.3 2.3l1.1 1.1M8.6 8.6l1.1 1.1M2.3 9.7l1.1-1.1M8.6 3.4l1.1-1.1" stroke="#0576b8" stroke-width="1.4" stroke-linecap="round"/></svg></i></button>
         <span class="bell"><svg width="24" height="24"><use href="#i-bell"/></svg></span>
         <span class="sp"></span>
         <button class="press" data-soon style="margin-right:21px"><svg width="22" height="24"><use href="#i-cal"/></svg></button>
@@ -342,6 +359,12 @@
   <div class="sheet acs-sheet" id="allacc-sheet" role="dialog" aria-label="Tüm Hesaplar">
     <div class="acs-head"><h3>Tüm Hesaplar</h3><button class="press" data-sheetclose aria-label="Kapat"><svg width="22" height="22" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
     <div id="allacc-list"></div>
+  </div>
+
+  <div class="sheet" id="hlogout-sheet" role="dialog" aria-label="Çıkış">
+    <div class="grab"></div>
+    <div class="hl-dlg"><span class="avatar"></span><h3>Deniz Yılmaz</h3><p>Uygulamadan çıkış yapmak istiyor musunuz?</p></div>
+    <div class="hl-btns"><button class="btn-secondary press" data-sheetclose>Vazgeç</button><button class="btn-primary press" data-hlogoutgo>Çıkış Yap</button></div>
   </div>
 
   <!-- Halk Kripto'ya yönlendirme (Al/Sat) -->

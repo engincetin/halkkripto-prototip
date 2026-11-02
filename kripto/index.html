@@ -637,6 +637,13 @@
     <div class="acs-head"><h3>Tüm Hesaplarım</h3><button class="press" data-kclose aria-label="Kapat"><svg width="22" height="22" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
     <div id="allacc-list"></div>
   </div>
+  <div class="sheet kl-sheet" id="kl-sheet" role="dialog" aria-label="Giriş Yap">
+    <div class="k-sheet-head"><span></span><button class="press" data-kclose aria-label="Kapat"><svg width="20" height="20" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></div>
+    <div class="kl-user"><span class="avatar"></span><b>Deniz Yılmaz</b><span class="kl-chev"><svg width="13" height="8"><use href="#i-chev-down"/></svg></span></div>
+    <label class="kl-field"><input id="kl-pass" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" aria-label="Dijital parola"><span class="kl-dots" id="kl-dots"><i></i><i></i><i></i><i></i><i></i><i></i></span><button class="kl-go press" id="kl-go" data-klogin-go aria-label="Giriş yap"><svg width="20" height="16" viewBox="0 0 20 16"><path d="M1.5 8h16M11 1.5 17.5 8 11 14.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="kl-load">Giriş yapılıyor…</span></label>
+    <button class="see-all press kl-forgot" data-kforgot>Parolamı Unuttum</button>
+    <p class="kl-hint">Halkbank dijital parolanızla giriş yapabilirsiniz.</p>
+  </div>
 </div>
 <script src="../common.js"></script>
 <script src="app.js"></script>

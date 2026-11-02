@@ -746,6 +746,29 @@ function closeKriptoApp() {
   }, 420);
 }
 
+/* ================= Giriş / Çıkış ================= */
+// Çıkış yapınca Halkbank giriş ekranı gelir; 6 haneli dijital parola girilince ana sayfaya dönülür
+function showLogin() {
+  // Arkadaki ekranlar ana sayfaya döner (animasyonsuz)
+  stack.slice(1).forEach((id) => { const e = el(id); e.classList.remove('active', 'under', 'dim', 'anim', 'moving'); e.style.transform = ''; });
+  stack.length = 1;
+  el('home').classList.add('active'); el('home').style.transform = '';
+  $('#home-scroll').scrollTop = 0;
+  const lg = el('login'), inp = $('#lg-pass');
+  inp.value = ''; $('.lg-field').classList.remove('busy');
+  lg.classList.add('active');
+}
+function setupLogin() {
+  const inp = $('#lg-pass');
+  inp.addEventListener('input', () => {
+    inp.value = inp.value.replace(/\D/g, '').slice(0, 6);
+    if (inp.value.length < 6) return;
+    inp.blur();
+    $('.lg-field').classList.add('busy');
+    setTimeout(() => { el('login').classList.remove('active'); toast('Hoş geldiniz, Deniz'); }, 900);
+  });
+}
+
 /* ================= Bildirim ================= */
 let toastT;
 function toast(msg) {
@@ -778,12 +801,14 @@ function setupEvents() {
     if (b.dataset.dcur) return setDisplayCur(b.dataset.dcur);
     if (b.hasAttribute('data-accsheet')) return openAccSheet();
     if (b.hasAttribute('data-allacc')) return openAllAcc();
+    if (b.hasAttribute('data-hlogout')) return openSheet('hlogout-sheet');
+    if (b.hasAttribute('data-hlogoutgo')) { closeSheet(); return showLogin(); }
     if (b.hasAttribute('data-sheetclose')) return closeSheet();
     if (b.dataset.homeacc) { state.homeAcc = b.dataset.homeacc; $$('#allacc-list .acs-card').forEach((x) => x.classList.toggle('on', x === b)); renderHomeAcct(); return setTimeout(closeSheet, 200); }
     if (b.dataset.acc) return setFromAcc(b.dataset.acc);
     if (b.hasAttribute('data-soon')) {
       // Ana sayfada demo dışı bir öğeye dokunulunca kullanıcıyı Kripto İşlemleri'ne yönlendir
-      if (stack[stack.length - 1] === 'home' && $('#kripto-tile').classList.contains('hint')) {
+      if (stack[stack.length - 1] === 'home' && !el('login').classList.contains('active') && $('#kripto-tile').classList.contains('hint')) {
         const t = $('#kripto-tile');
         t.classList.remove('nudge'); void t.offsetWidth; t.classList.add('nudge');
         return toast('Bu özellik demoda yer almıyor. Kripto İşlemleri’ni deneyin.');
@@ -903,6 +928,7 @@ function init() {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { layout(); lockWindow(); } });
   if (window.visualViewport) visualViewport.addEventListener('resize', layout);
 
+  setupLogin();
   // Açılış ekranı → Ana Sayfa
   stack.push('home');
   el('home').classList.add('active');

@@ -580,3 +580,27 @@ body.framed .home-indicator {
 .acs-cols b { display: block; font-size: 22px; font-weight: 800; color: var(--ink); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .3px; }
 .acs-cols b small { font-size: 14px; }
 .acs-cols b.up { color: var(--green); } .acs-cols b.down { color: var(--red); }
+
+/* ---------- Giriş ekranı (Halkbank) ---------- */
+.lg-screen { z-index: 48; background: #fff; visibility: visible; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+.lg-screen.active { opacity: 1; pointer-events: auto; }
+.lg-bg { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.lg-hot { position: absolute; border-radius: 12px; }
+.lg-round { border-radius: 50%; }
+.lg-av { position: absolute; border-radius: 50%; background: #fff url(img/avatar.jpg) center/cover; box-shadow: inset 0 0 0 3px #fff; }
+.lg-name { position: absolute; color: #fff; font-size: 19px; font-weight: 700; letter-spacing: .2px; line-height: 26px; text-shadow: 0 1px 6px rgba(0,0,0,.15); }
+.lg-field { position: absolute; display: flex; align-items: center; padding: 0 14px; border-radius: 9px; }
+.lg-field input { width: 100%; border: 0; outline: 0; background: none; color: #fff; font: 600 16px 'Nunito Sans', sans-serif; letter-spacing: .3px; -webkit-user-select: text; user-select: text; caret-color: #fff; }
+.lg-field input::placeholder { color: rgba(255,255,255,.95); font-weight: 600; }
+.lg-field input[type="password"]:not(:placeholder-shown) { letter-spacing: 6px; font-size: 20px; }
+.lg-field:focus-within { background: rgba(255,255,255,.08); box-shadow: 0 0 0 1.5px rgba(255,255,255,.9); }
+.lg-load { position: absolute; right: 14px; color: #fff; font-size: 14px; font-weight: 700; opacity: 0; transition: opacity .2s; }
+.lg-field.busy .lg-load { opacity: 1; }
+.home-top .row1 button.avatar { border: 0; padding: 0; }
+.hl-dlg { text-align: center; }
+.hl-dlg .avatar { display: block; margin: 4px auto 0; width: 64px; height: 64px; }
+.hl-dlg h3 { margin-top: 10px; }
+.hl-dlg p { font-size: 15px; color: var(--ink-3); margin: 6px 0 0; }
+.hl-btns { display: flex; gap: 12px; margin-top: 22px; }
+.hl-btns > * { flex: 1; height: 50px; border-radius: 10px; font-size: 17px; }
+#login.lg-screen, #login.lg-screen.active { z-index: 48; }

@@ -29,6 +29,15 @@ const TUMU = '<button class="pill-orange press" data-allacc>Tümü</button>';
 function cashAcc(cur) { return { id: cur, name: `Halk Kripto ${cur} Hesabı`, no: ACCT_NO[cur], bal: cashOf(cur) }; }
 function renderTotal() {
   const cur = state.cur;
+  if (loggedOut) {
+    $('#k-total').innerHTML = `
+      <div class="kw-card">
+        <img src="img/logo.png" alt="">
+        <div><b>Halk Kripto’ya hoş geldiniz.</b><p>Hızlı ve kolay bir şekilde kripto alım satımı yapmak için giriş yapın.</p>
+        <button class="see-all press" data-klogin>Giriş Yap <svg width="6" height="10"><use href="#i-chev-right"/></svg></button></div>
+      </div>`;
+    return;
+  }
   if (homeAcc === 'TL' || homeAcc === 'USD') {
     const a = cashAcc(homeAcc);
     $('#k-total').innerHTML = `
@@ -1079,19 +1088,45 @@ function toast(msg) {
 }
 
 // Çıkış: açılış ekranı yeniden gelir ve uygulama ana sayfadan başlar
+// Çıkış: uygulama "giriş yapılmamış" ana sayfaya döner; piyasalar açık, diğer her şey giriş ister
+let loggedOut = false;
 function logout() {
-  const sp = $('#k-splash');
-  sp.classList.add('active');
-  requestAnimationFrame(() => sp.classList.remove('gone'));
-  setTimeout(() => {
-    stack.length = 0;
-    $$('.k-push.open').forEach((x) => x.classList.remove('open', 'active'));
-    $(`#${current}`).classList.remove('active');
-    current = 'k-home';
-    $('#k-home').classList.add('active');
-    sp.classList.add('gone');
-    setTimeout(() => sp.classList.remove('active'), 600);
-  }, 1600);
+  stack.length = 0;
+  $$('.k-push.open').forEach((x) => x.classList.remove('open', 'active'));
+  $(`#${current}`).classList.remove('active');
+  current = 'k-home';
+  $('#k-home').classList.add('active');
+  $('#k-home-scroll').scrollTop = 0;
+  setLoggedOut(true);
+}
+function setLoggedOut(v) {
+  loggedOut = v;
+  $('#device').classList.toggle('k-out', v);
+  renderTotal(); renderHomeMoves(); updateBadges();
+}
+// İzin verilenler: ana sayfa / piyasalar, arama, sıralama ve liste seçimleri, giriş paneli
+function allowedOut(b) {
+  const d = b.dataset;
+  if (d.ktabgo) return d.ktabgo === 'k-home' || d.ktabgo === 'k-markets';
+  if (d.kpush) return d.kpush === 'k-search';
+  if (d.ksheet) return d.ksheet === 'filter-sheet';
+  return ['kpop', 'ksort', 'kml', 'ktab', 'kpm', 'kclose', 'bank', 'klogin', 'kloginGo', 'kforgot', 'kq'].some((k) => k in d) || b.id === 'ks-clear';
+}
+let lgBusy = false;
+function openLogin() {
+  $('#kl-pass').value = ''; drawDots(); lgBusy = false; $('#kl-sheet').classList.remove('busy');
+  openSheet('kl-sheet');
+  setTimeout(() => $('#kl-pass').focus(), 350);
+}
+function drawDots() {
+  const n = $('#kl-pass').value.length;
+  $$('#kl-dots i').forEach((d, i) => d.classList.toggle('on', i < n));
+  $('#kl-go').classList.toggle('on', n === 6);
+}
+function doLogin() {
+  if (lgBusy || $('#kl-pass').value.length < 6) return;
+  lgBusy = true; $('#kl-pass').blur(); $('#kl-sheet').classList.add('busy');
+  setTimeout(() => { closeSheet(); setLoggedOut(false); toast('Hoş geldiniz, Deniz'); }, 900);
 }
 
 /* ---------- Ölçek (Halkbank uygulamasıyla aynı mantık) ---------- */
@@ -1138,6 +1173,7 @@ function init() {
   $('#kt-amt').addEventListener('input', onAmt);
   $('#cs-q').addEventListener('input', renderCoinSheet);
   $('#kd-q').addEventListener('input', renderDepList);
+  $('#kl-pass').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6); drawDots(); if (e.target.value.length === 6) doLogin(); });
   $('#km-slider').addEventListener('scroll', (e) => { const el = e.target, i = Math.round(el.scrollLeft / (el.firstElementChild ? el.firstElementChild.offsetWidth + 10 : 1)); $$('#km-dots i').forEach((d, j) => d.classList.toggle('on', j === i)); }, { passive: true });
   ['#kt-qty', '#kt-amt', '#cs-q', '#kd-q'].forEach((q) => $(q).addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); }));
   $('#ka-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
@@ -1146,6 +1182,10 @@ function init() {
   document.addEventListener('click', (e) => {
     const b = e.target.closest('button, [data-soon], [data-kpair], [data-kpick], [data-tx], [data-kdfiat], [data-kaseg]');
     if (!b) return;
+    if (loggedOut && !allowedOut(b)) { e.preventDefault(); return openLogin(); }
+    if (b.hasAttribute('data-klogin')) return openLogin();
+    if (b.hasAttribute('data-klogin-go')) return doLogin();
+    if (b.hasAttribute('data-kforgot')) return toast('Bu özellik demoda yer almıyor');
     if (b.hasAttribute('data-bank')) return window.parent.postMessage({ type: 'halkkripto:back' }, location.origin);
     if (b.dataset.ktabgo) return showTab(b.dataset.ktabgo);
     if (b.dataset.kpush) return pushScreen(b.dataset.kpush);

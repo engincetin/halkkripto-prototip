@@ -1,9 +1,9 @@
 // Çevrimdışı çalışma için basit önbellek. Dosyaları değiştirince VERSION'ı artırın.
-const VERSION = 'hk-v66';
+const VERSION = 'hk-v68';
 const FILES = [
   './', 'index.html', 'styles.css', 'common.js', 'app.js', 'manifest.webmanifest',
   'fonts/nunitosans-latin.woff2', 'fonts/nunitosans-latin-ext.woff2',
-  'img/acilis.jpg', 'img/avatar.jpg', 'img/banka.png', 'img/kripto.png', 'img/hediye.png',
+  'img/acilis.jpg', 'img/giris.jpg', 'img/avatar.jpg', 'img/banka.png', 'img/kripto.png', 'img/hediye.png',
   'img/ev.png', 'img/arac.png', 'img/seyahat.png',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-1024.png', 'icons/icon-maskable-512.png',
   // Halk Kripto (ikinci uygulama)
