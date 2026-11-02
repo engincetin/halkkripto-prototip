@@ -182,7 +182,7 @@
       <div class="pad-header k-pad"></div>
       <div class="pull-content">
       <div class="grad-ext"></div>
-      <div class="card kcard k-total" id="km-card"></div>
+      <div id="km-top"></div>
       <div class="k-tabs" id="km-tabs"><button class="on" data-kml="all">Tüm Kriptolar</button><button data-kml="fav">Favorilerim</button></div>
       <div class="k-sorthead" id="km-sort">
         <button data-ksort="name">İsim <svg width="9" height="14"><use href="#k-sort"/></svg></button>
@@ -243,7 +243,7 @@
       <div class="pad-header k-pad"></div>
       <div class="pull-content">
       <div class="grad-ext"></div>
-      <div class="card kcard k-total bal" id="kh-month"></div>
+      <div id="kh-top"></div>
       <div class="section-title">HESAP İŞLEMLERİ</div>
       <div class="kops k-kops kh-ops">
         <button class="kop press" data-kpush="k-ekstre"><span class="ki"><svg width="15" height="17"><use href="#i-receipt"/></svg></span>Hesap<br>Ekstresi</button>
@@ -311,6 +311,7 @@
 
       <div class="section-title">UYGULAMA HAKKINDA</div>
       <div class="list-card kp-list">
+          <button class="kp-row press" data-kdvsheet><span>Tasarım Denemeleri<small>Piyasalar ve İşlemler üst alanı</small></span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
           <button class="kp-row press" data-soon><span>Halk Kripto’yu Paylaş</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
           <button class="kp-row press" data-soon><span>Uygulamayı Değerlendir</span><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>
           <div class="kp-row"><span>Sürüm</span><span class="kp-val">1.0.0</span></div>
@@ -718,6 +719,11 @@
     <div class="grab"></div>
     <div class="k-sheet-head"><h3 id="wxp-title"></h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
     <div class="cs-list" id="wxp-list"></div>
+  </div>
+  <div class="sheet kt-sheet" id="dv-sheet" role="dialog" aria-label="Tasarım denemeleri">
+    <div class="grab"></div>
+    <div class="k-sheet-head"><h3>Tasarım Denemeleri</h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <div class="cs-list" id="dv-list"></div>
   </div>
 </div>
 <script src="../common.js"></script>
