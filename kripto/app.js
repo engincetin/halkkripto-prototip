@@ -1414,14 +1414,14 @@ function txAmount(x) {
   return { s: plus ? '+' : '-', v: fmt(v), u: cash ? assetCode(x.k) : txCur(x), cls: x.st === 'cancel' ? 'off' : plus ? 'pos' : 'neg' };
 }
 const txName = (x) => (x.t === 'wd' && !isCash(x) ? 'Kripto Çekme' : isCash(x) ? (x.t === 'dep' ? 'Para Yatırma' : 'Para Çekme') : `${assetCode(x.k)} ${TX_TYPE[x.t].n}`);
-function txCardHTML(x, label, detail) {
+function txCardHTML(x, label) {
   const a = txAmount(x), d = new Date(x.ts), [i, f] = a.v.split(',');
   const st = x.st === 'cancel' ? '<span class="kx-st off">İptal</span>' : '<span class="kx-st">Gerçekleşti</span>';
-  const again = !isCash(x) && x.t !== 'wd' && x.st !== 'cancel' ? `<button class="see-all press" data-ktrade="${x.k}/${txCur(x)}/${x.t}">Tekrarla <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>` : `<button class="see-all press" data-tx="${x.id}">Detay <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
-  const rows = detail ? `<div class="kx-rows">
+  const again = !isCash(x) && x.t !== 'wd' && x.st !== 'cancel' ? `<button class="see-all press" data-ktrade="${x.k}/${txCur(x)}/${x.t}">Tekrarla <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>` : '';
+  const rows = `<div class="kx-rows">
       <div><span>İşlem No</span><b>${x.id}</b></div>
       ${isCash(x) || x.t === 'wd' ? `<div><span>İşlem Ücreti</span><b class="amt">${x.t === 'wd' && !isCash(x) ? `${fmt(x.nfee, decOf(x.nfee))} ${assetCode(x.k)}` : `0,00 ${assetCode(x.k)}`}</b></div>` : `<div><span>Komisyon</span><b class="amt">${txMoney(x, x.fee)}</b></div>`}
-    </div>` : '';
+    </div>`;
   return `
     <div class="acct-head">${coinIcon(x.k)}<span class="name">${label || txName(x)}</span>${st}</div>
     <div class="lbl kx-when">${label ? `${txName(x)} · ` : ''}${dayLabel(x.ts)}, ${d.toTimeString().slice(0, 5)}</div>
@@ -1429,7 +1429,7 @@ function txCardHTML(x, label, detail) {
     <div class="kx-line">${txLine(x)}</div>
     ${rows}
     <hr>
-    <div class="kx-links"><button class="see-all press" data-dekont="${x.id}">Dekont <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>${again}</div>`;
+    <div class="kx-links"><button class="see-all press" data-tx="${x.id}">Detay Gör <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>${again}</div>`;
 }
 function renderDVSheet() {
   const opt = (k, v, t, d) => `<button class="opt press${DV[k] === v ? ' on' : ''}" data-kdv="${k}:${v}"><span class="lbl2"><b>${t}</b><span>${d}</span></span><i class="radio"></i></button>`;
@@ -1441,7 +1441,7 @@ function renderHistTop() {
   if (DV.h === 2) {
     const x = all.find((t) => t.st === 'done') || all[0];
     const now = new Date(), m0 = new Date(now.getFullYear(), now.getMonth(), 1).getTime(), n = all.filter((t) => t.ts >= m0 && t.st === 'done').length;
-    $('#kh-top').innerHTML = `<div class="card kcard k-total bal kx-one">${txCardHTML(x, 'Son İşleminiz', true)}</div>
+    $('#kh-top').innerHTML = `<div class="card kcard k-total bal kx-one">${txCardHTML(x, 'Son İşleminiz')}</div>
       <p class="kx-sub">${TR_MONTHS[now.getMonth()]} ayında <b>${n}</b> işlem yaptınız.</p>`;
     return;
   }

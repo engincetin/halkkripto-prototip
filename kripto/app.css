@@ -817,3 +817,9 @@
 .kx-sub { margin: 10px 21px 0; font-size: 14px; color: var(--gray-2); font-weight: 600; }
 .kx-sub b { color: var(--ink); }
 #k-history .kx-slider + .km-dots + .section-title, #k-markets .kx-slider + .km-dots + .k-tabs { margin-top: 10px; }
+/* İşlem kartları: alt bölüm ana sayfa kartıyla aynı (ince çizgi, aynı boşluk) */
+.kx-sc hr, .kx-one hr { border: 0; border-top: 1px solid #e3e5e8; margin: 14px 0 12px; }
+.kx-sc hr { margin-top: auto; padding-top: 0; }
+.kx-sc { padding-bottom: 16px; }
+#kh-sl .kx-sc { height: auto; }
+#kh-sl .kx-rows { margin-bottom: 14px; }
