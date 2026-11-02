@@ -1,7 +1,7 @@
 // Çevrimdışı çalışma için basit önbellek. Dosyaları değiştirince VERSION'ı artırın.
-const VERSION = 'hk-v72';
+const VERSION = 'hk-v73';
 const FILES = [
-  './', 'index.html', 'styles.css', 'common.js', 'app.js', 'manifest.webmanifest',
+  './', 'index.html', 'styles.css', 'common.js', 'coin.js', 'app.js', 'manifest.webmanifest',
   'fonts/nunitosans-latin.woff2', 'fonts/nunitosans-latin-ext.woff2',
   'img/acilis.jpg', 'img/giris.jpg', 'img/avatar.jpg', 'img/banka.png', 'img/kripto.png', 'img/hediye.png',
   'img/ev.png', 'img/arac.png', 'img/seyahat.png',

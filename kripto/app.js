@@ -112,7 +112,7 @@ function renderList() {
     const p = inCur(c.tl, cur);
     const price = cur === 'USD' ? fmt(p, p < 1 ? 4 : 2) : fmt(c.tl, c.d);
     return `
-    <div class="coin-row tap" data-soon>
+    <div class="coin-row tap" data-coin="${c.k}" data-cur="${cur}">
       ${coinIcon(c.k)}
       <div class="coin-name"><b>${c.n}</b><span>${c.c}/${cur}</span></div>
       <div class="coin-val"><b>${price} ${cur}</b><span class="${chClass(c.ch)}">%${fmt(Math.abs(c.ch))}${c.ch ? '<i class="k-arrow"></i>' : ''}</span></div>
@@ -157,7 +157,7 @@ function renderMarketCard() {
     <div class="lbl" style="margin-top:13px">Kripto Bakiye</div>
     <div class="amt-big amt">${money(inCur(val), cur)}</div>
     <div class="pl-row"><span class="lbl">24s Değişim</span><b class="${chClass(pct)} amt">%${fmt(Math.abs(pct))}</b><b class="${chClass(chg)} money-sm amt">${signed(cv).split(',')[0]}<small>,${fmt(cv).split(',')[1]} ${cur}</small></b></div>
-    <div class="km-held">${held.map((h) => `<button class="press" data-kpair="${h.a.k}/${cur}">${coinIcon(h.a.k)}<b>${h.c.c}</b><span class="${chClass(h.c.ch)}">%${fmt(Math.abs(h.c.ch))}${h.c.ch ? '<i class="k-arrow"></i>' : ''}</span></button>`).join('')}</div>
+    <div class="km-held">${held.map((h) => `<button class="press" data-coin="${h.a.k}" data-cur="${cur}">${coinIcon(h.a.k)}<b>${h.c.c}</b><span class="${chClass(h.c.ch)}">%${fmt(Math.abs(h.c.ch))}${h.c.ch ? '<i class="k-arrow"></i>' : ''}</span></button>`).join('')}</div>
     <hr>
     <button class="see-all press" data-ktabgo="k-assets">Varlıklarıma Git <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
 
@@ -215,7 +215,7 @@ function renderMarkets() {
     const key = { name: (c) => nameOf(c).toLocaleLowerCase('tr-TR'), price: (c) => c.tl, ch: (c) => c.ch }[km.sort];
     list.sort((a, b) => (key(a) > key(b) ? 1 : key(a) < key(b) ? -1 : 0) * km.dir);
   }
-  $('#km-list').innerHTML = list.length ? list.map((c) => pairRow(c, quote, km.pm, `data-kpair="${c.k}/${quote}"`)).join('') : '<div class="k-empty">Favori listeniz boş</div>';
+  $('#km-list').innerHTML = list.length ? list.map((c) => pairRow(c, quote, km.pm, `data-coin="${c.k}" data-cur="${quote}"`)).join('') : '<div class="k-empty">Favori listeniz boş</div>';
   $$('#km-tabs [data-kml]').forEach((b) => b.classList.toggle('on', b.dataset.kml === km.list));
   $('#km-price-lbl').textContent = PM_LABEL[km.pm];
   $$('#km-sort [data-ksort]').forEach((b) => {
@@ -264,7 +264,7 @@ function pickPair(pair) {
   recents = [{ k, q }, ...recents.filter((r) => !(r.k === k && r.q === q))].slice(0, 5);
   renderSearch();
   popScreen();
-  openTrade(k, q, 'buy');
+  openCoin(k, q);
 }
 
 /* ---------- Varlıklarım ---------- */
@@ -339,7 +339,7 @@ function renderAssets() {
     <div class="ka-body">${rows.map((a) => {
       const calc = a.v ? assetCalc(a) : { qty: `0 ${a.c}`, pl: 0 };
       return `
-      <div class="asset-row tap" data-kpair="${a.k}/${cur}">
+      <div class="asset-row tap" data-coin="${a.k}" data-cur="${cur}">
         ${coinIcon(a.k)}
         <div class="coin-name">
           <b>${a.c}</b><span>${a.n}</span>
@@ -432,7 +432,6 @@ function dayLabel(ts) {
   if (diff === 1) return 'Dün';
   return `${d.getDate()} ${TR_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
-const TR_MONTHS = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
 const stDot = (x) => `<em class="kh-dot ${x.st}">${x.st === 'cancel' ? 'İptal' : 'Gerçekleşti'}</em>`;
 const typeTxt = (x) => `<b class="kh-type ${x.t}">${TX_TYPE[x.t].n}</b>`;
 
@@ -1028,6 +1027,17 @@ function renderNotifs() {
 }
 function addNotif(n) { notifs.unshift({ id: `n${Date.now()}`, ts: Date.now(), read: false, ...n }); updateBadges(); }
 
+/* ---------- Kripto detay (../coin.js) ---------- */
+function openCoin(k, cur) {
+  cd.k = k; cd.cur = cur === 'USD' ? 'USD' : 'TL'; cd.range = '1S';
+  $('#cd-buy').dataset.ktrade = `${k}/${cd.cur}/buy`;
+  $('#cd-sell').dataset.ktrade = `${k}/${cd.cur}/sell`;
+  setSeg('ozet');
+  renderCoin();
+  if (!stack.includes('coin')) pushScreen('coin');
+  $('#coin-scroll').scrollTop = 0;
+}
+
 /* ---------- Ekranlar: alt menü sekmeleri ve üstten açılan ekranlar ---------- */
 let current = 'k-home';
 function tabbarHTML(active) {
@@ -1067,7 +1077,7 @@ function popScreen() {
   const s = $(`#${id}`);
   $$('input').forEach((i) => i.blur());
   s.classList.remove('open');
-  setTimeout(() => s.classList.remove('active'), 360);
+  setTimeout(() => { if (!stack.includes(id)) s.classList.remove('active'); }, 360);
 }
 function popAll() { while (stack.length) popScreen(); }
 
@@ -1110,7 +1120,7 @@ function allowedOut(b) {
   if (d.ktabgo) return d.ktabgo === 'k-home' || d.ktabgo === 'k-markets';
   if (d.kpush) return d.kpush === 'k-search';
   if (d.ksheet) return d.ksheet === 'filter-sheet';
-  return ['kpop', 'ksort', 'kml', 'ktab', 'kpm', 'kclose', 'bank', 'klogin', 'kloginGo', 'kforgot', 'kq'].some((k) => k in d) || b.id === 'ks-clear';
+  return ['kpop', 'ksort', 'kml', 'ktab', 'kpm', 'kclose', 'bank', 'klogin', 'kloginGo', 'kforgot', 'kq', 'coin', 'seg', 'r', 'toast'].some((k) => k in d) || b.id === 'ks-clear';
 }
 let lgBusy = false;
 function openLogin() {
@@ -1187,6 +1197,7 @@ function init() {
   $('#kt-amt').addEventListener('input', onAmt);
   $('#cs-q').addEventListener('input', renderCoinSheet);
   $('#kd-q').addEventListener('input', renderDepList);
+  setupChartScrub();
   $('#kl-pass').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6); drawDots(); if (e.target.value.length === 6) doLogin(); });
   $('#km-slider').addEventListener('scroll', (e) => { const el = e.target, i = Math.round(el.scrollLeft / (el.firstElementChild ? el.firstElementChild.offsetWidth + 10 : 1)); $$('#km-dots i').forEach((d, j) => d.classList.toggle('on', j === i)); }, { passive: true });
   ['#kt-qty', '#kt-amt', '#cs-q', '#kd-q'].forEach((q) => $(q).addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); }));
@@ -1194,10 +1205,15 @@ function init() {
   $('#ks-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
 
   document.addEventListener('click', (e) => {
-    const b = e.target.closest('button, [data-soon], [data-kpair], [data-kpick], [data-tx], [data-kdfiat], [data-kaseg]');
+    const b = e.target.closest('button, [data-soon], [data-kpair], [data-kpick], [data-tx], [data-kdfiat], [data-kaseg], [data-coin]');
     if (!b) return;
     if (loggedOut && !allowedOut(b)) { e.preventDefault(); return openLogin(); }
     if (b.hasAttribute('data-klogin')) return openLogin();
+    if (b.dataset.coin) return openCoin(b.dataset.coin, b.dataset.cur);
+    if (b.dataset.seg) return setSeg(b.dataset.seg);
+    if (b.dataset.r) { cd.range = b.dataset.r; $$('#ranges button').forEach((x) => x.classList.toggle('on', x === b)); return drawChart(true); }
+    if (b.id === 'coin-fav') { favs.has(cd.k) ? favs.delete(cd.k) : favs.add(cd.k); b.classList.toggle('on', favs.has(cd.k)); renderList(); renderMarkets(); return toast(favs.has(cd.k) ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı'); }
+    if (b.dataset.toast) return toast(b.dataset.toast);
     if (b.hasAttribute('data-klogin-go')) return doLogin();
     if (b.hasAttribute('data-kforgot')) return toast('Bu özellik demoda yer almıyor');
     if (b.hasAttribute('data-bank')) return window.parent.postMessage({ type: 'halkkripto:back' }, location.origin);
