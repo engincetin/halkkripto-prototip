@@ -578,7 +578,7 @@ function setupLogin() {
     if (inp.value.length < 6) return;
     inp.blur();
     $('.lg-field').classList.add('busy');
-    setTimeout(() => { el('login').classList.remove('active'); toast('Hoş geldiniz, Deniz'); }, 900);
+    setTimeout(() => { el('login').classList.remove('active'); }, 900);
   });
 }
 

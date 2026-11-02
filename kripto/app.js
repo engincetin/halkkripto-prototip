@@ -638,8 +638,8 @@ function parseNum(v) {
 const timeStr = (d) => d.toTimeString().slice(0, 8);
 
 function openTrade(k = 'btc', cur = state.cur, side = 'buy') {
-  Object.assign(tr, { k, cur: cur === 'USD' ? 'USD' : 'TL', side: side === 'sell' && holding(k) ? 'sell' : 'buy', qty: 0, amt: 0, drift: 1, upd: new Date() });
-  if (side === 'sell' && !holding(k)) toast(`${coinOf(k).c} varlığınız bulunmuyor, Alış ekranı açıldı`);
+  // İstenen yön her zaman açılır; satılacak varlık yoksa Satış sekmesinde bilgi notu görünür
+  Object.assign(tr, { k, cur: cur === 'USD' ? 'USD' : 'TL', side: side === 'sell' ? 'sell' : 'buy', qty: 0, amt: 0, drift: 1, upd: new Date() });
   $('#kt-qty').value = ''; $('#kt-amt').value = '';
   renderTrade();
   if (!stack.includes('k-trade')) pushScreen('k-trade');
@@ -659,6 +659,9 @@ function acctCard(cur, attrs) {
 }
 function assetCard(k, sell) {
   const c = coinOf(k), q = holdQty(k);
+  if (!q && sell) {
+    return `<div class="card kt-note"><span class="kt-note-ic"><svg width="22" height="22"><use href="#i-info"/></svg></span><span><b>Halk Kripto ${c.c} Hesabı</b><small>Satılabilir ${c.c} varlığınız bulunmuyor.</small></span></div>`;
+  }
   if (!q) {
     return `<div class="card kt-note"><span class="kt-note-ic"><svg width="22" height="22"><use href="#i-info"/></svg></span><span><b>Halk Kripto ${c.c} Hesabı</b><small>${c.c} hesabınız işlem sonunda açılacaktır.</small></span></div>`;
   }
@@ -1150,7 +1153,7 @@ function afterAuth() {
 function doLogin() {
   if (lgBusy || $('#kl-pass').value.length < 6) return;
   lgBusy = true; $('#kl-pass').blur(); $('#kl-sheet').classList.add('busy');
-  setTimeout(() => { closeSheet(); setLoggedOut(false); state.kAuthed = true; toast('Hoş geldiniz, Deniz'); afterAuth(); }, 900);
+  setTimeout(() => { closeSheet(); setLoggedOut(false); state.kAuthed = true; afterAuth(); }, 900);
 }
 
 /* ---------- Ölçek (Halkbank uygulamasıyla aynı mantık) ---------- */
@@ -1232,7 +1235,7 @@ function init() {
       return;
     }
     if (b.dataset.ktrade !== undefined) { const [k, q, sd] = (b.dataset.ktrade || 'btc').split('/'); closeSheet(); return openTrade(k, q || state.cur, sd || 'buy'); }
-    if (b.dataset.kside) { if (b.dataset.kside === 'sell' && !holding(tr.k)) { const h = ASSETS.find((a) => a.v > 0.005); if (!h) return toast('Satılabilir kripto varlığınız yok'); toast(`${coinOf(tr.k).c} varlığınız yok, ${h.c} seçildi`); tr.k = h.k; } tr.side = b.dataset.kside; tr.qty = tr.amt = 0; $('#kt-qty').value = ''; $('#kt-amt').value = ''; return renderTrade(); }
+    if (b.dataset.kside) { tr.side = b.dataset.kside; tr.qty = tr.amt = 0; $('#kt-qty').value = ''; $('#kt-amt').value = ''; return renderTrade(); }
     if (b.hasAttribute('data-krefresh')) return refreshPrice();
     if (b.dataset.kdcoin) return openNetSheet(b.dataset.kdcoin, 'info');
     if (b.dataset.kdfiat) { dep.fiat = b.dataset.kdfiat; return openInfo(dep.fiat, 'detail'); }
