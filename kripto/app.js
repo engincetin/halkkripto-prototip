@@ -45,7 +45,7 @@ function renderTotal() {
       <div class="acct-no k-no">${a.no}</div>
       <div class="lbl" style="margin-top:13px">Kullanılabilir Bakiye</div>
       <div class="amt-big amt">${money(a.bal, a.id)}</div>
-      <div class="pl-row"><span class="lbl">Emirdeki Tutar</span><b class="money-sm amt">0<small>,00 ${a.id}</small></b></div>
+      <div class="pl-row"><span class="lbl">${a.id === 'TL' ? 'USD' : 'TL'} Karşılığı</span><b class="money-sm amt">${money(a.id === 'TL' ? a.bal / USD_RATE : a.bal * USD_RATE, a.id === 'TL' ? 'USD' : 'TL')}</b></div>
       <hr>
       <button class="see-all press" data-khacc="${a.id === 'TL' ? 'try' : 'usd'}">Hesap Hareketleri <svg width="6" height="10"><use href="#i-chev-right"/></svg></button>`;
   } else if (homeAcc !== 'all') {
@@ -90,7 +90,7 @@ function openAllAcc() {
   $('#allacc-list').innerHTML = `
     ${card('all', '<svg class="coin-badge" width="17" height="17"><use href="#i-coinbadge"/></svg><b>Toplam Varlığım</b>', 'Tüm nakit ve kripto hesaplarınız', [['Kripto ve Nakit Bakiye', money(inCur(cashTL() + state.kripto), cur)], ['Olası Kar / Zarar', money(inCur(tp.pl), cur), chClass(tp.pl)]])}
     <div class="acs-sec">NAKİT HESAPLARIM</div>
-    ${['TL', 'USD'].map((c) => { const a = cashAcc(c); return card(c, `${c === 'TL' ? '<span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span>' : ''}<b>${a.name}</b>`, a.no, [['Kullanılabilir Bakiye', money(a.bal, c)], ['Emirdeki Tutar', money(0, c)]]); }).join('')}
+    ${['TL', 'USD'].map((c) => { const a = cashAcc(c); return card(c, `${c === 'TL' ? '<span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span>' : ''}<b>${a.name}</b>`, a.no, [['Kullanılabilir Bakiye', money(a.bal, c)], [`${c === 'TL' ? 'USD' : 'TL'} Karşılığı`, money(c === 'TL' ? a.bal / USD_RATE : a.bal * USD_RATE, c === 'TL' ? 'USD' : 'TL')]]); }).join('')}
     <div class="acs-sec">KRİPTO HESAPLARIM</div>
     ${crypto}`;
   openSheet('allacc-sheet');
@@ -313,7 +313,6 @@ function renderAssets() {
   const q = $('#ka-q').value.trim().toLocaleLowerCase('tr-TR');
   const match = (...t) => !q || t.join(' ').toLocaleLowerCase('tr-TR').includes(q);
   const open = (id) => !!q || ka.open[id];
-  const pending = (label) => `<div class="ka-pending"><span>${label}</span><b class="amt">≈ 0,00 ${cur}</b></div>`;
 
   // Nakit
   const cash = [
@@ -323,7 +322,7 @@ function renderAssets() {
   $('#ka-cash').classList.toggle('open', open('cash'));
   $('#ka-cash').hidden = !!q && !cash.length;
   $('#ka-cash').innerHTML = groupHead('cash', 'Nakit Varlıklarım', cashTL()) + `
-    <div class="ka-body">${pending('Emirdeki Nakit Tutar')}${cash.map((r) => `
+    <div class="ka-body">${cash.map((r) => `
       <div class="coin-row tap" data-kdfiat="${r.c}">
         ${coinIcon(r.k)}
         <div class="coin-name"><b>${r.c}</b><span>${r.n}</span></div>
@@ -337,7 +336,7 @@ function renderAssets() {
   $('#ka-crypto').classList.toggle('open', open('crypto'));
   $('#ka-crypto').hidden = !!q && !rows.length;
   $('#ka-crypto').innerHTML = groupHead('crypto', 'Kripto Varlıklarım', state.kripto) + `
-    <div class="ka-body">${pending('Emirdeki Kripto Tutar')}${rows.map((a) => {
+    <div class="ka-body">${rows.map((a) => {
       const calc = a.v ? assetCalc(a) : { qty: `0 ${a.c}`, pl: 0 };
       return `
       <div class="asset-row tap" data-kpair="${a.k}/${cur}">
@@ -656,7 +655,7 @@ function acctCard(cur, attrs) {
     <button class="card kt-acct press" ${attrs}>
       <div class="kt-acct-head"><span class="star"><svg width="10" height="10"><use href="#i-star"/></svg></span><b>Halk Kripto ${cur} Hesabı</b><svg class="kt-acct-chev" width="14" height="8"><use href="#i-chev-down"/></svg></div>
       <div class="kt-acct-no">${ACCT_NO[cur]} · Nakit Varlık</div>
-      <div class="kt-cols">${balCol('Kullanılabilir Bakiye', money(cashOf(cur), cur))}${balCol('Emirdeki Tutar', money(0, cur))}</div>
+      <div class="kt-cols">${balCol('Kullanılabilir Bakiye', money(cashOf(cur), cur))}${balCol(`${cur === 'TL' ? 'USD' : 'TL'} Karşılığı`, money(cur === 'TL' ? cashOf(cur) / USD_RATE : cashOf(cur) * USD_RATE, cur === 'TL' ? 'USD' : 'TL'))}</div>
     </button>`;
 }
 function assetCard(k, sell) {

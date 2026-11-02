@@ -106,8 +106,6 @@
 .ka-group.open .ka-chev { transform: rotate(180deg); }
 .ka-body { display: none; border-top: 1px solid var(--line); }
 .ka-group.open .ka-body { display: block; }
-.ka-pending { display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--gray-2); }
-.ka-pending b { color: var(--ink-3); font-weight: 700; }
 .ka-group .coin-row, .ka-group .asset-row { align-items: center; }
 .ka-group .asset-row .coin-name { align-self: flex-start; }
 .ka-group .coin-name b { font-size: 16px; }
