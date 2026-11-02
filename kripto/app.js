@@ -1354,6 +1354,20 @@ function bindDots(sl, dots) {
   sl.onscroll = () => { const w = sl.firstElementChild ? sl.firstElementChild.offsetWidth + 10 : 1, i = Math.round(sl.scrollLeft / w); $$('i', dots).forEach((d, j) => d.classList.toggle('on', j === i)); };
 }
 
+// Kaydırıcı 5 sn'de bir sonraki karta geçer; kullanıcı dokununca 8 sn bekler, sona gelince başa döner
+let autoT = null, autoHold = 0;
+function autoSlide(sl) {
+  clearInterval(autoT);
+  const hold = () => { autoHold = Date.now() + 8000; };
+  sl.addEventListener('touchstart', hold, { passive: true });
+  sl.addEventListener('pointerdown', hold);
+  autoT = setInterval(() => {
+    if (!document.body.contains(sl)) return clearInterval(autoT);
+    if (current !== 'k-markets' || stack.length || Date.now() < autoHold || document.hidden) return;
+    const w = sl.firstElementChild.offsetWidth + 10, n = sl.children.length, i = Math.round(sl.scrollLeft / w);
+    sl.scrollTo({ left: ((i + 1) % n) * w, behavior: 'smooth' });
+  }, 5000);
+}
 function renderMarketCard() {
   const cur = state.cur, b = breadth();
   const gain = [...COINS].sort((x, y) => y.ch - x.ch), lose = [...COINS].sort((x, y) => x.ch - y.ch);
@@ -1384,21 +1398,20 @@ function renderMarketCard() {
     </div>`;
     return;
   }
-  // 1: Bugün Piyasada kaydırıcısı (her kart ana kart ölçüsünde)
-  const s = spark('btc', 360, 58);
+  // 1: Bugün Piyasada kaydırıcısı (her kart ana kart ölçüsünde; 5 sn'de bir kendiliğinden kayar)
+  const NEW = [['virtual', '28 Ekim'], ['zro', '21 Ekim'], ['ena', '14 Ekim']];
+  const newRow = ([k, d]) => { const c = coinOf(k); return `<button class="kx-mrow press" data-coin="${k}" data-cur="${cur}">${coinIcon(k)}<b>${c.c}<small>${d}’de listelendi</small></b><span class="amt">${priceTL(c, cur)}</span>${chPill(c.ch)}</button>`; };
   const cards = [
-    `${head(coinIcon('btc'), `Bitcoin <small class="kx-pair">BTC/${cur}</small>`, chPill(btc.ch))}
-     <div class="amt-big kx-price">${priceTL(btc, cur).replace(` ${cur}`, '').split(',')[0]}<small>${priceTL(btc, cur).includes(',') ? `,${priceTL(btc, cur).split(',')[1].replace(` ${cur}`, '')}` : ''} ${cur}</small></div>
-     <div class="kx-chart">${s.svg}</div>
-     <div class="kx-hl"><span>24s En Düşük <b class="amt">${fmt(cur === 'USD' ? s.lo / USD_RATE : s.lo, 0)} ${cur}</b></span><span>24s En Yüksek <b class="amt">${fmt(cur === 'USD' ? s.hi / USD_RATE : s.hi, 0)} ${cur}</b></span></div>`,
     `${head(`<span class="kx-hic up"><svg width="14" height="14"><use href="#k-up"/></svg></span>`, 'Günün Yükselenleri')}<div class="kx-movers">${gain.slice(0, 3).map((c) => moverRow(c, cur)).join('')}</div>`,
     `${head(`<span class="kx-hic down"><svg width="14" height="14"><use href="#k-up"/></svg></span>`, 'Günün Düşenleri')}<div class="kx-movers">${lose.slice(0, 3).map((c) => moverRow(c, cur)).join('')}</div>`,
+    `${head(`<span class="kx-hic new"><svg width="13" height="13"><use href="#k-spark"/></svg></span>`, 'Yeni Listelenenler', '<span class="kx-mood new">Yeni</span>')}<div class="kx-movers">${NEW.map(newRow).join('')}</div>`,
     `${head(badge, 'Piyasa Nabzı', `<span class="kx-mood ${chClass(b.avg)}">${b.avg >= 0 ? 'Yükselişte' : 'Düşüşte'}</span>`)}
      <div class="kx-pulse"><b class="${chClass(b.avg)}">%${fmt(b.pct, 0)}</b><span>kripto bugün<br>yükselişte</span></div>
      ${breadthBar(b)}
      <p class="kx-note">Ortalama 24 saatlik değişim <b class="${chClass(b.avg)}">${b.avg >= 0 ? '+' : '−'}%${fmt(Math.abs(b.avg))}</b></p>`,
   ];
   $('#km-top').innerHTML = `<div class="kx-slider" id="km-sl">${cards.map((h) => `<div class="card kx-sc">${h}</div>`).join('')}</div><div class="km-dots" id="km-sld">${dotsHTML(cards.length)}</div>`;
+  autoSlide($('#km-sl'));
   bindDots($('#km-sl'), $('#km-sld'));
 }
 
@@ -1433,7 +1446,7 @@ function txCardHTML(x, label) {
 }
 function renderDVSheet() {
   const opt = (k, v, t, d) => `<button class="opt press${DV[k] === v ? ' on' : ''}" data-kdv="${k}:${v}"><span class="lbl2"><b>${t}</b><span>${d}</span></span><i class="radio"></i></button>`;
-  $('#dv-list').innerHTML = `<div class="hf-title">Piyasalar</div>${opt('m', 1, '1 · Bugün Piyasada kaydırıcısı', 'Bitcoin, yükselenler, düşenler, piyasa nabzı')}${opt('m', 2, '2 · Tek özet kartı', 'BTC / ETH / SOL ve piyasa dengesi')}${opt('m', 3, '3 · Grafikli kart', 'Seçilen kriptonun 24 saatlik grafiği')}
+  $('#dv-list').innerHTML = `<div class="hf-title">Piyasalar</div>${opt('m', 1, '1 · Bugün Piyasada kaydırıcısı', 'Yükselenler, düşenler, yeni listelenenler, piyasa nabzı; 5 sn’de bir kayar')}${opt('m', 2, '2 · Tek özet kartı', 'BTC / ETH / SOL ve piyasa dengesi')}${opt('m', 3, '3 · Grafikli kart', 'Seçilen kriptonun 24 saatlik grafiği')}
     <div class="hf-title">İşlemler</div>${opt('h', 1, '1 · Son işlemler kaydırıcısı', 'Son 5 işlem kart kart')}${opt('h', 2, '2 · Son işlem detay kartı', 'En son işlemin ayrıntıları')}`;
 }
 function renderHistTop() {

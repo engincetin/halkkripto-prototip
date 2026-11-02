@@ -823,3 +823,5 @@
 .kx-sc { padding-bottom: 16px; }
 #kh-sl .kx-sc { height: auto; }
 #kh-sl .kx-rows { margin-bottom: 14px; }
+.kx-hic.new { background: var(--orange); }
+.kx-mood.new { background: #fff1e5; color: var(--orange); }
