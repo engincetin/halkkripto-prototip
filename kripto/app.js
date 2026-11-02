@@ -1173,10 +1173,10 @@ function init() {
     if (b.hasAttribute('data-kdnet')) return openNetSheet(dep.k, 'detail');
     if (b.hasAttribute('data-kdqr')) return openQR();
     if (b.dataset.kcopy) return copyText(b.dataset.kcopy);
-    if (b.hasAttribute('data-kshare')) return toast('Paylaşım menüsü demoda yer almıyor');
+    if (b.hasAttribute('data-kshare')) return toast('Paylaşım bu demoda yer almıyor');
     if (b.dataset.kbanksend) {
       if (embedded) return window.parent.postMessage({ type: 'halkkripto:send', cur: b.dataset.kbanksend }, location.origin);
-      return toast('Bu adım Halkbank uygulamasında açılır');
+      return toast('Bu özellik Halkbank uygulamasından açıldığında çalışır');
     }
     if (b.dataset.kpct) return setPct(+b.dataset.kpct);
     if (b.id === 'kt-go') return goSummary();
@@ -1190,7 +1190,7 @@ function init() {
     if (b.dataset.kpsw) { b.classList.toggle('on'); b.setAttribute('aria-checked', b.classList.contains('on')); return; }
     if (b.dataset.kplim) { limTab = b.dataset.kplim; return renderLimits(); }
     if (b.dataset.klang) { if (b.dataset.klang === 'en') return toast('İngilizce dil seçeneği demoda yer almıyor'); return closeSheet(); }
-    if (b.dataset.ktheme) { if (b.dataset.ktheme !== 'light') return toast('Koyu tema sıradaki adımda tasarlanacak'); return closeSheet(); }
+    if (b.dataset.ktheme) { if (b.dataset.ktheme !== 'light') return toast('Koyu tema demoda yer almıyor'); return closeSheet(); }
     if (b.hasAttribute('data-kedit')) return toast('Bilgilerinizi Halkbank uygulamasından güncelleyebilirsiniz');
     if (b.hasAttribute('data-kclosego')) { closeSheet(); return toast('Hesap kapatma demoda yer almıyor'); }
     if (b.hasAttribute('data-klogout')) { closeSheet(); return logout(); }
@@ -1203,7 +1203,7 @@ function init() {
     if (b.id === 'hf-apply') { Object.assign(kh, hfDraft); renderHistory(); return closeSheet(); }
     if (b.dataset.dekont) return openDekont(b.dataset.dekont);
     if (b.dataset.tx) return openTx(b.dataset.tx);
-    if (b.hasAttribute('data-txshare')) { if (b.closest('#k-txd')) return openDekont(txOpen.id); return toast('Paylaşım menüsü demoda yer almıyor'); }
+    if (b.hasAttribute('data-txshare')) { if (b.closest('#k-txd')) return openDekont(txOpen.id); return toast('Paylaşım bu demoda yer almıyor'); }
     if (b.id === 'ke-go') { popScreen(); return toast(`Hesap ekstreniz ${$('#ke-mail').value} adresine gönderildi`); }
     if (b.hasAttribute('data-kclose')) return closeSheet();
     if (b.dataset.kslx) { slDismissed.add(b.dataset.kslx); return renderSlides(); }
@@ -1226,7 +1226,7 @@ function init() {
     if (b.dataset.kagroup) { ka.open[b.dataset.kagroup] = !ka.open[b.dataset.kagroup]; return b.parentElement.classList.toggle('open'); }
     if (b.id === 'ka-zero') { ka.hideZero = !ka.hideZero; return renderAssets(); }
     if (b.dataset.ktab) { kTab = b.dataset.ktab; return renderList(); }
-    if (b.hasAttribute('data-soon')) return toast('Bu ekran sıradaki adımda tasarlanacak');
+    if (b.hasAttribute('data-soon')) return toast('Bu özellik demoda yer almıyor');
   });
   $('#sheet-bg').addEventListener('click', closeSheet);
 
