@@ -216,7 +216,7 @@ body.framed .home-indicator {
 .btn-row { display: flex; align-items: center; justify-content: flex-start; gap: 16px; height: 47px; border-radius: 7px; padding: 0 20px 0 38px; background: var(--grad); color: #fff; font-size: 18px; font-weight: 800; width: 100%; }
 
 /* ---------- Açılış ---------- */
-#splash { background: #0275b6 url(img/acilis.jpg) center / cover no-repeat; z-index: 50; visibility: visible; }
+#splash { background: #0a5ea8 url(img/acilis.jpg) center / cover no-repeat; z-index: 50; visibility: visible; }
 #splash.gone { opacity: 0; pointer-events: none; }
 
 /* ---------- Ana Sayfa ---------- */

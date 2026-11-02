@@ -38,5 +38,5 @@ sonra http://localhost:8000
 
 ## Notlar
 - Font: Tasarımdaki "Falling Sky" yerine ona yakın **Nunito Sans** kullanıldı. Falling Sky lisansınız varsa `fonts/` klasörüne koyup `styles.css` içindeki `@font-face` tanımını değiştirmeniz yeterli.
-- Açılış görseli (`img/acilis.jpg`) Figma'dan 1x çözünürlükte alındı. Daha keskin olması için Figma'dan 3x PNG/JPG export edip aynı isimle değiştirin.
+- Açılış görseli (`img/acilis.jpg`): Halkbank uygulamasının açılış ekranı (851×1847).
 - Dosyaları güncelledikten sonra `sw.js` içindeki `VERSION` değerini artırın.
