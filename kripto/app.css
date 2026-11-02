@@ -4,8 +4,8 @@
 #k-splash { z-index: 50; display: flex; align-items: center; justify-content: center; background: linear-gradient(160deg, #025193 0%, #0368b3 45%, #02a6e6 100%); transition: opacity .5s ease; }
 #k-splash.gone { opacity: 0; pointer-events: none; }
 .k-splash-in { text-align: center; color: #fff; animation: k-rise .7s cubic-bezier(.2,.8,.2,1) both; }
-.k-splash-logo { width: 220px; height: auto; filter: drop-shadow(0 16px 26px rgba(0,20,60,.35)); }
-.k-brand { font-size: 34px; font-weight: 900; letter-spacing: .3px; margin-top: 10px; }
+.k-splash-logo { width: 132px; height: 132px; border-radius: 30px; box-shadow: 0 18px 36px rgba(0,20,60,.35), 0 0 0 1px rgba(255,255,255,.18); }
+.k-brand { font-size: 34px; font-weight: 900; letter-spacing: .3px; margin-top: 22px; }
 .k-tag { font-size: 15px; font-weight: 700; opacity: .85; margin-top: 6px; }
 @keyframes k-rise { from { opacity: 0; transform: translateY(14px) scale(.96); } }
 
@@ -524,7 +524,7 @@
 .kdk-page { font-size: 20px; font-weight: 800; color: #000; margin: 0 0 18px 10px; }
 .kdk-doc { font: 9.5px/1.45 'SF Mono', Menlo, Consolas, monospace; color: #222; }
 .kdk-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-.kdk-top img { width: 26px; height: auto; }
+.kdk-top img { width: 22px; height: 22px; border-radius: 5px; }
 .kdk-top b { font: 900 14px 'Nunito Sans', sans-serif; color: #025193; letter-spacing: .4px; }
 .kdk-top span { margin-left: 60px; font: 700 11px 'Nunito Sans', sans-serif; letter-spacing: .5px; }
 .kdk-box { border: 1px solid #b9c2cc; border-radius: 3px; padding: 5px 7px; margin-top: 4px; }
@@ -641,7 +641,7 @@
 /* ---------- Giriş yapılmamış ana sayfa ---------- */
 .k-out #k-home .k-movescard, .k-out #k-home .km-slider, .k-out #k-home .km-dots, .k-out [data-nbadge] { display: none !important; }
 .kw-card { display: flex; gap: 14px; align-items: flex-start; }
-.kw-card img { width: 78px; height: auto; flex: none; margin-top: 2px; filter: drop-shadow(0 6px 10px rgba(2,81,147,.2)); }
+.kw-card img { width: 64px; height: 64px; border-radius: 15px; flex: none; margin-top: 2px; box-shadow: 0 6px 14px rgba(2,81,147,.25); }
 .kw-card b { display: block; font-size: 18px; font-weight: 800; color: var(--ink); line-height: 1.3; }
 .kw-card p { font-size: 15px; color: var(--ink-3); line-height: 1.4; margin: 6px 0 12px; font-weight: 600; }
 /* Giriş paneli (alttan) */

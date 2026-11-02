@@ -32,7 +32,7 @@ function renderTotal() {
   if (loggedOut) {
     $('#k-total').innerHTML = `
       <div class="kw-card">
-        <img src="img/logo.png" alt="">
+        <img src="icons/icon-192.png" alt="">
         <div><b>Halk Kripto’ya hoş geldiniz.</b><p>Hızlı ve kolay bir şekilde kripto alım satımı yapmak için giriş yapın.</p>
         <button class="see-all press" data-klogin>Giriş Yap <svg width="6" height="10"><use href="#i-chev-right"/></svg></button></div>
       </div>`;
@@ -575,7 +575,7 @@ function openDekont(id) {
   $('#kdk-paper').innerHTML = `
     <div class="kdk-page">1 / 1</div>
     <div class="kdk-doc">
-      <div class="kdk-top"><img src="img/logo.png" alt=""><b>HALK KRİPTO</b><span>DEKONT</span></div>
+      <div class="kdk-top"><img src="icons/icon-180.png" alt=""><b>HALK KRİPTO</b><span>DEKONT</span></div>
       <div class="kdk-box kdk-2">
         <div>${L('MÜŞTERİ NO', CUSTOMER_NO)}${L('AD SOYAD', 'DENİZ YILMAZ')}${L('HESAP', 'HK 48215903')}</div>
         <div>${L('İŞLEM TARİHİ', `${p2d} - ${d.toTimeString().slice(0, 5)}`)}${L('VALÖR TARİHİ', p2d)}${L('İŞLEM KANALI', 'MOBİL')}</div>

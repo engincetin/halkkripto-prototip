@@ -1,5 +1,5 @@
 // Çevrimdışı çalışma için basit önbellek. Dosyaları değiştirince VERSION'ı artırın.
-const VERSION = 'hk-v74';
+const VERSION = 'hk-v75';
 const FILES = [
   './', 'index.html', 'styles.css', 'common.js', 'coin.js', 'app.js', 'manifest.webmanifest',
   'fonts/nunitosans-latin.woff2', 'fonts/nunitosans-latin-ext.woff2',
@@ -7,7 +7,7 @@ const FILES = [
   'img/ev.png', 'img/arac.png', 'img/seyahat.png',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-1024.png', 'icons/icon-maskable-512.png',
   // Halk Kripto (ikinci uygulama)
-  'kripto/', 'kripto/index.html', 'kripto/app.css', 'kripto/app.js', 'kripto/manifest.webmanifest', 'kripto/img/logo.png',
+  'kripto/', 'kripto/index.html', 'kripto/app.css', 'kripto/app.js', 'kripto/manifest.webmanifest', 'kripto/img/logo.png', 'kripto/icons/icon-1024.png',
   'kripto/icons/icon-180.png', 'kripto/icons/icon-192.png', 'kripto/icons/icon-512.png',
 ];
 
