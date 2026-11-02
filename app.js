@@ -749,6 +749,7 @@ function closeKriptoApp() {
 /* ================= Giriş / Çıkış ================= */
 // Çıkış yapınca Halkbank giriş ekranı gelir; 6 haneli dijital parola girilince ana sayfaya dönülür
 function showLogin() {
+  state.kAuthed = false; // Halk Kripto'ya da yeniden giriş gerekir
   // Arkadaki ekranlar ana sayfaya döner (animasyonsuz)
   stack.slice(1).forEach((id) => { const e = el(id); e.classList.remove('active', 'under', 'dim', 'anim', 'moving'); e.style.transform = ''; });
   stack.length = 1;
@@ -929,9 +930,10 @@ function init() {
   if (window.visualViewport) visualViewport.addEventListener('resize', layout);
 
   setupLogin();
-  // Açılış ekranı → Ana Sayfa
+  // Açılış ekranı → Giriş (dijital parola) → Ana Sayfa. ?skiplogin yalnızca test betikleri içindir
   stack.push('home');
   el('home').classList.add('active');
+  if (!location.search.includes('skiplogin')) el('login').classList.add('active');
   const splash = el('splash');
   splash.classList.add('anim-fade');
   setTimeout(() => {

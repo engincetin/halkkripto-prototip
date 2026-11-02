@@ -1090,6 +1090,7 @@ function toast(msg) {
 // Çıkış: uygulama "giriş yapılmamış" ana sayfaya döner; piyasalar açık, diğer her şey giriş ister
 let loggedOut = false;
 function logout() {
+  state.kAuthed = false;
   stack.length = 0;
   $$('.k-push.open').forEach((x) => x.classList.remove('open', 'active'));
   $(`#${current}`).classList.remove('active');
@@ -1122,10 +1123,24 @@ function drawDots() {
   $$('#kl-dots i').forEach((d, i) => d.classList.toggle('on', i < n));
   $('#kl-go').classList.toggle('on', n === 6);
 }
+// Test betikleri için (?skiplogin): giriş adımını atlar
+const testSkipLogin = (() => { try { return /skiplogin/.test(location.search + window.parent.location.search); } catch (e) { return false; } })();
+let intentDone = false;
+// Halkbank'taki Al/Sat düğmesinden gelindiyse (#pair=BTC/TL&side=Al) Al/Sat ekranı doğrudan açılır
+function afterAuth() {
+  if (intentDone) return;
+  intentDone = true;
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('pair')) {
+    const [code, q] = h.get('pair').split('/');
+    const c = COINS.find((x) => x.c === code);
+    if (c) setTimeout(() => openTrade(c.k, q, h.get('side') === 'Sat' ? 'sell' : 'buy'), 250);
+  }
+}
 function doLogin() {
   if (lgBusy || $('#kl-pass').value.length < 6) return;
   lgBusy = true; $('#kl-pass').blur(); $('#kl-sheet').classList.add('busy');
-  setTimeout(() => { closeSheet(); setLoggedOut(false); toast('Hoş geldiniz, Deniz'); }, 900);
+  setTimeout(() => { closeSheet(); setLoggedOut(false); state.kAuthed = true; toast('Hoş geldiniz, Deniz'); afterAuth(); }, 900);
 }
 
 /* ---------- Ölçek (Halkbank uygulamasıyla aynı mantık) ---------- */
@@ -1279,13 +1294,9 @@ function init() {
     $('#k-home').classList.add('active');
     $('#k-splash').classList.add('gone');
     setTimeout(() => $('#k-splash').classList.remove('active'), 600);
-    // Halkbank'taki Al/Sat düğmesinden gelindiyse (#pair=BTC/TL&side=Al) Al/Sat ekranı doğrudan açılır
-    const h = new URLSearchParams(location.hash.slice(1));
-    if (h.get('pair')) {
-      const [code, q] = h.get('pair').split('/');
-      const c = COINS.find((x) => x.c === code);
-      if (c) setTimeout(() => openTrade(c.k, q, h.get('side') === 'Sat' ? 'sell' : 'buy'), 250);
-    }
+    // İlk girişte (Halkbank'tan geçişte de) önce dijital parola istenir; sonra gidilmek istenen ekran açılır
+    if (state.kAuthed || testSkipLogin) afterAuth();
+    else { setLoggedOut(true); setTimeout(openLogin, 350); }
   }, 1400);
 }
 init();
