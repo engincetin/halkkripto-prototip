@@ -664,3 +664,5 @@
 .kl-sheet.busy .kl-load { opacity: 1; }
 .kl-forgot { margin-top: 16px; font-size: 15px; font-weight: 800; }
 .kl-hint { font-size: 14px; color: var(--gray); margin-top: 18px; }
+/* Fotoğraf rozeti: sağ üstte sayısız turuncu nokta (Halkbank zil noktası gibi) */
+.avatar i.k-nbadge { right: -1px; top: -1px; bottom: auto; width: 13px; height: 13px; min-width: 0; padding: 0; border-radius: 50%; border: 2px solid #fff; font-size: 0; line-height: 0; color: transparent; overflow: hidden; }
