@@ -148,7 +148,7 @@
         <div class="kops k-kops">
           <button class="kop press" data-ktrade=""><span class="ki"><svg width="16" height="14"><use href="#i-transfer"/></svg></span>Al/Sat</button>
           <button class="kop press" data-kpush="k-dep"><span class="ki"><svg width="13" height="13"><use href="#k-deposit"/></svg></span>Yatır</button>
-          <button class="kop press" data-soon><span class="ki"><svg width="13" height="13"><use href="#k-withdraw"/></svg></span>Çek</button>
+          <button class="kop press" data-kpush="k-wd"><span class="ki"><svg width="13" height="13"><use href="#k-withdraw"/></svg></span>Çek</button>
         </div>
 
         <div class="km-slider" id="km-slider"></div>
@@ -214,7 +214,7 @@
         <div class="kops k-kops">
           <button class="kop press" data-ktrade=""><span class="ki"><svg width="16" height="14"><use href="#i-transfer"/></svg></span>Al/Sat</button>
           <button class="kop press" data-kpush="k-dep"><span class="ki"><svg width="13" height="13"><use href="#k-deposit"/></svg></span>Yatır</button>
-          <button class="kop press" data-soon><span class="ki"><svg width="13" height="13"><use href="#k-withdraw"/></svg></span>Çek</button>
+          <button class="kop press" data-kpush="k-wd"><span class="ki"><svg width="13" height="13"><use href="#k-withdraw"/></svg></span>Çek</button>
         </div>
 
         <label class="search"><svg width="22" height="22" style="color:#0576b8"><use href="#i-search"/></svg><input id="ka-q" type="search" placeholder="Varlıklarınızda arayın" autocomplete="off" autocorrect="off" spellcheck="false"></label>
@@ -569,6 +569,31 @@
     </div>
   </section>
 
+  <!-- ===================== ÇEK ===================== -->
+  <section class="screen k-push" id="k-wd">
+    <header class="header"><button class="hbtn left press" data-kpop aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1>Çek</h1></header>
+    <div class="scroll">
+      <div class="pad-header"></div>
+      <p class="kd-lead">İşlem yapacağınız varlığı seçin.</p>
+      <div class="section-title">PARA ÇEK</div>
+      <div class="list-card" id="kw-fiat"></div>
+      <div class="section-title">KRİPTO ÇEK</div>
+      <div class="list-card" id="kw-list"></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+  </section>
+
+  <section class="screen k-push" id="k-wdx">
+    <header class="header"><button class="hbtn left press" data-wdback aria-label="Geri"><svg width="20" height="18"><use href="#i-back"/></svg></button><h1 id="wx-title">Çek</h1></header>
+    <div class="scroll" id="wx-scroll">
+      <div class="pad-header"></div>
+      <div class="wx-steps" id="wx-steps"></div>
+      <div id="wx-body"></div>
+      <div style="height:calc(var(--sab) + 30px)"></div>
+    </div>
+    <div class="wx-notif" id="wx-notif"></div>
+  </section>
+
   <!-- ===================== ARAMA ===================== -->
   <section class="screen k-push" id="k-search">
     <header class="header">
@@ -688,6 +713,11 @@
     <label class="kl-field"><input id="kl-pass" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" aria-label="Dijital parola"><span class="kl-dots" id="kl-dots"><i></i><i></i><i></i><i></i><i></i><i></i></span><button class="kl-go press" id="kl-go" data-klogin-go aria-label="Giriş yap"><svg width="20" height="16" viewBox="0 0 20 16"><path d="M1.5 8h16M11 1.5 17.5 8 11 14.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="kl-load">Giriş yapılıyor…</span></label>
     <button class="see-all press kl-forgot" data-kforgot>Parolamı Unuttum</button>
     <p class="kl-hint">Halkbank dijital parolanızla giriş yapabilirsiniz.</p>
+  </div>
+  <div class="sheet kt-sheet" id="wx-pick" role="dialog" aria-label="Seçim">
+    <div class="grab"></div>
+    <div class="k-sheet-head"><h3 id="wxp-title"></h3><button class="press" data-kclose aria-label="Kapat"><svg width="18" height="18" viewBox="0 0 18 18"><path d="m3 3 12 12M15 3 3 15" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>
+    <div class="cs-list" id="wxp-list"></div>
   </div>
 </div>
 <script src="../common.js"></script>

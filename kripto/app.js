@@ -419,7 +419,7 @@ const txCur = (x) => (x.cur === 'USD' ? 'USD' : 'TL');
 const inTx = (x, vTL) => (txCur(x) === 'USD' ? vTL / USD_RATE : vTL);
 const txMoney = (x, vTL) => `${fmt(inTx(x, vTL))} ${txCur(x)}`;
 const txPrice = (x) => { const v = inTx(x, x.p); return `${fmt(v, v < 1 ? 4 : v < 20 ? 3 : 2)} ${txCur(x)}`; };
-function txTitle(x) { return isCash(x) ? `${assetCode(x.k)} ${TX_TYPE[x.t].n}` : `${assetCode(x.k)}/${txCur(x)}`; }
+function txTitle(x) { if (x.t === 'wd' && !isCash(x)) return `${assetCode(x.k)} Çekme`; return isCash(x) ? `${assetCode(x.k)} ${TX_TYPE[x.t].n}` : `${assetCode(x.k)}/${txCur(x)}`; }
 const signedQty = (x) => `${x.t === 'buy' || x.t === 'dep' ? '+' : '-'}${qtyText(x)}`;
 const outAmt = (x) => (x.t === 'buy' ? txMoney(x, x.total + x.fee) : qtyText(x)); // hesaptan çıkan
 const inAmt = (x) => (x.t === 'buy' ? qtyText(x) : txMoney(x, x.total - x.fee)); // hesaba geçen
@@ -446,7 +446,21 @@ function filteredTx() {
 // Liste satırı: Halkbank ana sayfasındaki hesap hareketiyle aynı düzen (tarih kutusu, başlık, tutar)
 const MON3 = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA'];
 // Hareket satırı: Halkbank Hesap Hareketleri düzeni (tarih kutusu, başlık, açıklama, tutar; altta Tekrarla + dekont)
+// Kripto çekme satırı: miktar coin cinsinden, açıklamada ağ ve alıcı adres
+function cwRow(x, full) {
+  const d = new Date(x.ts), [i, f] = fmt(x.q, decOf(x.q) + 2).split(',');
+  return `
+    <div class="mv kh-mv tap${full ? ' full' : ''}" data-tx="${x.id}">
+      <div class="datebox"><span class="m">${MON3[d.getMonth()]}</span><span class="d">${d.getDate()}</span><span class="y">${d.getFullYear()}</span></div>
+      <div class="mv-body">
+        <div class="mv-top"><b>Kripto Çekme</b><span class="neg amt">-${i}<small>,${f} ${assetCode(x.k)}</small></span></div>
+        <div class="mv-bot"><span>${assetCode(x.k)} · ${x.net.toLocaleUpperCase('tr-TR')} · ALICI: ${shortAddr(x.addr)}</span>${full ? '' : `<button class="mv-rc press" data-dekont="${x.id}" aria-label="Dekont"><svg width="17" height="19"><use href="#i-receipt"/></svg></button>`}</div>
+        ${full ? `<div class="mv-act"><button class="mv-rc press" data-dekont="${x.id}" aria-label="Dekont"><svg width="17" height="19"><use href="#i-receipt"/></svg></button></div>` : ''}
+      </div>
+    </div>`;
+}
 function txRow(x, full = true) {
+  if (x.t === 'wd' && !isCash(x)) return cwRow(x, full);
   const d = new Date(x.ts), cancel = x.st === 'cancel', cash = isCash(x);
   const plus = x.t === 'sell' || x.t === 'dep';
   const amt = cash ? x.q : inTx(x, x.t === 'buy' ? x.total + x.fee : x.total - x.fee);
@@ -524,7 +538,12 @@ function renderTxDetail(more) {
     + `<div class="kh-r"><span>İşlem Numarası</span><button class="kd-copy press" data-kcopytx="${x.id}"><b>${x.id}</b><svg width="18" height="18"><use href="#i-copy"/></svg></button></div>`
     + `<div class="kh-r"><span>İşlem Türü</span>${typeTxt(x)}</div>`;
   let extra = '', second = '';
-  if (cash) {
+  if (x.t === 'wd' && !cash) {
+    const u = assetCode(x.k), q = (v) => `${fmt(v, decOf(v) + 2)} ${u}`;
+    main += r('Varlık', `${u} ${assetName(x.k)}`) + r('Ağ', x.net) + r('Tutar', q(x.q));
+    extra = r('Alıcı Adres', `<span class="wx-mono">${x.addr}</span>`) + r('Gönderim Yapılan Platform', x.plat) + r('Gönderim Ücreti', q(x.nfee)) + r('Gönderilen Tutar', q(x.q - x.nfee));
+    second = `<div class="section-title">GERÇEKLEŞME BİLGİSİ</div><div class="card kh-dcard">${r('Gönderim Tarihi', dt(x.ts + 2000))}${r('Ağ Onayı', 'Tamamlandı')}${r('Gönderilen Tutar', q(x.q - x.nfee))}</div>`;
+  } else if (cash) {
     main += r('Varlık', `${assetCode(x.k)} ${assetName(x.k)}`) + r('Tutar', qtyText(x));
     extra = r(x.t === 'dep' ? 'Gönderen Hesap' : 'Alıcı Hesap', `Halkbank Vadesiz ${assetCode(x.k)} Hesabı`) + r('İşlem Ücreti', `0,00 ${assetCode(x.k)}`)
       + r(x.t === 'dep' ? 'Hesaba Geçen Tutar' : 'Hesaptan Çıkan Tutar', qtyText(x));
@@ -549,7 +568,7 @@ function renderTxDetail(more) {
     ${second}
     <div class="hf-btns kh-dbtns">
       <button class="btn-secondary press" data-txshare>Dekont Paylaş</button>
-      ${cash ? '' : `<button class="btn-primary press" data-kpair="${x.k}/${txCur(x)}">Tekrar İşlem Yap</button>`}
+      ${cash || x.t === 'wd' ? '' : `<button class="btn-primary press" data-kpair=""${x.k}/${txCur(x)}">Tekrar İşlem Yap</button>`}
     </div>`;
   $('#txd-body').dataset.more = more ? '1' : '';
 }
@@ -561,7 +580,11 @@ function openDekont(id) {
   const up = (t) => t.toLocaleUpperCase('tr-TR');
   const p2d = `${p2(d.getDate())}/${p2(d.getMonth() + 1)}/${d.getFullYear()}`;
   let body;
-  if (cash) {
+  if (x.t === 'wd' && !cash) {
+    const u = assetCode(x.k), q = (v) => `${fmt(v, decOf(v) + 2)} ${u}`;
+    body = L('İŞLEM TÜRÜ', 'KRİPTO VARLIK ÇEKME') + L('VARLIK', `${u} ${up(assetName(x.k))}`) + L('AĞ', up(x.net)) + L('ALICI ADRES', x.addr)
+      + L('PLATFORM', up(x.plat)) + L('TUTAR', q(x.q)) + L('GÖNDERİM ÜCRETİ', q(x.nfee)) + L('GÖNDERİLEN', q(x.q - x.nfee));
+  } else if (cash) {
     body = L('İŞLEM TÜRÜ', x.t === 'dep' ? 'HALK KRİPTO PARA YATIRMA' : 'HALK KRİPTO PARA ÇEKME')
       + L(x.t === 'dep' ? 'GÖNDEREN HESAP' : 'ALICI HESAP', `HALKBANK VADESİZ ${assetCode(x.k)} HESABI`)
       + L('İŞLEM TUTARI', `${fmt(x.q)} ${assetCode(x.k)}`) + L('İŞLEM ÜCRETİ', `0,00 ${assetCode(x.k)}`);
@@ -900,7 +923,8 @@ function renderDepList() {
 }
 function openNetSheet(k, next) {
   dep.k = k; dep.next = next;
-  if (next === 'info') dep.net = 0;
+  if (next === 'info' || next === 'wd') dep.net = 0;
+  if (next === 'wdchange') dep.net = wd.net;
   $('#net-list').innerHTML = netsOf(k).map(([n, , min], i) => `
     <button class="opt press${i === dep.net ? ' on' : ''}" data-knet="${i}"><span class="lbl2"><b>${n}</b><span>Minimum ${fmt(min, min < 1 ? String(min).split('.')[1].length : 0)} ${coinOf(k).c}</span></span><i class="radio"></i></button>`).join('');
   openSheet('net-sheet');
@@ -1041,6 +1065,284 @@ function openCoin(k, cur) {
   $('#coin-scroll').scrollTop = 0;
 }
 
+/* ---------- Çek (para ve kripto çekme) ---------- */
+// Kimlik doğrulama adımları demoda atlanır; kullanıcının kayıtlı hesap/adresleri varmış gibi davranılır.
+const BANK_ACC = {
+  TL: { name: 'Halkbank Vadesiz TL Hesabım', iban: 'TR12 0001 2009 1658 0011 0684 50' },
+  USD: { name: 'Halkbank Vadesiz USD Hesabım', iban: 'TR85 0001 2009 1658 0011 0685 21' },
+};
+const PLATFORMS = ['Kişisel Cüzdan (MetaMask)', 'Kişisel Cüzdan (Ledger)', 'Binance TR', 'BTCTurk', 'Paribu', 'OKX TR', 'Bitexen', 'Diğer'];
+const PURPOSES = ['Kendi cüzdanlarım arasında saklama amaçlı transfer', 'Kendi hesabıma alım-satım amaçlı transfer', 'Diğer'];
+const SENDTO = ['Kendi Cüzdanıma Transfer', 'Başkasının Cüzdanına Transfer'];
+const WD_STEPS = { fiat: ['Bilgiler', 'Onay', 'Doğrulama'], crypto: ['Adres', 'Alıcı', 'Onay', 'Doğrulama'] };
+const wd = { kind: 'fiat', k: 'try', cur: 'TL', net: 0, step: 0, amt: '', saved: 0, own: true, addr: '', plat: 0, name: 'Deniz', sur: 'Yılmaz', sendto: 0, purpose: 0, decl: false, code: '', id: '' };
+let wdTimer = null, wdLeft = 0, infoCb = null, pickCb = null;
+
+function savedAddrs(k, net) {
+  const f = netsOf(k)[net][1], c = coinOf(k);
+  const wallet = f === 'btc' || f === 'ltc' || f === 'doge' ? 1 : 0;
+  return [
+    { label: `${wallet ? 'Ledger' : 'MetaMask'} Cüzdanım`, addr: fakeAddr(`${k}w1`, f), plat: wallet },
+    { label: `Binance TR ${c.c} Adresim`, addr: fakeAddr(`${k}w2`, f), plat: 2 },
+  ];
+}
+const coinBal = (k) => holdQty(k);
+const netFee = (k) => { const usd = coinOf(k).tl / USD_RATE, raw = 1.5 / usd, mag = 10 ** Math.floor(Math.log10(raw)); return Math.ceil(raw / mag) * mag; };
+const decOf = (v) => (v < 1 ? Math.min(8, String(v).split('.')[1]?.length || 2) : 2);
+const shortAddr = (a) => `${a.slice(0, 6)}…${a.slice(-5)}`;
+
+function renderWdList() {
+  $('#kw-fiat').innerHTML = ['TL', 'USD'].map((cur) => {
+    const v = cashOf(cur);
+    return `<button class="kd-row press" data-wdfiat="${cur}">${coinIcon(cur === 'USD' ? 'usd' : 'try')}<span><b>${cur}</b> ${cur === 'USD' ? 'Amerikan Doları' : 'Türk Lirası'}</span><em class="kw-bal amt">${fmt(v)} ${cur}<small>${cur === 'USD' ? `≈ ${fmt(v * USD_RATE)} TL` : `≈ ${fmt(v / USD_RATE)} USD`}</small></em><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>`;
+  }).join('');
+  const held = ASSETS.filter((a) => a.v > 0.005).sort((x, y) => y.v - x.v);
+  $('#kw-list').innerHTML = held.map((a) => {
+    const c = coinOf(a.k), q = coinBal(a.k);
+    return `<button class="kd-row press" data-wdcoin="${a.k}">${coinIcon(a.k)}<span><b>${c.c}</b> ${nameOf(c)}</span><em class="kw-bal amt">${fmt(q, qtyDec(c))} ${c.c}<small>≈ ${fmt(a.v)} TL</small></em><svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg></button>`;
+  }).join('') || '<div class="k-empty">Çekilebilir kripto varlığınız yok</div>';
+}
+function showInfo(title, items, btn, cb) {
+  $('#di-title').textContent = title;
+  $('#di-list').innerHTML = items.map((t) => `<li>${t}</li>`).join('');
+  $('#di-ok').textContent = btn;
+  infoCb = cb;
+  openSheet('dinfo-sheet');
+}
+function startWdFiat(cur) {
+  Object.assign(wd, { kind: 'fiat', k: cur === 'USD' ? 'usd' : 'try', cur, step: 0, amt: '', saved: 0, own: true, decl: true, code: '' });
+  wd.addr = BANK_ACC[cur].iban;
+  showInfo(`Halk Kripto’dan ${cur} transferi yapmadan önce bilmeniz gerekenler`, [
+    `Yalnızca <b>kendinize ait</b> ${cur} banka hesaplarına transfer yapabilirsiniz.`,
+    'IBAN’ın eksik veya hatalı olması durumunda transferiniz gerçekleşmeyecektir.',
+    'Üçüncü kişilere ait hesaplara transfer yapılmamaktadır.',
+    'Halkbank hesaplarınıza yapılan transferler 7/24 anında hesabınıza geçer.',
+  ], 'Anladım, Devam Et', openWdx);
+}
+function startWdCrypto(k) {
+  Object.assign(wd, { kind: 'crypto', k, cur: coinOf(k).c, net: 0, step: 0, amt: '', saved: 0, plat: 0, name: 'Deniz', sur: 'Yılmaz', sendto: 0, purpose: 0, decl: false, code: '' });
+  showInfo('Halk Kripto’dan transfer yapmadan önce bilmeniz gerekenler', [
+    'Diğer platformlara yapacağınız çekme işlemlerini;<ol><li>Kimlik bilgilerinizle adınıza açılan,</li><li>Kripto Varlık Hizmet Sağlayıcı kuruluş tarafından sunulan</li></ol>bir hesaba yapabilirsiniz.',
+    'Kişisel cüzdanlarınıza yapacağınız transferlerde cüzdanın size ait olduğunu beyan etmeniz gerekir.',
+    'Seçtiğiniz ağ ile alıcı platformun desteklediği ağın <b>aynı olduğundan</b> emin olun; hatalı ağ ile yapılan transferler geri alınamaz.',
+  ], 'Anladım, Devam Et', () => {
+    if (netsOf(k).length > 1) return openNetSheet(k, 'wd');
+    pickSaved(0); openWdx();
+  });
+}
+function pickSaved(i) {
+  wd.saved = i;
+  if (i < 0) { wd.addr = ''; wd.plat = 7; return; }
+  const s = savedAddrs(wd.k, wd.net)[i];
+  wd.addr = s.addr; wd.plat = s.plat; wd.sendto = 0; wd.purpose = s.plat >= 2 ? 1 : 0;
+}
+function openWdx() {
+  wd.step = 0;
+  renderWdx();
+  if (!stack.includes('k-wdx')) pushScreen('k-wdx');
+}
+function openPick(title, opts, sel, cb) {
+  $('#wxp-title').textContent = title;
+  $('#wxp-list').innerHTML = opts.map((o, i) => `<button class="opt press${i === sel ? ' on' : ''}" data-wxp="${i}"><span class="lbl2"><b>${o.label}</b>${o.sub ? `<span>${o.sub}</span>` : ''}</span><i class="radio"></i></button>`).join('');
+  pickCb = cb;
+  openSheet('wx-pick');
+}
+
+const wxRow = (label, val, attr = '', chev = false, cls = '') => `<button class="wx-field press ${cls}" ${attr}><span>${label}</span><b>${val}</b>${chev ? '<svg class="kp-chev" width="7" height="12"><use href="#i-chev-right"/></svg>' : ''}</button>`;
+const sumRow = (a, b) => `<div class="sum-row"><span>${a}</span><b>${b}</b></div>`;
+function wdNums() {
+  const v = parseNum(wd.amt);
+  if (wd.kind === 'fiat') return { v, fee: 0, send: v, max: cashOf(wd.cur), min: 1 };
+  const fee = netFee(wd.k), min = netsOf(wd.k)[wd.net][2];
+  return { v, fee, send: Math.max(0, v - fee), max: coinBal(wd.k), min };
+}
+function wdError() {
+  const { v, max, min, fee } = wdNums(), u = wd.kind === 'fiat' ? wd.cur : coinOf(wd.k).c;
+  if (!v) return '';
+  if (v > max * 1.000001) return `Yetersiz bakiye. Çekilebilir: ${fmt(max, wd.kind === 'fiat' ? 2 : qtyDec(coinOf(wd.k)))} ${u}`;
+  if (v < min) return `Minimum işlem tutarı ${fmt(min, decOf(min))} ${u}`;
+  if (wd.kind === 'crypto' && v <= fee) return 'Tutar gönderim ücretinden büyük olmalıdır';
+  return '';
+}
+function renderWdx() {
+  const fiat = wd.kind === 'fiat', c = fiat ? null : coinOf(wd.k), unit = fiat ? wd.cur : c.c;
+  const steps = WD_STEPS[wd.kind], done = wd.step >= steps.length;
+  $('#wx-title').textContent = `${unit} Çek`;
+  $('#wx-steps').hidden = done;
+  $('#wx-steps').innerHTML = steps.map((n, i) => `<div class="${i < wd.step ? 'done' : i === wd.step ? 'on' : ''}"><i>${i < wd.step ? '<svg width="12" height="10" viewBox="0 0 12 10"><path d="m1.5 5 3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : i + 1}</i><span>${n}</span></div>`).join('');
+  $('#k-wdx [data-wdback]').hidden = done;
+  stopWdTimer(); $('#wx-notif').classList.remove('show');
+  const B = $('#wx-body'), N = wdNums(), err = wdError();
+  const asset = `<div class="card wx-asset">${coinIcon(fiat ? wd.k : wd.k)}<div><span>${fiat ? 'Varlık' : 'Kripto Varlık'}</span><b>${unit} ${fiat ? (wd.cur === 'USD' ? 'Amerikan Doları' : 'Türk Lirası') : nameOf(c)}</b></div><em><small>Kullanılabilir Bakiye</small><b class="amt">${fmt(N.max, fiat ? 2 : qtyDec(c))} ${unit}</b></em></div>`;
+  const amountBox = `
+    <label class="kt-in wx-amt"><input id="wx-amt" inputmode="decimal" autocomplete="off" placeholder="Tutar" value="${wd.amt}"><span>${unit}</span></label>
+    <div class="wx-hints"><span>Minimum İşlem Tutarı: ${fmt(N.min, fiat ? 2 : decOf(N.min))} ${unit}</span><button class="see-all press" data-wdall>Tüm bakiyemi kullan</button></div>
+    ${err ? `<div class="kt-err wx-err">${err}</div>` : ''}
+    <div class="card wx-total">${sumRow('Gönderim Ücreti', `${fmt(N.fee, fiat ? 2 : decOf(N.fee))} ${unit}`)}${sumRow('Gönderilecek Tutar', `${fmt(N.send, fiat ? 2 : decOf(N.min) + 2)} ${unit}`)}</div>`;
+  const go = (label, ok, attr = 'data-wdnext') => `<div class="kt-go-wrap"><button class="btn-primary press" ${attr} ${ok ? '' : 'disabled'}>${label}</button></div>`;
+  const okAmt = N.v > 0 && !err;
+
+  if (done) {
+    const sent = fmt(N.v, fiat ? 2 : decOf(N.min) + 2);
+    B.innerHTML = `
+      <div class="card res-card wx-res">
+        <div class="check pop"><i><svg width="40" height="28"><use href="#i-check"/></svg></i></div>
+        <h2>${fiat ? 'Para çekme talebiniz alındı.' : 'Kripto çekme talebiniz alındı.'}</h2>
+        <p>${fiat ? `${sent} ${unit} tutarındaki para çekme işleminiz ${BANK_ACC[wd.cur].name.replace('Hesabım', 'Hesabınıza')} gönderildi.` : `${sent} ${unit} tutarındaki kripto çekme talebiniz alındı. Ağ onayları tamamlanınca alıcı adrese ulaşacaktır.`}</p>
+        <p class="ref">İşlem No: ${wd.id}</p>
+        <div class="res-btns">
+          <button class="btn-row press" data-dekont="${wd.id}"><svg width="17" height="19" style="color:#fff"><use href="#i-receipt"/></svg>Dekont Görüntüle</button>
+          <button class="btn-row press" data-wdhist><svg width="20" height="20"><use href="#t-tx"/></svg>İşlem Geçmişi</button>
+          <button class="btn-row press" data-kpopall><svg width="20" height="20"><use href="#t-home"/></svg>Ana Sayfaya Dön</button>
+        </div>
+      </div>`;
+    return;
+  }
+  const last = steps.length - 1;
+  if (wd.step === last) {
+    // SMS doğrulama
+    B.innerHTML = `
+      <div class="wx-lead"><b>Çekme işleminizi doğrulayın.</b><p><b>+90 5** *** ** 47</b> telefon numarasına gönderilen 6 haneli doğrulama kodunu girin.</p></div>
+      <label class="kt-in wx-code"><span class="wx-code-l">SMS Doğrulama Kodu</span><input id="wx-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" value="${wd.code}"><em class="wx-timer"><svg width="18" height="18" viewBox="0 0 20 20"><circle cx="10" cy="11" r="7.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10 7.5V11l2.4 1.6M7.5 1.8h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><small>Kalan Süre</small><b id="wx-left">03:00</b></em></label>
+      <button class="see-all press wx-resend" data-wdresend disabled>Tekrar Kod Gönder</button>
+      ${go('Onayla', wd.code.length === 6, 'data-wdfinish')}`;
+    startWdTimer();
+    setTimeout(() => showSmsBanner(), 900);
+    return;
+  }
+  if (fiat && wd.step === 0) {
+    B.innerHTML = asset
+      + wxRow('Kayıtlı Hesaplar', wd.saved >= 0 ? BANK_ACC[wd.cur].name : 'Kayıtlı hesaptan seç', 'data-wdsaved', true)
+      + `<label class="kt-in wx-iban"><span class="wx-code-l">IBAN</span><input id="wx-iban" autocomplete="off" value="${wd.addr}"></label>
+      <label class="wx-check"><input type="checkbox" id="wx-own" ${wd.own ? 'checked' : ''}><i></i><span>Gönderim yapacağım banka hesabı bana aittir.</span></label>`
+      + amountBox + go('Devam', okAmt && wd.own && wd.addr.replace(/\s/g, '').length >= 26);
+    return;
+  }
+  if (fiat && wd.step === 1) {
+    B.innerHTML = `<div class="wx-lead"><b>İşleminizi onaylayın.</b></div><div class="card sum-card">
+      ${sumRow('Varlık', `${unit} ${wd.cur === 'USD' ? 'Amerikan Doları' : 'Türk Lirası'}`)}${sumRow('Alıcı Hesap', BANK_ACC[wd.cur].name)}${sumRow('IBAN', wd.addr)}${sumRow('Tutar', `${fmt(N.v)} ${unit}`)}${sumRow('Gönderim Ücreti', `0,00 ${unit}`)}${sumRow('Gönderilecek Tutar', `${fmt(N.send)} ${unit}`)}</div>
+      ${go('Onayla', true)}<div class="kt-go-wrap wx-edit"><button class="btn-secondary press" data-wdback>Düzenle</button></div>`;
+    return;
+  }
+  const [netName] = netsOf(wd.k)[wd.net], saved = savedAddrs(wd.k, wd.net);
+  if (wd.step === 0) {
+    B.innerHTML = asset
+      + wxRow('Ağ', netName, 'data-wdnet', false, 'info')
+      + wxRow('Kayıtlı Adresler', wd.saved >= 0 ? saved[wd.saved].label : 'Kayıtlı adresten seç (zorunlu değil)', 'data-wdsaved', true)
+      + `<label class="kt-in wx-iban"><span class="wx-code-l">Alıcı Adres</span><input id="wx-addr" autocomplete="off" value="${wd.addr}" placeholder="Adres girin"><button class="wx-qr press" data-wdqr aria-label="QR okut"><svg width="22" height="22"><use href="#i-qr"/></svg></button></label>`
+      + wxRow('Gönderim Yapılan Platform', PLATFORMS[wd.plat], 'data-wdplat', true)
+      + amountBox + go('Devam', okAmt && wd.addr.length > 20);
+    return;
+  }
+  if (wd.step === 1) {
+    B.innerHTML = `<div class="wx-lead"><b>Alıcı bilgilerini girin.</b><p>Kayıtlı adresiniz için bilgiler otomatik dolduruldu.</p></div>
+      <label class="kt-in wx-iban"><span class="wx-code-l">Alıcının Adı</span><input id="wx-name" value="${wd.name}"></label>
+      <label class="kt-in wx-iban"><span class="wx-code-l">Alıcının Soyadı</span><input id="wx-sur" value="${wd.sur}"></label>
+      ${wxRow('Adres Gönderimi', SENDTO[wd.sendto], 'data-wdsend', true)}${wxRow('İşlem Amacı', PURPOSES[wd.purpose], 'data-wdpurp', true)}
+      <label class="wx-check card"><input type="checkbox" id="wx-decl" ${wd.decl ? 'checked' : ''}><i></i><span>Yukarıda belirttiğim bilgilerin doğruluğunu ve gönderim yapacağım hesabın bana ait olduğunu beyan ederim.</span></label>
+      ${go('Devam', wd.decl && wd.name.trim() && wd.sur.trim())}`;
+    return;
+  }
+  if (wd.step === 2) {
+    B.innerHTML = `<div class="wx-lead"><b>Lütfen işleminizi onaylayın.</b></div><div class="card sum-card">
+      ${sumRow('Kripto Varlık', `${c.c} ${nameOf(c)}`)}${sumRow('Ağ', netName)}${sumRow('Alıcı Adres', `<span class="wx-mono">${wd.addr}</span>`)}${sumRow('Gönderim Yapılan Platform', PLATFORMS[wd.plat])}${sumRow('Alıcı', `${wd.name} ${wd.sur}`)}${sumRow('Adres Gönderimi', SENDTO[wd.sendto])}${sumRow('İşlem Amacı', PURPOSES[wd.purpose])}${sumRow('Tutar', `${fmt(N.v, decOf(N.min) + 2)} ${unit}`)}${sumRow('Gönderim Ücreti', `${fmt(N.fee, decOf(N.fee))} ${unit}`)}${sumRow('Gönderilecek Tutar', `${fmt(N.send, decOf(N.min) + 2)} ${unit}`)}</div>
+      <p class="wx-warn">Ağ onay süreçleri tamamlanmış bir transferin durdurulması veya iptali teknik olarak mümkün değildir.</p>
+      <div class="k-info ka-note"><svg width="20" height="20"><use href="#i-info"/></svg><span>Transferinizin tamamlanma süresi ağ yoğunluğuna bağlı olarak değişiklik gösterebilir (${netsOf(wd.k)[wd.net][3]}).</span></div>
+      ${go('SMS Onayı İle Devam Et', true)}<div class="kt-go-wrap wx-edit"><button class="btn-secondary press" data-wdedit>Düzenle</button></div>`;
+  }
+}
+function stopWdTimer() { clearInterval(wdTimer); wdTimer = null; }
+function startWdTimer() {
+  wdLeft = 180;
+  const tick = () => {
+    const m = String(Math.floor(wdLeft / 60)).padStart(2, '0'), s2 = String(wdLeft % 60).padStart(2, '0');
+    const el = $('#wx-left'); if (el) el.textContent = `${m}:${s2}`;
+    if (wdLeft <= 0) { stopWdTimer(); const r = $('[data-wdresend]'); if (r) r.disabled = false; }
+    wdLeft -= 1;
+  };
+  tick(); wdTimer = setInterval(tick, 1000);
+}
+// Demo: SMS geldi gibi üstte bildirim; dokununca kod otomatik dolar
+function showSmsBanner() {
+  if (!stack.includes('k-wdx') || wd.step !== WD_STEPS[wd.kind].length - 1) return;
+  wd.sms = String(100000 + Math.floor(Math.random() * 899999));
+  $('#wx-notif').innerHTML = `<img src="icons/icon-180.png" alt=""><div><b>HALK KRİPTO <small>şimdi</small></b><span>Çekme işleminiz için doğrulama kodunuz: <b>${wd.sms}</b>. Bu kodu kimseyle paylaşmayınız.</span></div>`;
+  $('#wx-notif').classList.add('show');
+  setTimeout(() => $('#wx-notif').classList.remove('show'), 6000);
+}
+function wdFinish() {
+  const N = wdNums(), fiat = wd.kind === 'fiat';
+  const id = `HK${48300000 + Math.floor(Math.random() * 90000)}`;
+  state.ktx = state.ktx || [];
+  if (fiat) {
+    if (wd.cur === 'USD') state.nakitUsd -= N.v; else state.nakit -= N.v;
+    // Halkbank'tan açıldıysa para Halkbank vadesiz hesabına geçer
+    if (embedded && state.moves) {
+      if (wd.cur === 'USD') state.usd = (state.usd || 0) + N.v; else { state.vadesiz += N.v; state.kredili += N.v; }
+      const d = new Date(), MON = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA'];
+      state.moves.unshift({ m: MON[d.getMonth()], d: d.getDate(), y: d.getFullYear(), t: 'Para Transferi', s: 'HALK KRİPTO HESABINDAN GELEN', a: N.v, cur: wd.cur });
+    }
+    state.ktx.push({ t: 'wd', k: wd.k, q: N.v, total: N.v, fee: 0, st: 'done', ts: Date.now(), id, cur: wd.cur, iban: wd.addr });
+    LIMITS.d[3][1] += wd.cur === 'USD' ? N.v * USD_RATE : N.v; LIMITS.m[3][1] += wd.cur === 'USD' ? N.v * USD_RATE : N.v;
+  } else {
+    const a = ASSETS.find((x) => x.k === wd.k), c = coinOf(wd.k);
+    const left = coinBal(wd.k) - N.v;
+    a.v = left <= coinBal(wd.k) * 0.0005 ? 0 : left * c.tl;
+    if (a.v < 0.005) { a.v = 0; ASSETS.splice(ASSETS.indexOf(a), 1); if (!ZERO.includes(a.k)) ZERO.unshift(a.k); }
+    state.kripto = ASSETS.reduce((t, x) => t + x.v, 0);
+    state.ktx.push({ t: 'wd', k: wd.k, q: N.v, p: c.tl, total: N.v * c.tl, fee: 0, nfee: N.fee, st: 'done', ts: Date.now(), id, cur: 'TL', addr: wd.addr, net: netsOf(wd.k)[wd.net][0], plat: PLATFORMS[wd.plat] });
+    LIMITS.d[4][1] += N.v * c.tl; LIMITS.m[4][1] += N.v * c.tl;
+  }
+  wd.id = id;
+  addNotif({ k: 'dep', title: fiat ? 'Para Çekme' : 'Kripto Çekme', text: `${fmt(N.v, fiat ? 2 : decOf(N.min) + 2)} ${fiat ? wd.cur : coinOf(wd.k).c} çekme talebiniz alındı.`, go: { tx: id } });
+  renderTotal(); renderList(); renderAssets(); renderHomeMoves();
+  wd.step = WD_STEPS[wd.kind].length;
+  renderWdx();
+  $('#wx-scroll').scrollTop = 0;
+}
+function wdInput(e) {
+  const t = e.target;
+  if (t.id === 'wx-amt') { wd.amt = t.value; const keep = t.selectionStart; renderWdxKeep('#wx-amt', keep); }
+  else if (t.id === 'wx-iban') { wd.addr = t.value.toUpperCase(); wd.saved = -1; renderWdxKeep('#wx-iban', t.selectionStart); }
+  else if (t.id === 'wx-addr') { wd.addr = t.value.trim(); wd.saved = -1; renderWdxKeep('#wx-addr', t.selectionStart); }
+  else if (t.id === 'wx-name') { wd.name = t.value; renderWdxKeep('#wx-name', t.selectionStart); }
+  else if (t.id === 'wx-sur') { wd.sur = t.value; renderWdxKeep('#wx-sur', t.selectionStart); }
+  else if (t.id === 'wx-code') { wd.code = t.value.replace(/\D/g, '').slice(0, 6); t.value = wd.code; const b = $('[data-wdfinish]'); if (b) b.disabled = wd.code.length < 6; }
+}
+// Yazarken yeniden çizim odak kaybettirmesin
+function renderWdxKeep(sel, pos) {
+  if (wd.step === WD_STEPS[wd.kind].length - 1) return;
+  const sc = $('#wx-scroll').scrollTop;
+  renderWdx();
+  const el = $(sel); if (el) { el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) { /* number input */ } }
+  $('#wx-scroll').scrollTop = sc;
+}
+function wdClick(b) {
+  const d = b.dataset;
+  if (d.wdfiat) { startWdFiat(d.wdfiat); return true; }
+  if (d.wdcoin) { startWdCrypto(d.wdcoin); return true; }
+  if (b.hasAttribute('data-wdback')) { if (wd.step > 0 && wd.step < WD_STEPS[wd.kind].length) { wd.step -= 1; wd.code = ''; renderWdx(); } else { stopWdTimer(); popScreen(); } return true; }
+  if (b.hasAttribute('data-wdedit')) { wd.step = 0; renderWdx(); return true; }
+  if (b.hasAttribute('data-wdnext')) { wd.step += 1; wd.code = ''; renderWdx(); $('#wx-scroll').scrollTop = 0; return true; }
+  if (b.hasAttribute('data-wdfinish')) { b.disabled = true; b.textContent = 'İşleniyor…'; stopWdTimer(); setTimeout(wdFinish, 800); return true; }
+  if (b.hasAttribute('data-wdall')) { const N = wdNums(); wd.amt = fmt(N.max, wd.kind === 'fiat' ? 2 : qtyDec(coinOf(wd.k))); renderWdx(); return true; }
+  if (b.hasAttribute('data-wdresend')) { b.disabled = true; startWdTimer(); showSmsBanner(); return true; }
+  if (b.hasAttribute('data-wdqr')) { toast('Kamera ile QR okutma bu demoda yer almıyor'); return true; }
+  if (b.hasAttribute('data-wdhist')) { popAll(); showTab('k-history'); return true; }
+  if (b.id === 'wx-notif' || b.closest('#wx-notif')) { wd.code = wd.sms; const i = $('#wx-code'); if (i) { i.value = wd.code; } const f = $('[data-wdfinish]'); if (f) f.disabled = false; $('#wx-notif').classList.remove('show'); return true; }
+  if (b.hasAttribute('data-wdnet')) { openNetSheet(wd.k, 'wdchange'); return true; }
+  if (b.hasAttribute('data-wdsaved')) {
+    if (wd.kind === 'fiat') openPick('Kayıtlı Hesaplar', [{ label: BANK_ACC[wd.cur].name, sub: BANK_ACC[wd.cur].iban }], wd.saved, () => { wd.saved = 0; wd.addr = BANK_ACC[wd.cur].iban; wd.own = true; });
+    else openPick('Kayıtlı Adresler', savedAddrs(wd.k, wd.net).map((s) => ({ label: s.label, sub: shortAddr(s.addr) })), wd.saved, (i) => pickSaved(i));
+    return true;
+  }
+  if (b.hasAttribute('data-wdplat')) { openPick('Gönderim Yapılan Platform', PLATFORMS.map((label) => ({ label })), wd.plat, (i) => { wd.plat = i; }); return true; }
+  if (b.hasAttribute('data-wdsend')) { openPick('Adres Gönderimi', SENDTO.map((label) => ({ label })), wd.sendto, (i) => { wd.sendto = i; if (i === 1) { wd.name = ''; wd.sur = ''; } else { wd.name = 'Deniz'; wd.sur = 'Yılmaz'; } }); return true; }
+  if (b.hasAttribute('data-wdpurp')) { openPick('İşlem Amacı', PURPOSES.map((label) => ({ label })), wd.purpose, (i) => { wd.purpose = i; }); return true; }
+  if (d.wxp !== undefined) { const i = +d.wxp; $$('#wxp-list .opt').forEach((o) => o.classList.toggle('on', o === b)); if (pickCb) pickCb(i); setTimeout(() => { closeSheet(); renderWdx(); }, 160); return true; }
+  return false;
+}
+
 /* ---------- Ekranlar: alt menü sekmeleri ve üstten açılan ekranlar ---------- */
 let current = 'k-home';
 function tabbarHTML(active) {
@@ -1067,6 +1369,7 @@ function pushScreen(id) {
   if (id === 'k-limits') renderLimits();
   if (id === 'k-ekstre') { const t = new Date(), f = new Date(Date.now() - 7 * 864e5), iso = (d) => d.toISOString().slice(0, 10); $('#ke-from').value = iso(f); $('#ke-to').value = iso(t); }
   if (id === 'k-dep') { $('#kd-q').value = ''; renderDepList(); }
+  if (id === 'k-wd') renderWdList();
   const s = $(`#${id}`);
   if (stack.includes(id)) return;
   stack.push(id);
@@ -1200,6 +1503,8 @@ function init() {
   $('#kt-amt').addEventListener('input', onAmt);
   $('#cs-q').addEventListener('input', renderCoinSheet);
   $('#kd-q').addEventListener('input', renderDepList);
+  $('#wx-body').addEventListener('input', wdInput);
+  $('#wx-body').addEventListener('change', (e) => { if (e.target.id === 'wx-own') { wd.own = e.target.checked; renderWdx(); } if (e.target.id === 'wx-decl') { wd.decl = e.target.checked; renderWdx(); } });
   setupChartScrub();
   $('#kl-pass').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6); drawDots(); if (e.target.value.length === 6) doLogin(); });
   $('#km-slider').addEventListener('scroll', (e) => { const el = e.target, i = Math.round(el.scrollLeft / (el.firstElementChild ? el.firstElementChild.offsetWidth + 10 : 1)); $$('#km-dots i').forEach((d, j) => d.classList.toggle('on', j === i)); }, { passive: true });
@@ -1208,10 +1513,11 @@ function init() {
   $('#ks-q').addEventListener('keydown', (e) => { if (e.key === 'Enter') e.target.blur(); });
 
   document.addEventListener('click', (e) => {
-    const b = e.target.closest('button, [data-soon], [data-kpair], [data-kpick], [data-tx], [data-kdfiat], [data-kaseg], [data-coin]');
+    const b = e.target.closest('button, [data-soon], [data-kpair], [data-kpick], [data-tx], [data-kdfiat], [data-kaseg], [data-coin], #wx-notif');
     if (!b) return;
     if (loggedOut && !allowedOut(b)) { e.preventDefault(); return openLogin(); }
     if (b.hasAttribute('data-klogin')) return openLogin();
+    if (wdClick(b)) return;
     if (b.dataset.coin) return openCoin(b.dataset.coin, b.dataset.cur);
     if (b.dataset.seg) return setSeg(b.dataset.seg);
     if (b.dataset.r) { cd.range = b.dataset.r; $$('#ranges button').forEach((x) => x.classList.toggle('on', x === b)); return drawChart(true); }
@@ -1240,7 +1546,9 @@ function init() {
     if (b.dataset.kdcoin) return openNetSheet(b.dataset.kdcoin, 'info');
     if (b.dataset.kdfiat) { dep.fiat = b.dataset.kdfiat; return openInfo(dep.fiat, 'detail'); }
     if (b.dataset.knet) { dep.net = +b.dataset.knet; $$('#net-list [data-knet]').forEach((x) => x.classList.toggle('on', x === b)); return; }
+    if (b.id === 'net-go' && (dep.next === 'wd' || dep.next === 'wdchange')) { closeSheet(); wd.net = dep.net; pickSaved(0); if (dep.next === 'wd') return setTimeout(openWdx, 300); return renderWdx(); }
     if (b.id === 'net-go') { closeSheet(); dep.fiat = null; if (dep.next === 'info') return setTimeout(() => openInfo('crypto', 'detail'), 320); return renderDepDetail(); }
+    if (b.id === 'di-ok' && infoCb) { const f = infoCb; infoCb = null; closeSheet(); return setTimeout(f, 320); }
     if (b.id === 'di-ok') { closeSheet(); if (dep.next === 'detail') openDepDetail(); return; }
     if (b.hasAttribute('data-kdhow')) return openInfo('crypto', null);
     if (b.hasAttribute('data-kdnet')) return openNetSheet(dep.k, 'detail');

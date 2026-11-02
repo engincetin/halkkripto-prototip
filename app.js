@@ -550,7 +550,7 @@ function closeKriptoApp() {
   sw.classList.remove('open');
   dev.classList.remove('app-out');
   // Halk Kripto'da yapılan alım/satım bakiyeleri değiştirmiş olabilir
-  renderBalances(); renderAssets(); renderKriptoList();
+  renderBalances(); renderAssets(); renderKriptoList(); renderMoves();
   setTimeout(() => {
     sw.classList.remove('show');
     $('#kripto-frame').src = 'about:blank';
